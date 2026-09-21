@@ -5,7 +5,7 @@ import androidx.room.PrimaryKey
 import java.util.UUID
 
 @Entity(tableName = "categories")
-data class Category (
+data class Category(
     @PrimaryKey
     val id: String = UUID.randomUUID().toString(),
 
@@ -17,5 +17,5 @@ data class Category (
 
     val isDeleted: Boolean = false,
 
-    val isPendingSync: Boolean = true,
+    val isPendingSync: Boolean = true
 )

@@ -5,9 +5,8 @@ import androidx.room.PrimaryKey
 import java.time.LocalDate
 import java.util.UUID
 
-
 @Entity(tableName = "subscriptions")
-data class Subscription (
+data class Subscription(
     @PrimaryKey
     val id: String = UUID.randomUUID().toString(),
 
@@ -31,7 +30,7 @@ data class Subscription (
 
     val isDeleted: Boolean = false,
 
-    val isPendingSync: Boolean = true,
+    val isPendingSync: Boolean = true
 
 )
 

@@ -3,9 +3,8 @@ package ru.pikahk.outdateapp.data
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-
 @Entity(tableName = "products")
-data class Product (
+data class Product(
     @PrimaryKey
     val barcode: String,
 
@@ -19,5 +18,5 @@ data class Product (
 
     val updatedAt: Long = System.currentTimeMillis(),
 
-    val isPendingSync: Boolean = true,
+    val isPendingSync: Boolean = true
 )
