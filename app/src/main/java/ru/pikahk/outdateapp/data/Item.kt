@@ -22,14 +22,19 @@ data class Item(
 
     val categoryId: String?,
 
+    /** Штрихкод, если расходник добавлен сканированием. */
     val barcode: String?,
 
+    /** Срок годности, указанный на упаковке. */
     val expiresAt: LocalDate,
 
+    /** Сколько дней расходник годен после вскрытия. null — отдельного срока нет. */
     val daysAfterOpening: Int?,
 
+    /** Дата вскрытия. null означает, что расходник запечатан. */
     val openedAt: LocalDate?,
 
+    /** За сколько дней до истечения срока прислать уведомление. */
     val notifyDaysBefore: Int = 3,
 
     val createdAt: Long = System.currentTimeMillis(),

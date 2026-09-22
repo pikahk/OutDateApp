@@ -15,7 +15,7 @@ object DatabaseProvider {
     private fun build(context: Context): AppDatabase = Room.databaseBuilder(
         context.applicationContext,
         AppDatabase::class.java,
-        "expirynote.db"
+        "outdate.db"
     )
         .fallbackToDestructiveMigration(dropAllTables = true)
         .build()
