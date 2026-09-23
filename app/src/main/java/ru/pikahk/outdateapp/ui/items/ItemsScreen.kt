@@ -1,0 +1,79 @@
+package ru.pikahk.outdateapp.ui.items
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import ru.pikahk.outdateapp.R
+import ru.pikahk.outdateapp.domain.Urgency
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ItemsScreen(viewModel: ItemsViewModel) {
+    val items by viewModel.items.collectAsStateWithLifecycle()
+
+    Scaffold(
+        topBar = { TopAppBar(title = { Text("Мои сроки") }) },
+        floatingActionButton = {
+            FloatingActionButton(onClick = { viewModel.addDemoItem() }) {
+                Icon(painter = painterResource(R.drawable.ic_add), contentDescription = "Добавить")
+            }
+        }
+    ) { padding ->
+        if (items.isEmpty()) {
+            Box(
+                modifier = Modifier.fillMaxSize().padding(padding),
+                contentAlignment = Alignment.Center
+            ) {
+                Text("Пока пусто. Нажмите «+»")
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize().padding(padding),
+                verticalArrangement = Arrangement.spacedBy(2.dp)
+            ) {
+                items(items = items, key = { it.id }) { item ->
+                    ItemRow(item)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ItemRow(item: ItemUi) {
+    ListItem(
+        headlineContent = { Text(item.name) },
+        trailingContent = {
+            Text(
+                text = "${item.daysLeft} дн.",
+                color = item.urgency.color(),
+                style = MaterialTheme.typography.labelLarge
+            )
+        }
+    )
+}
+
+private fun Urgency.color(): Color = when (this) {
+    Urgency.EXPIRED, Urgency.CRITICAL -> Color(0xFFC0392B)
+    Urgency.SOON -> Color(0xFF9A6A0C)
+    Urgency.OK -> Color(0xFF24874A)
+}
