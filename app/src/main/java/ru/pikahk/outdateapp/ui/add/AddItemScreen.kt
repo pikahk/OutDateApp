@@ -37,8 +37,7 @@ fun AddItemScreen(
     var dateText by rememberSaveable { mutableStateOf("") }
 
     val expiresAt = parseExpiryDate(dateText)
-    // Ошибку показываем, только когда дата набрана целиком, а не на каждом символе.
-    val showDateError = dateText.length >= 10 && expiresAt == null
+    val showDateError = expiresAt == null && isYearTyped(dateText)
     val canSave = name.isNotBlank() && expiresAt != null
 
     Scaffold(
@@ -62,7 +61,7 @@ fun AddItemScreen(
                 label = { Text("Годен до") },
                 placeholder = { Text("15.10.2026") },
                 isError = showDateError,
-                supportingText = { if (showDateError) Text("Нет такой даты. Формат: ДД.ММ.ГГГГ") },
+                supportingText = { Text(if (showDateError) "Нет такой даты" else "ДД.ММ.ГГГГ или ММ.ГГГГ") },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 modifier = Modifier.fillMaxWidth()
@@ -83,6 +82,9 @@ fun AddItemScreen(
         }
     }
 }
+
+/** Год набран целиком: только тогда есть смысл показывать ошибку, а не на каждом символе. */
+private fun isYearTyped(text: String): Boolean = text.trim().takeLastWhile { it.isDigit() }.length >= 4
 
 @Preview(showBackground = true)
 @Composable

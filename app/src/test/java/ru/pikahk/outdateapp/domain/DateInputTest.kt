@@ -29,6 +29,17 @@ class DateInputTest {
     }
 
     @Test
+    fun `месяц и год означают конец месяца`() {
+        assertEquals(LocalDate.of(2026, 10, 31), parseExpiryDate("10.2026"))
+    }
+
+    @Test
+    fun `месяц и год учитывают високосный февраль`() {
+        assertEquals(LocalDate.of(2028, 2, 29), parseExpiryDate("2.2028"))
+        assertEquals(LocalDate.of(2027, 2, 28), parseExpiryDate("02.2027"))
+    }
+
+    @Test
     fun `пустая строка не дата`() {
         assertNull(parseExpiryDate(""))
     }
@@ -46,10 +57,16 @@ class DateInputTest {
     @Test
     fun `год из двух цифр не принимается`() {
         assertNull(parseExpiryDate("15.10.26"))
+        assertNull(parseExpiryDate("10.26"))
     }
 
     @Test
     fun `несуществующая дата не принимается`() {
         assertNull(parseExpiryDate("31.02.2026"))
+    }
+
+    @Test
+    fun `несуществующий месяц не принимается`() {
+        assertNull(parseExpiryDate("13.2026"))
     }
 }
