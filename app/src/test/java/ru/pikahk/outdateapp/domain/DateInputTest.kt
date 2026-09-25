@@ -84,4 +84,31 @@ class DateInputTest {
     fun `дата для показа с ведущими нулями`() {
         assertEquals("05.01.2026", formatDate(LocalDate.of(2026, 1, 5)))
     }
+
+    @Test
+    fun `точки расставляются по мере ввода`() {
+        assertEquals("1", formatDateDigits("1"))
+        assertEquals("15", formatDateDigits("15"))
+        assertEquals("15.1", formatDateDigits("151"))
+        assertEquals("15.10", formatDateDigits("1510"))
+        assertEquals("15.10.2", formatDateDigits("15102"))
+        assertEquals("15.10.2026", formatDateDigits("15102026"))
+    }
+
+    @Test
+    fun `месяц и год получают одну точку`() {
+        assertEquals("10.2026", formatDateDigits("102026"))
+    }
+
+    @Test
+    fun `лишние цифры отбрасываются`() {
+        assertEquals("15.10.2026", formatDateDigits("151020269"))
+        assertEquals("10.2026", formatDateDigits("1020269"))
+    }
+
+    @Test
+    fun `повторное форматирование ничего не меняет`() {
+        assertEquals("15.10.2026", formatDateDigits("15.10.2026"))
+        assertEquals("15.10", formatDateDigits("15.10."))
+    }
 }

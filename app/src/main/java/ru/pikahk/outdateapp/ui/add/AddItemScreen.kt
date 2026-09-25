@@ -12,28 +12,40 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import java.time.Instant
 import java.time.LocalDate
+import java.time.ZoneOffset
+import ru.pikahk.outdateapp.R
 import ru.pikahk.outdateapp.domain.ShelfLifeUnit
 import ru.pikahk.outdateapp.domain.expiryFromProduction
 import ru.pikahk.outdateapp.domain.formatDate
+import ru.pikahk.outdateapp.domain.formatDateDigits
 import ru.pikahk.outdateapp.domain.parseDate
 import ru.pikahk.outdateapp.domain.parseExpiryDate
 import ru.pikahk.outdateapp.domain.shelfLifeInDays
@@ -101,7 +113,7 @@ fun AddItemScreen(onSave: (ItemDraft) -> Unit, onCancel: () -> Unit, modifier: M
                     onValueChange = { expiryText = it },
                     label = "Годен до",
                     hint = "ДД.ММ.ГГГГ или ММ.ГГГГ",
-                    isValid = expiresAt != null
+                    parse = ::parseExpiryDate
                 )
 
                 InputMode.PRODUCTION -> {
@@ -110,7 +122,7 @@ fun AddItemScreen(onSave: (ItemDraft) -> Unit, onCancel: () -> Unit, modifier: M
                         onValueChange = { producedText = it },
                         label = "Дата изготовления",
                         hint = "ДД.ММ.ГГГГ",
-                        isValid = parseDate(producedText) != null
+                        parse = ::parseDate
                     )
                     AmountField(value = amountText, onValueChange = { amountText = it }, label = "Срок годности")
                     ChoiceChips(options = unitOptions, selected = unit, onSelect = { unit = it })
@@ -152,19 +164,67 @@ fun AddItemScreen(onSave: (ItemDraft) -> Unit, onCancel: () -> Unit, modifier: M
 }
 
 @Composable
-private fun DateField(value: String, onValueChange: (String) -> Unit, label: String, hint: String, isValid: Boolean) {
-    val showError = !isValid && isYearTyped(value)
+private fun DateField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    label: String,
+    hint: String,
+    parse: (String) -> LocalDate?
+) {
+    var showPicker by rememberSaveable { mutableStateOf(false) }
+    val date = parse(value)
+    val showError = date == null && isYearTyped(value)
+
     OutlinedTextField(
-        value = value,
-        onValueChange = onValueChange,
+        value = TextFieldValue(value, TextRange(value.length)),
+        onValueChange = { onValueChange(formatDateDigits(it.text)) },
         label = { Text(label) },
         placeholder = { Text("15.10.2026") },
+        trailingIcon = {
+            IconButton(onClick = { showPicker = true }) {
+                Icon(painter = painterResource(R.drawable.ic_calendar), contentDescription = "Выбрать дату")
+            }
+        },
         isError = showError,
         supportingText = { Text(if (showError) "Нет такой даты" else hint) },
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         modifier = Modifier.fillMaxWidth()
     )
+
+    if (showPicker) {
+        DatePickerModal(
+            initial = date,
+            onPick = { onValueChange(formatDate(it)) },
+            onDismiss = { showPicker = false }
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun DatePickerModal(initial: LocalDate?, onPick: (LocalDate) -> Unit, onDismiss: () -> Unit) {
+    val state = rememberDatePickerState(initialSelectedDateMillis = initial?.toUtcMillis())
+    DatePickerDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    state.selectedDateMillis?.let { onPick(it.toUtcDate()) }
+                    onDismiss()
+                }
+            ) {
+                Text("Готово")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Отмена")
+            }
+        }
+    ) {
+        DatePicker(state = state)
+    }
 }
 
 @Composable
@@ -206,6 +266,10 @@ private fun calculateExpiry(producedText: String, amountText: String, unit: Shel
 private fun parseAmount(text: String): Int? = text.toIntOrNull()?.takeIf { it > 0 }
 
 private fun isYearTyped(text: String): Boolean = text.trim().takeLastWhile { it.isDigit() }.length >= 4
+
+private fun LocalDate.toUtcMillis(): Long = atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli()
+
+private fun Long.toUtcDate(): LocalDate = Instant.ofEpochMilli(this).atZone(ZoneOffset.UTC).toLocalDate()
 
 @Preview(showBackground = true)
 @Composable

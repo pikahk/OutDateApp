@@ -21,3 +21,14 @@ fun parseExpiryDate(text: String): LocalDate? =
 fun formatDate(date: LocalDate): String = date.format(displayFormat)
 
 private fun normalize(text: String): String = text.trim().replace(',', '.').replace('-', '.').replace('/', '.')
+
+fun formatDateDigits(text: String): String {
+    val digits = text.filter(Char::isDigit).take(8)
+    if (digits.length <= 2) return digits
+    val startsWithDay = digits.length > 4 && digits.substring(2, 4).toInt() in 1..12
+    return if (startsWithDay) {
+        "${digits.take(2)}.${digits.substring(2, 4)}.${digits.drop(4)}"
+    } else {
+        "${digits.take(2)}.${digits.drop(2).take(4)}"
+    }
+}
