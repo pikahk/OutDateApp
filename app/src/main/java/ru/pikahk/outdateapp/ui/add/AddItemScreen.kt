@@ -33,6 +33,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
@@ -54,15 +55,15 @@ import ru.pikahk.outdateapp.ui.theme.OutDateAppTheme
 private enum class InputMode { EXPIRY_DATE, PRODUCTION }
 
 private val modeOptions = listOf(
-    InputMode.EXPIRY_DATE to "Годен до",
-    InputMode.PRODUCTION to "Изготовлен"
+    InputMode.EXPIRY_DATE to R.string.mode_expiry,
+    InputMode.PRODUCTION to R.string.mode_production
 )
 
 private val unitOptions = listOf(
-    ShelfLifeUnit.HOURS to "часы",
-    ShelfLifeUnit.DAYS to "сутки",
-    ShelfLifeUnit.MONTHS to "месяцы",
-    ShelfLifeUnit.YEARS to "годы"
+    ShelfLifeUnit.HOURS to R.string.unit_hours,
+    ShelfLifeUnit.DAYS to R.string.unit_days,
+    ShelfLifeUnit.MONTHS to R.string.unit_months,
+    ShelfLifeUnit.YEARS to R.string.unit_years
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -86,7 +87,7 @@ fun AddItemScreen(onSave: (ItemDraft) -> Unit, onCancel: () -> Unit, modifier: M
 
     Scaffold(
         modifier = modifier,
-        topBar = { TopAppBar(title = { Text("Новый продукт") }) }
+        topBar = { TopAppBar(title = { Text(stringResource(R.string.add_title)) }) }
     ) { padding ->
         Column(
             modifier = Modifier
@@ -101,7 +102,7 @@ fun AddItemScreen(onSave: (ItemDraft) -> Unit, onCancel: () -> Unit, modifier: M
             OutlinedTextField(
                 value = name,
                 onValueChange = { name = it },
-                label = { Text("Название") },
+                label = { Text(stringResource(R.string.field_name)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -111,8 +112,8 @@ fun AddItemScreen(onSave: (ItemDraft) -> Unit, onCancel: () -> Unit, modifier: M
                 InputMode.EXPIRY_DATE -> DateField(
                     value = expiryText,
                     onValueChange = { expiryText = it },
-                    label = "Годен до",
-                    hint = "ДД.ММ.ГГГГ или ММ.ГГГГ",
+                    label = stringResource(R.string.field_expires),
+                    hint = stringResource(R.string.hint_expiry_format),
                     parse = ::parseExpiryDate
                 )
 
@@ -120,15 +121,19 @@ fun AddItemScreen(onSave: (ItemDraft) -> Unit, onCancel: () -> Unit, modifier: M
                     DateField(
                         value = producedText,
                         onValueChange = { producedText = it },
-                        label = "Дата изготовления",
-                        hint = "ДД.ММ.ГГГГ",
+                        label = stringResource(R.string.field_produced),
+                        hint = stringResource(R.string.hint_date_format),
                         parse = ::parseDate
                     )
-                    AmountField(value = amountText, onValueChange = { amountText = it }, label = "Срок годности")
+                    AmountField(
+                        value = amountText,
+                        onValueChange = { amountText = it },
+                        label = stringResource(R.string.field_shelf_life)
+                    )
                     ChoiceChips(options = unitOptions, selected = unit, onSelect = { unit = it })
                     if (expiresAt != null) {
                         Text(
-                            text = "Годен до ${formatDate(expiresAt)}",
+                            text = stringResource(R.string.expires_on, formatDate(expiresAt)),
                             style = MaterialTheme.typography.titleMedium
                         )
                     }
@@ -139,8 +144,8 @@ fun AddItemScreen(onSave: (ItemDraft) -> Unit, onCancel: () -> Unit, modifier: M
             AmountField(
                 value = openedAmountText,
                 onValueChange = { openedAmountText = it },
-                label = "Годен после вскрытия",
-                hint = "Необязательно. Например, «хранить 5 суток после вскрытия»"
+                label = stringResource(R.string.field_after_opening),
+                hint = stringResource(R.string.hint_after_opening)
             )
             ChoiceChips(options = unitOptions, selected = openedUnit, onSelect = { openedUnit = it })
 
@@ -151,13 +156,13 @@ fun AddItemScreen(onSave: (ItemDraft) -> Unit, onCancel: () -> Unit, modifier: M
                 enabled = canSave,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Сохранить")
+                Text(stringResource(R.string.save))
             }
             TextButton(
                 onClick = onCancel,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Отмена")
+                Text(stringResource(R.string.cancel))
             }
         }
     }
@@ -182,11 +187,14 @@ private fun DateField(
         placeholder = { Text("15.10.2026") },
         trailingIcon = {
             IconButton(onClick = { showPicker = true }) {
-                Icon(painter = painterResource(R.drawable.ic_calendar), contentDescription = "Выбрать дату")
+                Icon(
+                    painter = painterResource(R.drawable.ic_calendar),
+                    contentDescription = stringResource(R.string.pick_date)
+                )
             }
         },
         isError = showError,
-        supportingText = { Text(if (showError) "Нет такой даты" else hint) },
+        supportingText = { Text(if (showError) stringResource(R.string.error_no_such_date) else hint) },
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         modifier = Modifier.fillMaxWidth()
@@ -214,12 +222,12 @@ private fun DatePickerModal(initial: LocalDate?, onPick: (LocalDate) -> Unit, on
                     onDismiss()
                 }
             ) {
-                Text("Готово")
+                Text(stringResource(R.string.done))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Отмена")
+                Text(stringResource(R.string.cancel))
             }
         }
     ) {
@@ -245,13 +253,13 @@ private fun AmountField(value: String, onValueChange: (String) -> Unit, label: S
 }
 
 @Composable
-private fun <T> ChoiceChips(options: List<Pair<T, String>>, selected: T, onSelect: (T) -> Unit) {
+private fun <T> ChoiceChips(options: List<Pair<T, Int>>, selected: T, onSelect: (T) -> Unit) {
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        options.forEach { (value, label) ->
+        options.forEach { (value, labelRes) ->
             FilterChip(
                 selected = value == selected,
                 onClick = { onSelect(value) },
-                label = { Text(label) }
+                label = { Text(stringResource(labelRes)) }
             )
         }
     }

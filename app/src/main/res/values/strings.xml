@@ -1,31 +1,57 @@
 <resources>
-  <string name="app_name">OutDateApp</string>
+  <string name="app_name" translatable="false">outDate</string>
 
-  <string name="back">Назад</string>
-  <string name="cancel">Отмена</string>
-  <string name="delete">Удалить</string>
+  <string name="back">Back</string>
+  <string name="cancel">Cancel</string>
+  <string name="delete">Delete</string>
+  <string name="done">Done</string>
+  <string name="save">Save</string>
 
-  <string name="details_expires">Годен до</string>
-  <string name="details_package_date">Срок на упаковке</string>
-  <string name="details_after_opening">После вскрытия</string>
-  <string name="details_not_set">Не указан</string>
-  <string name="details_opened">Вскрыто</string>
-  <string name="details_sealed">Не вскрыто</string>
+  <string name="items_title">Expiry dates</string>
+  <string name="add_item">Add</string>
+  <string name="items_empty">Nothing here yet. Tap “+”</string>
+  <string name="list_expired">expired</string>
+  <string name="list_today">today</string>
 
-  <string name="status_left">Осталось %1$s</string>
-  <string name="status_today">Истекает сегодня</string>
-  <string name="status_expired">Просрочено на %1$s</string>
+  <string name="add_title">New item</string>
+  <string name="field_name">Name</string>
+  <string name="mode_expiry">Best before</string>
+  <string name="mode_production">Produced</string>
+  <string name="field_expires">Best before</string>
+  <string name="hint_expiry_format">DD.MM.YYYY or MM.YYYY</string>
+  <string name="field_produced">Production date</string>
+  <string name="hint_date_format">DD.MM.YYYY</string>
+  <string name="field_shelf_life">Shelf life</string>
+  <string name="expires_on">Best before %1$s</string>
+  <string name="field_after_opening">Shelf life after opening</string>
+  <string name="hint_after_opening">Optional. For example, “keep for 5 days after opening”</string>
+  <string name="error_no_such_date">No such date</string>
+  <string name="pick_date">Pick a date</string>
 
-  <string name="open_today">Открыть сегодня</string>
-  <string name="undo_open">Отменить вскрытие</string>
+  <string name="unit_hours">hours</string>
+  <string name="unit_days">days</string>
+  <string name="unit_months">months</string>
+  <string name="unit_years">years</string>
 
-  <string name="delete_title">Удалить продукт?</string>
-  <string name="delete_message">Продукт пропадёт из списка.</string>
+  <string name="details_expires">Best before</string>
+  <string name="details_package_date">Date on package</string>
+  <string name="details_after_opening">After opening</string>
+  <string name="details_not_set">Not set</string>
+  <string name="details_opened">Opened</string>
+  <string name="details_sealed">Sealed</string>
+
+  <string name="status_left">%1$s left</string>
+  <string name="status_today">Expires today</string>
+  <string name="status_expired">Expired %1$s ago</string>
+
+  <string name="open_today">Open today</string>
+  <string name="undo_open">Undo opening</string>
+
+  <string name="delete_title">Delete this item?</string>
+  <string name="delete_message">It will be removed from the list.</string>
 
   <plurals name="days">
-    <item quantity="one">%d день</item>
-    <item quantity="few">%d дня</item>
-    <item quantity="many">%d дней</item>
-    <item quantity="other">%d дня</item>
+    <item quantity="one">%d day</item>
+    <item quantity="other">%d days</item>
   </plurals>
 </resources>

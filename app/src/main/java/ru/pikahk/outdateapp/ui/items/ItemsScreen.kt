@@ -20,6 +20,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ru.pikahk.outdateapp.R
@@ -31,10 +33,13 @@ fun ItemsScreen(viewModel: ItemsViewModel, onAddClick: () -> Unit, onItemClick: 
     val items by viewModel.items.collectAsStateWithLifecycle()
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("Мои сроки") }) },
+        topBar = { TopAppBar(title = { Text(stringResource(R.string.items_title)) }) },
         floatingActionButton = {
             FloatingActionButton(onClick = onAddClick) {
-                Icon(painter = painterResource(R.drawable.ic_add), contentDescription = "Добавить")
+                Icon(
+                    painter = painterResource(R.drawable.ic_add),
+                    contentDescription = stringResource(R.string.add_item)
+                )
             }
         }
     ) { padding ->
@@ -43,7 +48,7 @@ fun ItemsScreen(viewModel: ItemsViewModel, onAddClick: () -> Unit, onItemClick: 
                 modifier = Modifier.fillMaxSize().padding(padding),
                 contentAlignment = Alignment.Center
             ) {
-                Text("Пока пусто. Нажмите «+»")
+                Text(stringResource(R.string.items_empty))
             }
         } else {
             LazyColumn(
@@ -65,10 +70,17 @@ private fun ItemRow(item: ItemUi, onClick: () -> Unit) {
         headlineContent = { Text(item.name) },
         trailingContent = {
             Text(
-                text = "${item.daysLeft} дн.",
+                text = daysLabel(item.daysLeft),
                 color = item.urgency.color(),
                 style = MaterialTheme.typography.labelLarge
             )
         }
     )
+}
+
+@Composable
+private fun daysLabel(daysLeft: Long): String = when {
+    daysLeft < 0 -> stringResource(R.string.list_expired)
+    daysLeft == 0L -> stringResource(R.string.list_today)
+    else -> pluralStringResource(R.plurals.days, daysLeft.toInt(), daysLeft.toInt())
 }

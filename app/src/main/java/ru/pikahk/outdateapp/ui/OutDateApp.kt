@@ -25,6 +25,7 @@ import ru.pikahk.outdateapp.ui.items.ItemsScreen
 import ru.pikahk.outdateapp.ui.items.ItemsViewModel
 
 private const val TRANSITION_MILLIS = 200
+
 @Serializable
 private object ItemsRoute
 
