@@ -1,5 +1,6 @@
 package ru.pikahk.outdateapp.ui
 
+import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -24,7 +25,7 @@ import ru.pikahk.outdateapp.ui.details.ItemDetailsViewModel
 import ru.pikahk.outdateapp.ui.items.ItemsScreen
 import ru.pikahk.outdateapp.ui.items.ItemsViewModel
 
-private const val TRANSITION_MILLIS = 200
+private const val TRANSITION_MILLIS = 250
 
 @Serializable
 private object ItemsRoute
@@ -45,8 +46,26 @@ fun OutDateApp() {
         NavHost(
             navController = navController,
             startDestination = ItemsRoute,
-            enterTransition = { fadeIn(tween(TRANSITION_MILLIS)) },
-            exitTransition = { fadeOut(tween(TRANSITION_MILLIS)) }
+            enterTransition = {
+                slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Start, tween(TRANSITION_MILLIS))
+            },
+            exitTransition = {
+                slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Start,
+                    tween(TRANSITION_MILLIS),
+                    targetOffset = { it / 4 }
+                ) + fadeOut(tween(TRANSITION_MILLIS))
+            },
+            popEnterTransition = {
+                slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.End,
+                    tween(TRANSITION_MILLIS),
+                    initialOffset = { it / 4 }
+                ) + fadeIn(tween(TRANSITION_MILLIS))
+            },
+            popExitTransition = {
+                slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.End, tween(TRANSITION_MILLIS))
+            }
         ) {
             composable<ItemsRoute> { entry ->
                 ItemsScreen(

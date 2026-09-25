@@ -102,4 +102,14 @@ class ExpiryTest {
     fun `больше недели помечается как OK`() {
         assertEquals(Urgency.OK, urgency(8))
     }
+
+    @Test
+    fun `срок считается и без сохранённого продукта`() {
+        val result = effectiveExpiryDate(
+            expiresAt = LocalDate.parse("2026-09-19"),
+            openedAt = LocalDate.parse("2026-09-15"),
+            daysAfterOpening = 3
+        )
+        assertEquals(LocalDate.parse("2026-09-18"), result)
+    }
 }

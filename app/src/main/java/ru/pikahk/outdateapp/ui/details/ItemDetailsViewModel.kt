@@ -5,7 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import java.time.Instant
 import java.time.LocalDate
+import java.time.ZoneId
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -45,14 +47,19 @@ class ItemDetailsViewModel(private val repository: ItemRepository, private val i
 
     private fun Item.toDetailsUi(today: LocalDate): ItemDetailsUi {
         val left = daysLeft(this, today)
+        val effective = effectiveExpiryDate(this)
         return ItemDetailsUi(
             name = name,
             expiresAt = expiresAt,
             openedAt = openedAt,
             daysAfterOpening = daysAfterOpening,
-            effectiveExpiresAt = effectiveExpiryDate(this),
+            effectiveExpiresAt = effective,
             daysLeft = left,
-            urgency = urgency(left)
+            urgency = urgency(left),
+            limitedByOpening = effective < expiresAt,
+            openingExpiresAt = daysAfterOpening?.let { days -> openedAt?.plusDays(days.toLong()) },
+            expiresIfOpenedToday = daysAfterOpening?.let { effectiveExpiryDate(copy(openedAt = today)) },
+            createdAt = Instant.ofEpochMilli(createdAt).atZone(ZoneId.systemDefault()).toLocalDate()
         )
     }
 

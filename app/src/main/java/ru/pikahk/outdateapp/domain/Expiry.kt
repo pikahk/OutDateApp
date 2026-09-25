@@ -6,9 +6,12 @@ import ru.pikahk.outdateapp.data.Item
 
 enum class Urgency { EXPIRED, CRITICAL, SOON, OK }
 
-fun effectiveExpiryDate(item: Item): LocalDate {
-    if (item.daysAfterOpening == null || item.openedAt == null) return item.expiresAt
-    return minOf(item.openedAt.plusDays(item.daysAfterOpening.toLong()), item.expiresAt)
+fun effectiveExpiryDate(item: Item): LocalDate =
+    effectiveExpiryDate(item.expiresAt, item.openedAt, item.daysAfterOpening)
+
+fun effectiveExpiryDate(expiresAt: LocalDate, openedAt: LocalDate?, daysAfterOpening: Int?): LocalDate {
+    if (daysAfterOpening == null || openedAt == null) return expiresAt
+    return minOf(openedAt.plusDays(daysAfterOpening.toLong()), expiresAt)
 }
 
 fun daysLeft(item: Item, today: LocalDate): Long = ChronoUnit.DAYS.between(today, effectiveExpiryDate(item))

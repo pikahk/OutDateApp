@@ -10,7 +10,11 @@ data class ItemDetailsUi(
     val daysAfterOpening: Int?,
     val effectiveExpiresAt: LocalDate,
     val daysLeft: Long,
-    val urgency: Urgency
+    val urgency: Urgency,
+    val limitedByOpening: Boolean,
+    val openingExpiresAt: LocalDate?,
+    val expiresIfOpenedToday: LocalDate?,
+    val createdAt: LocalDate
 )
 
 sealed interface ItemDetailsState {

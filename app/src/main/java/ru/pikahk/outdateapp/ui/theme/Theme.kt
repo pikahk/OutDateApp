@@ -1,58 +1,66 @@
 package ru.pikahk.outdateapp.ui.theme
 
-import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
-
-private val DarkColorScheme =
-    darkColorScheme(
-        primary = Purple80,
-        secondary = PurpleGrey80,
-        tertiary = Pink80
-    )
+import androidx.compose.ui.graphics.Color
 
 private val LightColorScheme =
     lightColorScheme(
-        primary = Purple40,
-        secondary = PurpleGrey40,
-        tertiary = Pink40
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-     */
+        primary = BrandBlue,
+        onPrimary = Color.White,
+        primaryContainer = Color(0xFFD6E8F7),
+        onPrimaryContainer = Color(0xFF0F4C7A),
+        secondaryContainer = Color(0xFFD6E8F7),
+        onSecondaryContainer = Color(0xFF0F4C7A),
+        background = SurfaceLight,
+        onBackground = InkLight,
+        surface = SurfaceLight,
+        onSurface = InkLight,
+        surfaceVariant = SurfaceMutedLight,
+        onSurfaceVariant = MutedLight,
+        surfaceContainerLowest = SurfaceLight,
+        surfaceContainerLow = Color(0xFFF8F9FA),
+        surfaceContainer = SurfaceMutedLight,
+        surfaceContainerHigh = Color(0xFFECEEF1),
+        surfaceContainerHighest = DividerLight,
+        outline = Color(0xFFA8ADB5),
+        outlineVariant = DividerLight,
+        error = RedLight,
+        errorContainer = RedContainerLight
+    )
+
+private val DarkColorScheme =
+    darkColorScheme(
+        primary = BrandBlueDark,
+        onPrimary = Color(0xFF10202C),
+        primaryContainer = Color(0xFF1E3A52),
+        onPrimaryContainer = Color(0xFFCFE6F7),
+        secondaryContainer = Color(0xFF1E3A52),
+        onSecondaryContainer = Color(0xFFCFE6F7),
+        background = SurfaceDark,
+        onBackground = InkDark,
+        surface = SurfaceDark,
+        onSurface = InkDark,
+        surfaceVariant = SurfaceMutedDark,
+        onSurfaceVariant = MutedDark,
+        surfaceContainerLowest = Color(0xFF0F171F),
+        surfaceContainerLow = Color(0xFF1A2530),
+        surfaceContainer = SurfaceMutedDark,
+        surfaceContainerHigh = Color(0xFF25313E),
+        surfaceContainerHighest = Color(0xFF2C3947),
+        outline = Color(0xFF5B6B7A),
+        outlineVariant = Color(0xFF26323E),
+        error = RedDark,
+        errorContainer = RedContainerDark
     )
 
 @Composable
-fun OutDateAppTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
-    content: @Composable () -> Unit
-) {
-    val colorScheme =
-        when {
-            dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-                val context = LocalContext.current
-                if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-            }
-
-            darkTheme -> DarkColorScheme
-            else -> LightColorScheme
-        }
-
+fun OutDateAppTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable () -> Unit) {
     MaterialTheme(
-        colorScheme = colorScheme,
+        colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme,
         typography = Typography,
         content = content
     )

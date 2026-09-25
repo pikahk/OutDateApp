@@ -14,15 +14,17 @@ import kotlinx.coroutines.launch
 import ru.pikahk.outdateapp.data.DatabaseProvider
 import ru.pikahk.outdateapp.data.Item
 import ru.pikahk.outdateapp.data.ItemRepository
+import ru.pikahk.outdateapp.domain.Urgency
 import ru.pikahk.outdateapp.domain.daysLeft
+import ru.pikahk.outdateapp.domain.effectiveExpiryDate
 import ru.pikahk.outdateapp.domain.urgency
 import ru.pikahk.outdateapp.ui.add.ItemDraft
 
 class ItemsViewModel(private val repository: ItemRepository) : ViewModel() {
 
-    val items: StateFlow<List<ItemUi>> =
+    val groups: StateFlow<List<ItemsGroup>> =
         repository.observeAll()
-            .map { list -> list.toUiModels(LocalDate.now()) }
+            .map { list -> list.toUiModels(LocalDate.now()).toGroups() }
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(5_000),
@@ -35,9 +37,21 @@ class ItemsViewModel(private val repository: ItemRepository) : ViewModel() {
             id = item.id,
             name = item.name,
             daysLeft = left,
-            urgency = urgency(left)
+            urgency = urgency(left),
+            openedAt = item.openedAt,
+            limitedByOpening = effectiveExpiryDate(item) < item.expiresAt
         )
     }.sortedBy { it.daysLeft }
+
+    private fun List<ItemUi>.toGroups(): List<ItemsGroup> = groupBy { it.urgency.toSection() }
+        .map { (section, items) -> ItemsGroup(section, items) }
+        .sortedBy { it.section }
+
+    private fun Urgency.toSection(): ItemsSection = when (this) {
+        Urgency.EXPIRED -> ItemsSection.EXPIRED
+        Urgency.CRITICAL, Urgency.SOON -> ItemsSection.SOON
+        Urgency.OK -> ItemsSection.LATER
+    }
 
     fun addItem(draft: ItemDraft) {
         viewModelScope.launch {
@@ -48,7 +62,7 @@ class ItemsViewModel(private val repository: ItemRepository) : ViewModel() {
                     barcode = null,
                     expiresAt = draft.expiresAt,
                     daysAfterOpening = draft.daysAfterOpening,
-                    openedAt = null
+                    openedAt = draft.openedAt
                 )
             )
         }

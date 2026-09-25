@@ -10,8 +10,15 @@
   <string name="items_title">Expiry dates</string>
   <string name="add_item">Add</string>
   <string name="items_empty">Nothing here yet. Tap “+”</string>
-  <string name="list_expired">expired</string>
-  <string name="list_today">today</string>
+
+  <string name="section_expired">Expired</string>
+  <string name="section_soon">Coming up</string>
+  <string name="section_later">Later</string>
+  <string name="list_sealed">Sealed</string>
+  <string name="list_opened">Opened %1$s</string>
+  <string name="list_opened_limited">Opened %1$s · counting from opening</string>
+  <string name="badge_today">Today</string>
+  <string name="badge_tomorrow">Tomorrow</string>
 
   <string name="add_title">New item</string>
   <string name="field_name">Name</string>
@@ -22,9 +29,14 @@
   <string name="field_produced">Production date</string>
   <string name="hint_date_format">DD.MM.YYYY</string>
   <string name="field_shelf_life">Shelf life</string>
-  <string name="expires_on">Best before %1$s</string>
   <string name="field_after_opening">Shelf life after opening</string>
-  <string name="hint_after_opening">Optional. For example, “keep for 5 days after opening”</string>
+  <string name="hint_after_opening">Optional</string>
+  <string name="field_opened">Opening date</string>
+  <string name="already_opened">Already opened</string>
+  <string name="already_opened_hint">Turn on if the package is already open</string>
+  <string name="summary_expires">Expires %1$s</string>
+  <string name="summary_expires_opening">Expires %1$s — the after-opening limit comes first</string>
+  <string name="summary_expired">Already expired on %1$s</string>
   <string name="error_no_such_date">No such date</string>
   <string name="pick_date">Pick a date</string>
 
@@ -33,16 +45,21 @@
   <string name="unit_months">months</string>
   <string name="unit_years">years</string>
 
-  <string name="details_expires">Best before</string>
   <string name="details_package_date">Date on package</string>
   <string name="details_after_opening">After opening</string>
   <string name="details_not_set">Not set</string>
-  <string name="details_opened">Opened</string>
-  <string name="details_sealed">Sealed</string>
 
-  <string name="status_left">%1$s left</string>
-  <string name="status_today">Expires today</string>
-  <string name="status_expired">Expired %1$s ago</string>
+  <string name="details_status_left">Left</string>
+  <string name="details_status_expires">Expires</string>
+  <string name="details_status_expired">Expired</string>
+  <string name="details_until">until %1$s</string>
+  <string name="details_was_due">was due %1$s</string>
+  <string name="details_used_now">%1$s — used now</string>
+  <string name="details_opening_not_started">%1$s — not started yet</string>
+  <string name="details_opening_running">Opened %1$s, good until %2$s</string>
+  <string name="details_opened_no_limit">Opened %1$s, no limit set</string>
+  <string name="details_open_hint">The countdown after opening starts today. It will be good until %1$s.</string>
+  <string name="details_added">Added</string>
 
   <string name="open_today">Open today</string>
   <string name="undo_open">Undo opening</string>
@@ -53,5 +70,10 @@
   <plurals name="days">
     <item quantity="one">%d day</item>
     <item quantity="other">%d days</item>
+  </plurals>
+
+  <plurals name="days_ago">
+    <item quantity="one">%d day ago</item>
+    <item quantity="other">%d days ago</item>
   </plurals>
 </resources>
