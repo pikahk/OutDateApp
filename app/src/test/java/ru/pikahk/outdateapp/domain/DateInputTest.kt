@@ -69,4 +69,19 @@ class DateInputTest {
     fun `несуществующий месяц не принимается`() {
         assertNull(parseExpiryDate("13.2026"))
     }
+
+    @Test
+    fun `дата изготовления разбирается полностью`() {
+        assertEquals(LocalDate.of(2026, 9, 15), parseDate("15.09.2026"))
+    }
+
+    @Test
+    fun `для даты изготовления нужен день`() {
+        assertNull(parseDate("09.2026"))
+    }
+
+    @Test
+    fun `дата для показа с ведущими нулями`() {
+        assertEquals("05.01.2026", formatDate(LocalDate.of(2026, 1, 5)))
+    }
 }

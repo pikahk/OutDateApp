@@ -11,8 +11,13 @@ private val fullDateFormat =
 private val monthYearFormat =
     DateTimeFormatter.ofPattern("M.uuuu").withResolverStyle(ResolverStyle.STRICT)
 
-fun parseExpiryDate(text: String): LocalDate? {
-    val normalized = text.trim().replace(',', '.').replace('-', '.').replace('/', '.')
-    return runCatching { LocalDate.parse(normalized, fullDateFormat) }.getOrNull()
-        ?: runCatching { YearMonth.parse(normalized, monthYearFormat).atEndOfMonth() }.getOrNull()
-}
+private val displayFormat = DateTimeFormatter.ofPattern("dd.MM.uuuu")
+
+fun parseDate(text: String): LocalDate? = runCatching { LocalDate.parse(normalize(text), fullDateFormat) }.getOrNull()
+
+fun parseExpiryDate(text: String): LocalDate? =
+    parseDate(text) ?: runCatching { YearMonth.parse(normalize(text), monthYearFormat).atEndOfMonth() }.getOrNull()
+
+fun formatDate(date: LocalDate): String = date.format(displayFormat)
+
+private fun normalize(text: String): String = text.trim().replace(',', '.').replace('-', '.').replace('/', '.')
