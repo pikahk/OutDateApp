@@ -34,9 +34,9 @@ fun OutDateApp() {
         }
         composable<AddItemRoute> { entry ->
             AddItemScreen(
-                onSave = { name, expiresAt ->
+                onSave = { draft ->
                     if (entry.lifecycle.currentState == Lifecycle.State.RESUMED) {
-                        itemsViewModel.addItem(name, expiresAt)
+                        itemsViewModel.addItem(draft)
                         navController.popBackStack()
                     }
                 },

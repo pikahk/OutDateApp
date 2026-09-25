@@ -10,3 +10,10 @@ fun expiryFromProduction(producedAt: LocalDate, amount: Int, unit: ShelfLifeUnit
     ShelfLifeUnit.MONTHS -> producedAt.plusMonths(amount.toLong())
     ShelfLifeUnit.YEARS -> producedAt.plusYears(amount.toLong())
 }
+
+fun shelfLifeInDays(amount: Int, unit: ShelfLifeUnit): Int = when (unit) {
+    ShelfLifeUnit.HOURS -> amount / 24
+    ShelfLifeUnit.DAYS -> amount
+    ShelfLifeUnit.MONTHS -> amount * 30
+    ShelfLifeUnit.YEARS -> amount * 365
+}

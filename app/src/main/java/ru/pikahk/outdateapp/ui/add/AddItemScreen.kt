@@ -14,6 +14,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -35,6 +36,7 @@ import ru.pikahk.outdateapp.domain.expiryFromProduction
 import ru.pikahk.outdateapp.domain.formatDate
 import ru.pikahk.outdateapp.domain.parseDate
 import ru.pikahk.outdateapp.domain.parseExpiryDate
+import ru.pikahk.outdateapp.domain.shelfLifeInDays
 import ru.pikahk.outdateapp.ui.theme.OutDateAppTheme
 
 private enum class InputMode { EXPIRY_DATE, PRODUCTION }
@@ -53,22 +55,21 @@ private val unitOptions = listOf(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddItemScreen(
-    onSave: (name: String, expiresAt: LocalDate) -> Unit,
-    onCancel: () -> Unit,
-    modifier: Modifier = Modifier
-) {
+fun AddItemScreen(onSave: (ItemDraft) -> Unit, onCancel: () -> Unit, modifier: Modifier = Modifier) {
     var name by rememberSaveable { mutableStateOf("") }
     var mode by rememberSaveable { mutableStateOf(InputMode.EXPIRY_DATE) }
     var expiryText by rememberSaveable { mutableStateOf("") }
     var producedText by rememberSaveable { mutableStateOf("") }
     var amountText by rememberSaveable { mutableStateOf("") }
     var unit by rememberSaveable { mutableStateOf(ShelfLifeUnit.DAYS) }
+    var openedAmountText by rememberSaveable { mutableStateOf("") }
+    var openedUnit by rememberSaveable { mutableStateOf(ShelfLifeUnit.DAYS) }
 
     val expiresAt = when (mode) {
         InputMode.EXPIRY_DATE -> parseExpiryDate(expiryText)
         InputMode.PRODUCTION -> calculateExpiry(producedText, amountText, unit)
     }
+    val daysAfterOpening = parseAmount(openedAmountText)?.let { shelfLifeInDays(it, openedUnit) }
     val canSave = name.isNotBlank() && expiresAt != null
 
     Scaffold(
@@ -111,14 +112,7 @@ fun AddItemScreen(
                         hint = "ДД.ММ.ГГГГ",
                         isValid = parseDate(producedText) != null
                     )
-                    OutlinedTextField(
-                        value = amountText,
-                        onValueChange = { amountText = it.filter(Char::isDigit).take(4) },
-                        label = { Text("Срок годности") },
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                    AmountField(value = amountText, onValueChange = { amountText = it }, label = "Срок годности")
                     ChoiceChips(options = unitOptions, selected = unit, onSelect = { unit = it })
                     if (expiresAt != null) {
                         Text(
@@ -129,8 +123,19 @@ fun AddItemScreen(
                 }
             }
 
+            HorizontalDivider()
+            AmountField(
+                value = openedAmountText,
+                onValueChange = { openedAmountText = it },
+                label = "Годен после вскрытия",
+                hint = "Необязательно. Например, «хранить 5 суток после вскрытия»"
+            )
+            ChoiceChips(options = unitOptions, selected = openedUnit, onSelect = { openedUnit = it })
+
             Button(
-                onClick = { if (expiresAt != null) onSave(name.trim(), expiresAt) },
+                onClick = {
+                    if (expiresAt != null) onSave(ItemDraft(name.trim(), expiresAt, daysAfterOpening))
+                },
                 enabled = canSave,
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -163,6 +168,23 @@ private fun DateField(value: String, onValueChange: (String) -> Unit, label: Str
 }
 
 @Composable
+private fun AmountField(value: String, onValueChange: (String) -> Unit, label: String, hint: String? = null) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = { onValueChange(it.filter(Char::isDigit).take(4)) },
+        label = { Text(label) },
+        supportingText = if (hint != null) {
+            { Text(hint) }
+        } else {
+            null
+        },
+        singleLine = true,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        modifier = Modifier.fillMaxWidth()
+    )
+}
+
+@Composable
 private fun <T> ChoiceChips(options: List<Pair<T, String>>, selected: T, onSelect: (T) -> Unit) {
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         options.forEach { (value, label) ->
@@ -177,9 +199,11 @@ private fun <T> ChoiceChips(options: List<Pair<T, String>>, selected: T, onSelec
 
 private fun calculateExpiry(producedText: String, amountText: String, unit: ShelfLifeUnit): LocalDate? {
     val producedAt = parseDate(producedText) ?: return null
-    val amount = amountText.toIntOrNull()?.takeIf { it > 0 } ?: return null
+    val amount = parseAmount(amountText) ?: return null
     return expiryFromProduction(producedAt, amount, unit)
 }
+
+private fun parseAmount(text: String): Int? = text.toIntOrNull()?.takeIf { it > 0 }
 
 private fun isYearTyped(text: String): Boolean = text.trim().takeLastWhile { it.isDigit() }.length >= 4
 
@@ -187,6 +211,6 @@ private fun isYearTyped(text: String): Boolean = text.trim().takeLastWhile { it.
 @Composable
 private fun AddItemScreenPreview() {
     OutDateAppTheme {
-        AddItemScreen(onSave = { _, _ -> }, onCancel = {})
+        AddItemScreen(onSave = {}, onCancel = {})
     }
 }

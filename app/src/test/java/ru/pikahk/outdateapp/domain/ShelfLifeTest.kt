@@ -43,4 +43,25 @@ class ShelfLifeTest {
         val result = expiryFromProduction(producedAt, 2, ShelfLifeUnit.YEARS)
         assertEquals(LocalDate.parse("2028-09-15"), result)
     }
+
+    @Test
+    fun `срок после вскрытия в часах переводится в сутки с округлением вниз`() {
+        assertEquals(2, shelfLifeInDays(48, ShelfLifeUnit.HOURS))
+        assertEquals(1, shelfLifeInDays(36, ShelfLifeUnit.HOURS))
+    }
+
+    @Test
+    fun `срок после вскрытия в сутках не меняется`() {
+        assertEquals(5, shelfLifeInDays(5, ShelfLifeUnit.DAYS))
+    }
+
+    @Test
+    fun `месяц после вскрытия считается за 30 дней`() {
+        assertEquals(360, shelfLifeInDays(12, ShelfLifeUnit.MONTHS))
+    }
+
+    @Test
+    fun `год после вскрытия считается за 365 дней`() {
+        assertEquals(730, shelfLifeInDays(2, ShelfLifeUnit.YEARS))
+    }
 }

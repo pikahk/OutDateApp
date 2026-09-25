@@ -16,6 +16,7 @@ import ru.pikahk.outdateapp.data.Item
 import ru.pikahk.outdateapp.data.ItemRepository
 import ru.pikahk.outdateapp.domain.daysLeft
 import ru.pikahk.outdateapp.domain.urgency
+import ru.pikahk.outdateapp.ui.add.ItemDraft
 
 class ItemsViewModel(private val repository: ItemRepository) : ViewModel() {
 
@@ -38,15 +39,15 @@ class ItemsViewModel(private val repository: ItemRepository) : ViewModel() {
         )
     }.sortedBy { it.daysLeft }
 
-    fun addItem(name: String, expiresAt: LocalDate) {
+    fun addItem(draft: ItemDraft) {
         viewModelScope.launch {
             repository.save(
                 Item(
-                    name = name,
+                    name = draft.name,
                     categoryId = null,
                     barcode = null,
-                    expiresAt = expiresAt,
-                    daysAfterOpening = null,
+                    expiresAt = draft.expiresAt,
+                    daysAfterOpening = draft.daysAfterOpening,
                     openedAt = null
                 )
             )
