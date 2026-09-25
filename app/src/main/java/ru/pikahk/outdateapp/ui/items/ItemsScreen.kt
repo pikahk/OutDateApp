@@ -27,13 +27,13 @@ import ru.pikahk.outdateapp.domain.Urgency
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ItemsScreen(viewModel: ItemsViewModel) {
+fun ItemsScreen(viewModel: ItemsViewModel, onAddClick: () -> Unit) {
     val items by viewModel.items.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = { TopAppBar(title = { Text("Мои сроки") }) },
         floatingActionButton = {
-            FloatingActionButton(onClick = { viewModel.addDemoItem() }) {
+            FloatingActionButton(onClick = onAddClick) {
                 Icon(painter = painterResource(R.drawable.ic_add), contentDescription = "Добавить")
             }
         }

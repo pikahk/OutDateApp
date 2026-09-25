@@ -4,9 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.lifecycle.viewmodel.compose.viewModel
-import ru.pikahk.outdateapp.ui.items.ItemsScreen
-import ru.pikahk.outdateapp.ui.items.ItemsViewModel
+import ru.pikahk.outdateapp.ui.OutDateApp
 import ru.pikahk.outdateapp.ui.theme.OutDateAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -15,10 +13,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             OutDateAppTheme {
-                val viewModel: ItemsViewModel = viewModel(
-                    factory = ItemsViewModel.factory(this@MainActivity)
-                )
-                ItemsScreen(viewModel)
+                OutDateApp()
             }
         }
     }

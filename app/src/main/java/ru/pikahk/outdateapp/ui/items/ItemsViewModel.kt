@@ -38,14 +38,14 @@ class ItemsViewModel(private val repository: ItemRepository) : ViewModel() {
         )
     }.sortedBy { it.daysLeft }
 
-    fun addDemoItem() {
+    fun addItem(name: String, expiresAt: LocalDate) {
         viewModelScope.launch {
             repository.save(
                 Item(
-                    name = "Продукт ${(1..99).random()}",
+                    name = name,
                     categoryId = null,
                     barcode = null,
-                    expiresAt = LocalDate.now().plusDays((-3..40).random().toLong()),
+                    expiresAt = expiresAt,
                     daysAfterOpening = null,
                     openedAt = null
                 )
