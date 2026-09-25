@@ -1,6 +1,13 @@
 package ru.pikahk.outdateapp.ui
 
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
@@ -17,6 +24,7 @@ import ru.pikahk.outdateapp.ui.details.ItemDetailsViewModel
 import ru.pikahk.outdateapp.ui.items.ItemsScreen
 import ru.pikahk.outdateapp.ui.items.ItemsViewModel
 
+private const val TRANSITION_MILLIS = 200
 @Serializable
 private object ItemsRoute
 
@@ -32,38 +40,45 @@ fun OutDateApp() {
     val itemsViewModel: ItemsViewModel = viewModel(factory = ItemsViewModel.factory(context))
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = ItemsRoute) {
-        composable<ItemsRoute> { entry ->
-            ItemsScreen(
-                viewModel = itemsViewModel,
-                onAddClick = dropUnlessResumed { navController.navigate(AddItemRoute) },
-                onItemClick = { id ->
-                    if (entry.isResumed()) navController.navigate(ItemDetailsRoute(id))
-                }
-            )
-        }
-        composable<AddItemRoute> { entry ->
-            AddItemScreen(
-                onSave = { draft ->
-                    if (entry.isResumed()) {
-                        itemsViewModel.addItem(draft)
-                        navController.popBackStack()
+    Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+        NavHost(
+            navController = navController,
+            startDestination = ItemsRoute,
+            enterTransition = { fadeIn(tween(TRANSITION_MILLIS)) },
+            exitTransition = { fadeOut(tween(TRANSITION_MILLIS)) }
+        ) {
+            composable<ItemsRoute> { entry ->
+                ItemsScreen(
+                    viewModel = itemsViewModel,
+                    onAddClick = dropUnlessResumed { navController.navigate(AddItemRoute) },
+                    onItemClick = { id ->
+                        if (entry.isResumed()) navController.navigate(ItemDetailsRoute(id))
                     }
-                },
-                onCancel = dropUnlessResumed { navController.popBackStack() }
-            )
-        }
-        composable<ItemDetailsRoute> { entry ->
-            val route = entry.toRoute<ItemDetailsRoute>()
-            val detailsViewModel: ItemDetailsViewModel =
-                viewModel(factory = ItemDetailsViewModel.factory(context, route.id))
-            ItemDetailsScreen(
-                viewModel = detailsViewModel,
-                onBack = dropUnlessResumed { navController.popBackStack() },
-                onGone = {
-                    if (entry.isResumed()) navController.popBackStack()
-                }
-            )
+                )
+            }
+            composable<AddItemRoute> { entry ->
+                AddItemScreen(
+                    onSave = { draft ->
+                        if (entry.isResumed()) {
+                            itemsViewModel.addItem(draft)
+                            navController.popBackStack()
+                        }
+                    },
+                    onCancel = dropUnlessResumed { navController.popBackStack() }
+                )
+            }
+            composable<ItemDetailsRoute> { entry ->
+                val route = entry.toRoute<ItemDetailsRoute>()
+                val detailsViewModel: ItemDetailsViewModel =
+                    viewModel(factory = ItemDetailsViewModel.factory(context, route.id))
+                ItemDetailsScreen(
+                    viewModel = detailsViewModel,
+                    onBack = dropUnlessResumed { navController.popBackStack() },
+                    onGone = {
+                        if (entry.isResumed()) navController.popBackStack()
+                    }
+                )
+            }
         }
     }
 }
