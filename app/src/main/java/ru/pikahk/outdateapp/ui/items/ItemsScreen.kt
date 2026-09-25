@@ -1,5 +1,6 @@
 package ru.pikahk.outdateapp.ui.items
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,16 +19,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import ru.pikahk.outdateapp.R
-import ru.pikahk.outdateapp.domain.Urgency
+import ru.pikahk.outdateapp.ui.color
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ItemsScreen(viewModel: ItemsViewModel, onAddClick: () -> Unit) {
+fun ItemsScreen(viewModel: ItemsViewModel, onAddClick: () -> Unit, onItemClick: (String) -> Unit) {
     val items by viewModel.items.collectAsStateWithLifecycle()
 
     Scaffold(
@@ -51,7 +51,7 @@ fun ItemsScreen(viewModel: ItemsViewModel, onAddClick: () -> Unit) {
                 verticalArrangement = Arrangement.spacedBy(2.dp)
             ) {
                 items(items = items, key = { it.id }) { item ->
-                    ItemRow(item)
+                    ItemRow(item = item, onClick = { onItemClick(item.id) })
                 }
             }
         }
@@ -59,8 +59,9 @@ fun ItemsScreen(viewModel: ItemsViewModel, onAddClick: () -> Unit) {
 }
 
 @Composable
-private fun ItemRow(item: ItemUi) {
+private fun ItemRow(item: ItemUi, onClick: () -> Unit) {
     ListItem(
+        modifier = Modifier.clickable(onClick = onClick),
         headlineContent = { Text(item.name) },
         trailingContent = {
             Text(
@@ -70,10 +71,4 @@ private fun ItemRow(item: ItemUi) {
             )
         }
     )
-}
-
-private fun Urgency.color(): Color = when (this) {
-    Urgency.EXPIRED, Urgency.CRITICAL -> Color(0xFFC0392B)
-    Urgency.SOON -> Color(0xFF9A6A0C)
-    Urgency.OK -> Color(0xFF24874A)
 }

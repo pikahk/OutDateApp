@@ -15,6 +15,9 @@ interface ItemDao {
     @Query("SELECT * FROM items WHERE isDeleted = 0 AND categoryId = :categoryId")
     fun observeByCategory(categoryId: String): Flow<List<Item>>
 
+    @Query("SELECT * FROM items WHERE id = :id AND isDeleted = 0")
+    fun observeById(id: String): Flow<Item?>
+
     @Query("SELECT * FROM items WHERE id = :id")
     suspend fun findById(id: String): Item?
 

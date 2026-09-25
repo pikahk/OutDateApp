@@ -1,3 +1,31 @@
 <resources>
-    <string name="app_name">OutDateApp</string>
+  <string name="app_name">OutDateApp</string>
+
+  <string name="back">Назад</string>
+  <string name="cancel">Отмена</string>
+  <string name="delete">Удалить</string>
+
+  <string name="details_expires">Годен до</string>
+  <string name="details_package_date">Срок на упаковке</string>
+  <string name="details_after_opening">После вскрытия</string>
+  <string name="details_not_set">Не указан</string>
+  <string name="details_opened">Вскрыто</string>
+  <string name="details_sealed">Не вскрыто</string>
+
+  <string name="status_left">Осталось %1$s</string>
+  <string name="status_today">Истекает сегодня</string>
+  <string name="status_expired">Просрочено на %1$s</string>
+
+  <string name="open_today">Открыть сегодня</string>
+  <string name="undo_open">Отменить вскрытие</string>
+
+  <string name="delete_title">Удалить продукт?</string>
+  <string name="delete_message">Продукт пропадёт из списка.</string>
+
+  <plurals name="days">
+    <item quantity="one">%d день</item>
+    <item quantity="few">%d дня</item>
+    <item quantity="many">%d дней</item>
+    <item quantity="other">%d дня</item>
+  </plurals>
 </resources>

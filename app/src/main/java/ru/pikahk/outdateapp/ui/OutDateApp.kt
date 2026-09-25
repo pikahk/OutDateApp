@@ -5,11 +5,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import kotlinx.serialization.Serializable
 import ru.pikahk.outdateapp.ui.add.AddItemScreen
+import ru.pikahk.outdateapp.ui.details.ItemDetailsScreen
+import ru.pikahk.outdateapp.ui.details.ItemDetailsViewModel
 import ru.pikahk.outdateapp.ui.items.ItemsScreen
 import ru.pikahk.outdateapp.ui.items.ItemsViewModel
 
@@ -19,6 +23,9 @@ private object ItemsRoute
 @Serializable
 private object AddItemRoute
 
+@Serializable
+private data class ItemDetailsRoute(val id: String)
+
 @Composable
 fun OutDateApp() {
     val context = LocalContext.current
@@ -26,16 +33,19 @@ fun OutDateApp() {
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = ItemsRoute) {
-        composable<ItemsRoute> {
+        composable<ItemsRoute> { entry ->
             ItemsScreen(
                 viewModel = itemsViewModel,
-                onAddClick = dropUnlessResumed { navController.navigate(AddItemRoute) }
+                onAddClick = dropUnlessResumed { navController.navigate(AddItemRoute) },
+                onItemClick = { id ->
+                    if (entry.isResumed()) navController.navigate(ItemDetailsRoute(id))
+                }
             )
         }
         composable<AddItemRoute> { entry ->
             AddItemScreen(
                 onSave = { draft ->
-                    if (entry.lifecycle.currentState == Lifecycle.State.RESUMED) {
+                    if (entry.isResumed()) {
                         itemsViewModel.addItem(draft)
                         navController.popBackStack()
                     }
@@ -43,5 +53,19 @@ fun OutDateApp() {
                 onCancel = dropUnlessResumed { navController.popBackStack() }
             )
         }
+        composable<ItemDetailsRoute> { entry ->
+            val route = entry.toRoute<ItemDetailsRoute>()
+            val detailsViewModel: ItemDetailsViewModel =
+                viewModel(factory = ItemDetailsViewModel.factory(context, route.id))
+            ItemDetailsScreen(
+                viewModel = detailsViewModel,
+                onBack = dropUnlessResumed { navController.popBackStack() },
+                onGone = {
+                    if (entry.isResumed()) navController.popBackStack()
+                }
+            )
+        }
     }
 }
+
+private fun NavBackStackEntry.isResumed(): Boolean = lifecycle.currentState == Lifecycle.State.RESUMED
