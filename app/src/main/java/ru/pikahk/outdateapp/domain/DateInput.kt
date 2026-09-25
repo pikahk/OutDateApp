@@ -11,7 +11,6 @@ private val fullDateFormat =
 private val monthYearFormat =
     DateTimeFormatter.ofPattern("M.uuuu").withResolverStyle(ResolverStyle.STRICT)
 
-
 fun parseExpiryDate(text: String): LocalDate? {
     val normalized = text.trim().replace(',', '.').replace('-', '.').replace('/', '.')
     return runCatching { LocalDate.parse(normalized, fullDateFormat) }.getOrNull()
