@@ -19,3 +19,12 @@ data class Category(
 
     val isPendingSync: Boolean = true
 )
+enum class DefaultCategory(val id: String) {
+    FOOD("food"),
+    MEDICINE("medicine"),
+    COSMETICS("cosmetics");
+
+    companion object {
+        fun of(id: String?): DefaultCategory? = entries.firstOrNull { it.id == id }
+    }
+}

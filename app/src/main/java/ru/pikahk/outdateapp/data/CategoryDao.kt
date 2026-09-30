@@ -1,6 +1,8 @@
 package ru.pikahk.outdateapp.data
 
 import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
@@ -19,6 +21,9 @@ interface CategoryDao {
 
     @Upsert
     suspend fun upsertAll(categories: List<Category>)
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertIfAbsent(categories: List<Category>)
 
     @Query("UPDATE categories SET isDeleted = 1, isPendingSync = 1, updatedAt = :now WHERE id = :id")
     suspend fun markDeleted(id: String, now: Long)
