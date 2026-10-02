@@ -11,6 +11,10 @@
   <string name="add_item">Add</string>
   <string name="items_empty">Nothing here yet. Tap “+”</string>
 
+  <string name="category_food">Food</string>
+  <string name="category_medicine">Medicine</string>
+  <string name="category_cosmetics">Cosmetics</string>
+
   <string name="section_expired">Expired</string>
   <string name="section_soon">Coming up</string>
   <string name="section_later">Later</string>

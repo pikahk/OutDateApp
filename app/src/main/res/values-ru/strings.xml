@@ -9,6 +9,10 @@
   <string name="add_item">Добавить</string>
   <string name="items_empty">Пока пусто. Нажмите «+»</string>
 
+  <string name="category_food">Еда</string>
+  <string name="category_medicine">Лекарства</string>
+  <string name="category_cosmetics">Косметика</string>
+
   <string name="section_expired">Просрочено</string>
   <string name="section_soon">Ближайшие дни</string>
   <string name="section_later">Позже</string>
