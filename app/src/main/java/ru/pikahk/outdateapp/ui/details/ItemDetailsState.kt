@@ -14,7 +14,6 @@ data class ItemDetailsUi(
     val daysLeft: Long,
     val urgency: Urgency,
     val limitedByOpening: Boolean,
-    val openingExpiresAt: LocalDate?,
     val expiresIfOpenedToday: LocalDate?,
     val createdAt: LocalDate
 )

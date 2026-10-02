@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
   <string name="back">Назад</string>
   <string name="cancel">Отмена</string>
   <string name="create">Создать</string>
@@ -57,15 +57,10 @@
   <string name="details_package_date">На упаковке</string>
   <string name="details_after_opening">После вскрытия</string>
   <string name="details_not_set">Не указан</string>
-
-  <string name="details_status_left">Осталось</string>
-  <string name="details_status_expires">Истекает</string>
-  <string name="details_status_expired">Просрочено</string>
+  <string name="details_opened">Вскрыто</string>
+  <string name="details_not_opened">Нет</string>
   <string name="details_until">до %1$s</string>
   <string name="details_was_due">истёк %1$s</string>
-  <string name="details_opening_not_started">%1$s, не вскрыто</string>
-  <string name="details_opening_running">Вскрыто %1$s, годен до %2$s</string>
-  <string name="details_opened_no_limit">Вскрыто %1$s, срок не указан</string>
   <string name="details_open_hint">После вскрытия годен до %1$s</string>
   <string name="details_added">Добавлено</string>
 
@@ -87,5 +82,19 @@
     <item quantity="few">%d дня назад</item>
     <item quantity="many">%d дней назад</item>
     <item quantity="other">%d дня назад</item>
+  </plurals>
+
+  <plurals name="days_unit" tools:ignore="ImpliedQuantity">
+    <item quantity="one">день</item>
+    <item quantity="few">дня</item>
+    <item quantity="many">дней</item>
+    <item quantity="other">дня</item>
+  </plurals>
+
+  <plurals name="days_ago_unit" tools:ignore="ImpliedQuantity">
+    <item quantity="one">день назад</item>
+    <item quantity="few">дня назад</item>
+    <item quantity="many">дней назад</item>
+    <item quantity="other">дня назад</item>
   </plurals>
 </resources>

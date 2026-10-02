@@ -1,22 +1,21 @@
 package ru.pikahk.outdateapp.ui.details
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
@@ -26,7 +25,6 @@ import androidx.compose.ui.unit.dp
 import java.time.format.DateTimeFormatter
 import kotlin.math.abs
 import ru.pikahk.outdateapp.R
-import ru.pikahk.outdateapp.domain.Urgency
 import ru.pikahk.outdateapp.ui.CategoryUi
 import ru.pikahk.outdateapp.ui.color
 import ru.pikahk.outdateapp.ui.containerColor
@@ -60,120 +58,109 @@ internal fun CategoryTag(category: CategoryUi) {
 }
 
 @Composable
-internal fun StatusCard(item: ItemDetailsUi, dateText: String) {
-    val days = abs(item.daysLeft).toInt()
-    val (label, value, subtitle) = when {
-        item.daysLeft < 0 -> Triple(
-            stringResource(R.string.details_status_expired),
-            pluralStringResource(R.plurals.days, days, days),
-            stringResource(R.string.details_was_due, dateText)
-        )
-
-        item.daysLeft == 0L -> Triple(
-            stringResource(R.string.details_status_expires),
-            stringResource(R.string.badge_today),
-            dateText
-        )
-
-        else -> Triple(
-            stringResource(R.string.details_status_left),
-            pluralStringResource(R.plurals.days, days, days),
-            stringResource(R.string.details_until, dateText)
-        )
-    }
+internal fun StatusHero(item: ItemDetailsUi, dateText: String) {
     val color = item.urgency.color()
+    val days = abs(item.daysLeft).toInt()
+    val subtitle = when {
+        item.daysLeft < 0 -> stringResource(R.string.details_was_due, dateText)
+        item.daysLeft == 0L -> dateText
+        else -> stringResource(R.string.details_until, dateText)
+    }
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(color = item.urgency.containerColor(), shape = RoundedCornerShape(16.dp))
-            .padding(20.dp)
+            .background(color = item.urgency.containerColor(), shape = RoundedCornerShape(20.dp))
+            .padding(horizontal = 22.dp, vertical = 20.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Text(
-            text = label.uppercase(),
-            style = MaterialTheme.typography.labelLarge,
-            color = color
-        )
-        Text(
-            text = value,
-            style = MaterialTheme.typography.displaySmall,
-            fontWeight = FontWeight.Bold,
-            color = color
-        )
+        if (item.daysLeft == 0L) {
+            Text(
+                text = stringResource(R.string.badge_today),
+                style = MaterialTheme.typography.displayMedium,
+                fontWeight = FontWeight.Bold,
+                color = color
+            )
+        } else {
+            val unit = if (item.daysLeft < 0) R.plurals.days_ago_unit else R.plurals.days_unit
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text(
+                    text = days.toString(),
+                    style = MaterialTheme.typography.displayLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = color,
+                    modifier = Modifier.alignByBaseline()
+                )
+                Text(
+                    text = pluralStringResource(unit, days),
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Medium,
+                    color = color,
+                    modifier = Modifier.alignByBaseline()
+                )
+            }
+        }
         Text(
             text = subtitle,
             style = MaterialTheme.typography.bodyLarge,
-            color = color
+            color = MaterialTheme.colorScheme.onSurface
         )
     }
 }
 
 @Composable
-internal fun InfoCard(content: @Composable () -> Unit) {
-    val shape = RoundedCornerShape(14.dp)
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(shape)
-            .border(width = 1.dp, color = MaterialTheme.colorScheme.outlineVariant, shape = shape)
-    ) {
-        content()
+internal fun DetailRows(item: ItemDetailsUi, longDate: DateTimeFormatter, shortDate: DateTimeFormatter) {
+    val accent = item.urgency.color()
+    val afterOpening = item.daysAfterOpening
+    Column {
+        DetailRow(
+            label = stringResource(R.string.details_package_date),
+            value = item.expiresAt.format(longDate),
+            accent = if (item.limitedByOpening) null else accent
+        )
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+        DetailRow(
+            label = stringResource(R.string.details_after_opening),
+            value = if (afterOpening != null) {
+                pluralStringResource(R.plurals.days, afterOpening, afterOpening)
+            } else {
+                stringResource(R.string.details_not_set)
+            },
+            accent = if (item.limitedByOpening) accent else null
+        )
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+        DetailRow(
+            label = stringResource(R.string.details_opened),
+            value = item.openedAt?.format(shortDate) ?: stringResource(R.string.details_not_opened)
+        )
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+        DetailRow(
+            label = stringResource(R.string.details_added),
+            value = item.createdAt.format(shortDate)
+        )
     }
 }
 
 @Composable
-internal fun InfoRow(title: String, subtitle: String, active: Boolean) {
+private fun DetailRow(label: String, value: String, accent: Color? = null) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(if (active) MaterialTheme.colorScheme.surfaceVariant else Color.Transparent)
-            .padding(horizontal = 16.dp, vertical = 14.dp),
+            .heightIn(min = 52.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        if (active) {
-            Icon(
-                painter = painterResource(R.drawable.ic_check),
-                contentDescription = null,
-                tint = Urgency.OK.color(),
-                modifier = Modifier.size(20.dp)
-            )
-        } else {
-            Spacer(modifier = Modifier.size(20.dp))
-        }
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Medium,
-                color = if (active) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Text(
-                text = subtitle,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
-    }
-}
-
-@Composable
-internal fun openingText(item: ItemDetailsUi, formatter: DateTimeFormatter): String {
-    val days = item.daysAfterOpening
-    val openedAt = item.openedAt
-    return when {
-        days == null && openedAt == null -> stringResource(R.string.details_not_set)
-
-        days == null && openedAt != null ->
-            stringResource(R.string.details_opened_no_limit, openedAt.format(formatter))
-
-        openedAt == null && days != null ->
-            stringResource(R.string.details_opening_not_started, pluralStringResource(R.plurals.days, days, days))
-
-        else -> stringResource(
-            R.string.details_opening_running,
-            openedAt?.format(formatter).orEmpty(),
-            item.openingExpiresAt?.format(formatter).orEmpty()
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.weight(1f)
+        )
+        Text(
+            text = value,
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = if (accent != null) FontWeight.Bold else FontWeight.Medium,
+            color = accent ?: MaterialTheme.colorScheme.onSurface
         )
     }
 }

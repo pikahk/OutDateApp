@@ -1,20 +1,20 @@
 package ru.pikahk.outdateapp.ui.details
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -35,6 +35,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -56,6 +57,7 @@ fun ItemDetailsScreen(viewModel: ItemDetailsViewModel, onBack: () -> Unit, onGon
         LaunchedEffect(Unit) { onGone() }
     }
 
+    val current = state
     Scaffold(
         topBar = {
             TopAppBar(
@@ -73,21 +75,24 @@ fun ItemDetailsScreen(viewModel: ItemDetailsViewModel, onBack: () -> Unit, onGon
                         Icon(
                             painter = painterResource(R.drawable.ic_delete),
                             contentDescription = stringResource(R.string.delete),
-                            tint = MaterialTheme.colorScheme.error
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
             )
+        },
+        bottomBar = {
+            if (current is ItemDetailsState.Loaded) {
+                DetailsActions(
+                    item = current.item,
+                    onOpen = viewModel::markOpened,
+                    onUndoOpen = viewModel::markSealed
+                )
+            }
         }
     ) { padding ->
-        val current = state
         if (current is ItemDetailsState.Loaded) {
-            ItemDetailsContent(
-                item = current.item,
-                onOpen = viewModel::markOpened,
-                onUndoOpen = viewModel::markSealed,
-                modifier = Modifier.padding(padding)
-            )
+            ItemDetailsContent(item = current.item, modifier = Modifier.padding(padding))
         }
     }
 
@@ -116,12 +121,7 @@ fun ItemDetailsScreen(viewModel: ItemDetailsViewModel, onBack: () -> Unit, onGon
 }
 
 @Composable
-private fun ItemDetailsContent(
-    item: ItemDetailsUi,
-    onOpen: () -> Unit,
-    onUndoOpen: () -> Unit,
-    modifier: Modifier = Modifier
-) {
+private fun ItemDetailsContent(item: ItemDetailsUi, modifier: Modifier = Modifier) {
     val longDate = rememberDateFormatter("d MMMM yyyy")
     val shortDate = rememberDateFormatter("d MMMM")
 
@@ -129,77 +129,63 @@ private fun ItemDetailsContent(
         modifier = modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(horizontal = 20.dp, vertical = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+            .padding(horizontal = 20.dp, vertical = 4.dp),
+        verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
-        if (item.category != null) {
-            CategoryTag(item.category)
-        }
-
-        Text(
-            text = item.name,
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold
-        )
-
-        StatusCard(item = item, dateText = item.effectiveExpiresAt.format(longDate))
-
-        InfoCard {
-            InfoRow(
-                title = stringResource(R.string.details_package_date),
-                subtitle = item.expiresAt.format(longDate),
-                active = !item.limitedByOpening
-            )
-            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-            InfoRow(
-                title = stringResource(R.string.details_after_opening),
-                subtitle = openingText(item, shortDate),
-                active = item.limitedByOpening
-            )
-        }
-
-        if (item.openedAt == null) {
-            Button(
-                onClick = onOpen,
-                shape = RoundedCornerShape(15.dp),
-                modifier = Modifier.fillMaxWidth().height(56.dp)
-            ) {
-                Text(stringResource(R.string.open_today), style = MaterialTheme.typography.titleMedium)
+        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            if (item.category != null) {
+                CategoryTag(item.category)
             }
+            Text(
+                text = item.name,
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold
+            )
+        }
+
+        StatusHero(item = item, dateText = item.effectiveExpiresAt.format(longDate))
+
+        DetailRows(item = item, longDate = longDate, shortDate = shortDate)
+    }
+}
+
+@Composable
+private fun DetailsActions(item: ItemDetailsUi, onOpen: () -> Unit, onUndoOpen: () -> Unit) {
+    val shortDate = rememberDateFormatter("d MMMM")
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.surface)
+            .navigationBarsPadding()
+            .padding(start = 20.dp, end = 20.dp, top = 12.dp, bottom = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        if (item.openedAt == null) {
             if (item.expiresIfOpenedToday != null) {
                 Text(
                     text = stringResource(R.string.details_open_hint, item.expiresIfOpenedToday.format(shortDate)),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp)
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
                 )
+            }
+            Button(
+                onClick = onOpen,
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier.fillMaxWidth().height(56.dp)
+            ) {
+                Text(stringResource(R.string.open_today), style = MaterialTheme.typography.titleMedium)
             }
         } else {
             OutlinedButton(
                 onClick = onUndoOpen,
-                shape = RoundedCornerShape(15.dp),
+                shape = RoundedCornerShape(16.dp),
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.onSurface),
                 modifier = Modifier.fillMaxWidth().height(56.dp)
             ) {
                 Text(stringResource(R.string.undo_open), style = MaterialTheme.typography.titleMedium)
             }
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                text = stringResource(R.string.details_added),
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Text(
-                text = item.createdAt.format(shortDate),
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Medium
-            )
         }
     }
 }
@@ -225,12 +211,9 @@ private fun ItemDetailsContentPreview() {
                 daysLeft = 4,
                 urgency = Urgency.SOON,
                 limitedByOpening = false,
-                openingExpiresAt = null,
                 expiresIfOpenedToday = LocalDate.of(2026, 9, 28),
                 createdAt = LocalDate.of(2026, 9, 20)
-            ),
-            onOpen = {},
-            onUndoOpen = {}
+            )
         )
     }
 }

@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
   <string name="app_name" translatable="false">outDate</string>
 
   <string name="back">Back</string>
@@ -59,15 +59,10 @@
   <string name="details_package_date">On package</string>
   <string name="details_after_opening">After opening</string>
   <string name="details_not_set">Not set</string>
-
-  <string name="details_status_left">Left</string>
-  <string name="details_status_expires">Expires</string>
-  <string name="details_status_expired">Expired</string>
+  <string name="details_opened">Opened</string>
+  <string name="details_not_opened">No</string>
   <string name="details_until">until %1$s</string>
   <string name="details_was_due">expired %1$s</string>
-  <string name="details_opening_not_started">%1$s, sealed</string>
-  <string name="details_opening_running">Opened %1$s, good until %2$s</string>
-  <string name="details_opened_no_limit">Opened %1$s, no limit set</string>
   <string name="details_open_hint">After opening: good until %1$s</string>
   <string name="details_added">Added</string>
 
@@ -85,5 +80,15 @@
   <plurals name="days_ago">
     <item quantity="one">%d day ago</item>
     <item quantity="other">%d days ago</item>
+  </plurals>
+
+  <plurals name="days_unit" tools:ignore="ImpliedQuantity">
+    <item quantity="one">day</item>
+    <item quantity="other">days</item>
+  </plurals>
+
+  <plurals name="days_ago_unit" tools:ignore="ImpliedQuantity">
+    <item quantity="one">day ago</item>
+    <item quantity="other">days ago</item>
   </plurals>
 </resources>
