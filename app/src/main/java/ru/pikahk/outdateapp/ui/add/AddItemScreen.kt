@@ -20,6 +20,7 @@ import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
@@ -94,11 +95,14 @@ private val unitOptions = listOf(
     ShelfLifeUnit.YEARS to R.string.unit_years
 )
 
+private const val CATEGORY_NAME_LIMIT = 30
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddItemScreen(
     categories: List<CategoryUi>,
     initialCategoryId: String?,
+    onCreateCategory: (String) -> String,
     onSave: (ItemDraft) -> Unit,
     onCancel: () -> Unit,
     modifier: Modifier = Modifier
@@ -204,7 +208,12 @@ fun AddItemScreen(
                 )
             }
 
-            CategoryField(categories = categories, selectedId = categoryId, onSelect = { categoryId = it })
+            CategoryField(
+                categories = categories,
+                selectedId = categoryId,
+                onSelect = { categoryId = it },
+                onCreate = onCreateCategory
+            )
 
             Segmented(options = modeOptions, selected = mode, onSelect = { mode = it })
 
@@ -316,8 +325,15 @@ private fun LabeledField(label: String, content: @Composable () -> Unit) {
 private val FieldShape = RoundedCornerShape(12.dp)
 
 @Composable
-private fun CategoryField(categories: List<CategoryUi>, selectedId: String?, onSelect: (String?) -> Unit) {
+private fun CategoryField(
+    categories: List<CategoryUi>,
+    selectedId: String?,
+    onSelect: (String?) -> Unit,
+    onCreate: (String) -> String
+) {
     var expanded by remember { mutableStateOf(false) }
+    var creating by rememberSaveable { mutableStateOf(false) }
+    val labels = categories.associate { it.id to it.label() }
     val selected = categories.firstOrNull { it.id == selectedId }
     val textColor = if (selected != null) {
         MaterialTheme.colorScheme.onSurface
@@ -339,7 +355,7 @@ private fun CategoryField(categories: List<CategoryUi>, selectedId: String?, onS
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = selected?.label() ?: stringResource(R.string.category_none),
+                    text = selected?.let { labels[it.id] } ?: stringResource(R.string.category_none),
                     style = MaterialTheme.typography.bodyLarge,
                     color = textColor,
                     modifier = Modifier.weight(1f)
@@ -364,16 +380,77 @@ private fun CategoryField(categories: List<CategoryUi>, selectedId: String?, onS
                 )
                 categories.forEach { category ->
                     DropdownMenuItem(
-                        text = { Text(category.label()) },
+                        text = { Text(labels.getValue(category.id)) },
                         onClick = {
                             onSelect(category.id)
                             expanded = false
                         }
                     )
                 }
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            text = stringResource(R.string.category_create),
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    },
+                    leadingIcon = {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_add),
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    },
+                    onClick = {
+                        expanded = false
+                        creating = true
+                    }
+                )
             }
         }
     }
+
+    if (creating) {
+        NewCategoryDialog(
+            onConfirm = { name ->
+                val existing = categories.firstOrNull { labels[it.id].equals(name, ignoreCase = true) }
+                onSelect(existing?.id ?: onCreate(name))
+                creating = false
+            },
+            onDismiss = { creating = false }
+        )
+    }
+}
+
+@Composable
+private fun NewCategoryDialog(onConfirm: (String) -> Unit, onDismiss: () -> Unit) {
+    var name by rememberSaveable { mutableStateOf("") }
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.category_new_title)) },
+        text = {
+            OutlinedTextField(
+                value = name,
+                onValueChange = { name = it.take(CATEGORY_NAME_LIMIT) },
+                placeholder = { Text(stringResource(R.string.category_name_hint)) },
+                singleLine = true,
+                shape = FieldShape,
+                colors = fieldColors(),
+                modifier = Modifier.fillMaxWidth()
+            )
+        },
+        confirmButton = {
+            TextButton(onClick = { onConfirm(name.trim()) }, enabled = name.isNotBlank()) {
+                Text(stringResource(R.string.create))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.cancel))
+            }
+        }
+    )
 }
 
 @Composable
@@ -531,6 +608,12 @@ private fun Long.toUtcDate(): LocalDate = Instant.ofEpochMilli(this).atZone(Zone
 @Composable
 private fun AddItemScreenPreview() {
     OutDateAppTheme {
-        AddItemScreen(categories = emptyList(), initialCategoryId = null, onSave = {}, onCancel = {})
+        AddItemScreen(
+            categories = emptyList(),
+            initialCategoryId = null,
+            onCreateCategory = { "" },
+            onSave = {},
+            onCancel = {}
+        )
     }
 }

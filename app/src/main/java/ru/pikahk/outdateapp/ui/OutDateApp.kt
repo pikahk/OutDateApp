@@ -83,6 +83,7 @@ fun OutDateApp() {
                 AddItemScreen(
                     categories = itemsState.categories,
                     initialCategoryId = itemsState.selectedCategoryId,
+                    onCreateCategory = itemsViewModel::createCategory,
                     onSave = { draft ->
                         if (entry.isResumed()) {
                             itemsViewModel.addItem(draft)

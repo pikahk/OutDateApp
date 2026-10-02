@@ -1,6 +1,7 @@
 <resources>
   <string name="back">Назад</string>
   <string name="cancel">Отмена</string>
+  <string name="create">Создать</string>
   <string name="delete">Удалить</string>
   <string name="done">Готово</string>
   <string name="save">Сохранить</string>
@@ -14,6 +15,9 @@
   <string name="category_cosmetics">Косметика</string>
   <string name="category_all">Все</string>
   <string name="items_empty_category">В этой категории пока пусто</string>
+  <string name="category_create">Создать категорию</string>
+  <string name="category_new_title">Новая категория</string>
+  <string name="category_name_hint">Например, Молочное</string>
 
   <string name="section_expired">Просрочено</string>
   <string name="section_soon">Ближайшие дни</string>

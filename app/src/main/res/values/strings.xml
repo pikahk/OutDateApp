@@ -3,6 +3,7 @@
 
   <string name="back">Back</string>
   <string name="cancel">Cancel</string>
+  <string name="create">Create</string>
   <string name="delete">Delete</string>
   <string name="done">Done</string>
   <string name="save">Save</string>
@@ -16,6 +17,9 @@
   <string name="category_cosmetics">Cosmetics</string>
   <string name="category_all">All</string>
   <string name="items_empty_category">Nothing in this category yet</string>
+  <string name="category_create">Create category</string>
+  <string name="category_new_title">New category</string>
+  <string name="category_name_hint">For example, Dairy</string>
 
   <string name="section_expired">Expired</string>
   <string name="section_soon">Coming up</string>

@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import ru.pikahk.outdateapp.data.Category
 import ru.pikahk.outdateapp.data.CategoryRepository
 import ru.pikahk.outdateapp.data.DatabaseProvider
 import ru.pikahk.outdateapp.data.Item
@@ -52,6 +53,12 @@ class ItemsViewModel(private val items: ItemRepository, private val categories: 
 
     fun selectCategory(id: String?) {
         selectedCategoryId.value = id
+    }
+
+    fun createCategory(name: String): String {
+        val category = Category(name = name.trim(), isDefault = false)
+        viewModelScope.launch { categories.save(category) }
+        return category.id
     }
 
     fun addItem(draft: ItemDraft) {
