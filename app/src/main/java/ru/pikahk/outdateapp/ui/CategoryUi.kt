@@ -21,6 +21,6 @@ fun DefaultCategory.titleRes(): Int = when (this) {
 
 fun DefaultCategory.iconRes(): Int = when (this) {
     DefaultCategory.FOOD -> R.drawable.ic_category_food
-    DefaultCategory.MEDICINE -> R.drawable.ic_category_cosmetics
+    DefaultCategory.MEDICINE -> R.drawable.ic_category_medicine
     DefaultCategory.COSMETICS -> R.drawable.ic_category_cosmetics
 }
