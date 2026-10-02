@@ -49,9 +49,13 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlin.math.abs
 import ru.pikahk.outdateapp.R
+import ru.pikahk.outdateapp.data.DefaultCategory
 import ru.pikahk.outdateapp.domain.Urgency
+import ru.pikahk.outdateapp.ui.CategoryUi
 import ru.pikahk.outdateapp.ui.color
 import ru.pikahk.outdateapp.ui.containerColor
+import ru.pikahk.outdateapp.ui.iconRes
+import ru.pikahk.outdateapp.ui.label
 import ru.pikahk.outdateapp.ui.theme.OutDateAppTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -140,6 +144,10 @@ private fun ItemDetailsContent(
             .padding(horizontal = 20.dp, vertical = 8.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+        if (item.category != null) {
+            CategoryTag(item.category)
+        }
+
         Text(
             text = item.name,
             style = MaterialTheme.typography.headlineMedium,
@@ -205,6 +213,32 @@ private fun ItemDetailsContent(
                 fontWeight = FontWeight.Medium
             )
         }
+    }
+}
+
+@Composable
+private fun CategoryTag(category: CategoryUi) {
+    val icon = category.builtIn?.iconRes()
+    Row(
+        modifier = Modifier
+            .background(color = MaterialTheme.colorScheme.surfaceVariant, shape = RoundedCornerShape(8.dp))
+            .padding(horizontal = 10.dp, vertical = 5.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(6.dp)
+    ) {
+        if (icon != null) {
+            Icon(
+                painter = painterResource(icon),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(16.dp)
+            )
+        }
+        Text(
+            text = category.label(),
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
     }
 }
 
@@ -340,6 +374,7 @@ private fun ItemDetailsContentPreview() {
         ItemDetailsContent(
             item = ItemDetailsUi(
                 name = "Творог 5%",
+                category = CategoryUi("food", "food", DefaultCategory.FOOD),
                 expiresAt = LocalDate.of(2026, 9, 29),
                 openedAt = null,
                 daysAfterOpening = 3,

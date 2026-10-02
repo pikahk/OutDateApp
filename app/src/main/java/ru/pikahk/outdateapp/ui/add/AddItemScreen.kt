@@ -1,6 +1,8 @@
 package ru.pikahk.outdateapp.ui.add
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,6 +23,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -70,8 +74,10 @@ import ru.pikahk.outdateapp.domain.parseDate
 import ru.pikahk.outdateapp.domain.parseExpiryDate
 import ru.pikahk.outdateapp.domain.shelfLifeInDays
 import ru.pikahk.outdateapp.domain.urgency
+import ru.pikahk.outdateapp.ui.CategoryUi
 import ru.pikahk.outdateapp.ui.color
 import ru.pikahk.outdateapp.ui.containerColor
+import ru.pikahk.outdateapp.ui.label
 import ru.pikahk.outdateapp.ui.theme.OutDateAppTheme
 
 private enum class InputMode { EXPIRY_DATE, PRODUCTION }
@@ -90,9 +96,16 @@ private val unitOptions = listOf(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddItemScreen(onSave: (ItemDraft) -> Unit, onCancel: () -> Unit, modifier: Modifier = Modifier) {
+fun AddItemScreen(
+    categories: List<CategoryUi>,
+    initialCategoryId: String?,
+    onSave: (ItemDraft) -> Unit,
+    onCancel: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     val today = remember { LocalDate.now() }
     var name by rememberSaveable { mutableStateOf("") }
+    var categoryId by rememberSaveable { mutableStateOf(initialCategoryId) }
     var mode by rememberSaveable { mutableStateOf(InputMode.EXPIRY_DATE) }
     var expiryText by rememberSaveable { mutableStateOf("") }
     var producedText by rememberSaveable { mutableStateOf("") }
@@ -151,7 +164,15 @@ fun AddItemScreen(onSave: (ItemDraft) -> Unit, onCancel: () -> Unit, modifier: M
                     Button(
                         onClick = {
                             if (expiresAt != null) {
-                                onSave(ItemDraft(name.trim(), expiresAt, daysAfterOpening, openedAt))
+                                onSave(
+                                    ItemDraft(
+                                        name = name.trim(),
+                                        categoryId = categoryId,
+                                        expiresAt = expiresAt,
+                                        daysAfterOpening = daysAfterOpening,
+                                        openedAt = openedAt
+                                    )
+                                )
                             }
                         },
                         enabled = canSave,
@@ -182,6 +203,8 @@ fun AddItemScreen(onSave: (ItemDraft) -> Unit, onCancel: () -> Unit, modifier: M
                     modifier = Modifier.fillMaxWidth()
                 )
             }
+
+            CategoryField(categories = categories, selectedId = categoryId, onSelect = { categoryId = it })
 
             Segmented(options = modeOptions, selected = mode, onSelect = { mode = it })
 
@@ -291,6 +314,67 @@ private fun LabeledField(label: String, content: @Composable () -> Unit) {
 }
 
 private val FieldShape = RoundedCornerShape(12.dp)
+
+@Composable
+private fun CategoryField(categories: List<CategoryUi>, selectedId: String?, onSelect: (String?) -> Unit) {
+    var expanded by remember { mutableStateOf(false) }
+    val selected = categories.firstOrNull { it.id == selectedId }
+    val textColor = if (selected != null) {
+        MaterialTheme.colorScheme.onSurface
+    } else {
+        MaterialTheme.colorScheme.onSurfaceVariant
+    }
+
+    LabeledField(label = stringResource(R.string.field_category)) {
+        Box {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp)
+                    .clip(FieldShape)
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                    .border(width = 1.dp, color = MaterialTheme.colorScheme.outlineVariant, shape = FieldShape)
+                    .clickable(role = Role.DropdownList) { expanded = true }
+                    .padding(horizontal = 16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = selected?.label() ?: stringResource(R.string.category_none),
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = textColor,
+                    modifier = Modifier.weight(1f)
+                )
+                Icon(
+                    painter = painterResource(R.drawable.ic_expand_more),
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                containerColor = MaterialTheme.colorScheme.surface
+            ) {
+                DropdownMenuItem(
+                    text = { Text(stringResource(R.string.category_none)) },
+                    onClick = {
+                        onSelect(null)
+                        expanded = false
+                    }
+                )
+                categories.forEach { category ->
+                    DropdownMenuItem(
+                        text = { Text(category.label()) },
+                        onClick = {
+                            onSelect(category.id)
+                            expanded = false
+                        }
+                    )
+                }
+            }
+        }
+    }
+}
 
 @Composable
 private fun fieldColors(): TextFieldColors = OutlinedTextFieldDefaults.colors(
@@ -447,6 +531,6 @@ private fun Long.toUtcDate(): LocalDate = Instant.ofEpochMilli(this).atZone(Zone
 @Composable
 private fun AddItemScreenPreview() {
     OutDateAppTheme {
-        AddItemScreen(onSave = {}, onCancel = {})
+        AddItemScreen(categories = emptyList(), initialCategoryId = null, onSave = {}, onCancel = {})
     }
 }

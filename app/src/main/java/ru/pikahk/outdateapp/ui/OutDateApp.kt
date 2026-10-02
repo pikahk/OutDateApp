@@ -8,9 +8,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.compose.dropUnlessResumed
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavBackStackEntry
@@ -77,7 +79,10 @@ fun OutDateApp() {
                 )
             }
             composable<AddItemRoute> { entry ->
+                val itemsState by itemsViewModel.state.collectAsStateWithLifecycle()
                 AddItemScreen(
+                    categories = itemsState.categories,
+                    initialCategoryId = itemsState.selectedCategoryId,
                     onSave = { draft ->
                         if (entry.isResumed()) {
                             itemsViewModel.addItem(draft)

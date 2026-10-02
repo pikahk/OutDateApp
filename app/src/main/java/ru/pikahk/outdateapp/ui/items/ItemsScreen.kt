@@ -9,10 +9,14 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -27,10 +31,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,20 +46,34 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlin.math.abs
 import ru.pikahk.outdateapp.R
+import ru.pikahk.outdateapp.data.DefaultCategory
 import ru.pikahk.outdateapp.domain.Urgency
+import ru.pikahk.outdateapp.ui.CategoryUi
 import ru.pikahk.outdateapp.ui.color
 import ru.pikahk.outdateapp.ui.containerColor
+import ru.pikahk.outdateapp.ui.iconRes
+import ru.pikahk.outdateapp.ui.label
 import ru.pikahk.outdateapp.ui.theme.OutDateAppTheme
 
 @Composable
 fun ItemsScreen(viewModel: ItemsViewModel, onAddClick: () -> Unit, onItemClick: (String) -> Unit) {
-    val groups by viewModel.groups.collectAsStateWithLifecycle()
-    ItemsScreen(groups = groups, onAddClick = onAddClick, onItemClick = onItemClick)
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    ItemsScreen(
+        state = state,
+        onAddClick = onAddClick,
+        onItemClick = onItemClick,
+        onCategorySelect = viewModel::selectCategory
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ItemsScreen(groups: List<ItemsGroup>, onAddClick: () -> Unit, onItemClick: (String) -> Unit) {
+private fun ItemsScreen(
+    state: ItemsUiState,
+    onAddClick: () -> Unit,
+    onItemClick: (String) -> Unit,
+    onCategorySelect: (String?) -> Unit
+) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -80,31 +100,87 @@ private fun ItemsScreen(groups: List<ItemsGroup>, onAddClick: () -> Unit, onItem
             }
         }
     ) { padding ->
-        if (groups.isEmpty()) {
-            Box(
-                modifier = Modifier.fillMaxSize().padding(padding),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = stringResource(R.string.items_empty),
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+        if (!state.isLoading) {
+            Column(modifier = Modifier.fillMaxSize().padding(padding)) {
+                CategoryFilter(
+                    categories = state.categories,
+                    selectedId = state.selectedCategoryId,
+                    onSelect = onCategorySelect
                 )
-            }
-        } else {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize().padding(padding),
-                contentPadding = PaddingValues(bottom = 88.dp)
-            ) {
-                groups.forEach { group ->
-                    item(key = "section_${group.section.name}") {
-                        SectionHeader(group.section)
+                if (state.groups.isEmpty()) {
+                    val message = if (state.hasItems) R.string.items_empty_category else R.string.items_empty
+                    Box(
+                        modifier = Modifier.fillMaxWidth().weight(1f),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = stringResource(message),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     }
-                    items(items = group.items, key = { it.id }) { item ->
-                        ItemRow(item = item, onClick = { onItemClick(item.id) })
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxWidth().weight(1f),
+                        contentPadding = PaddingValues(bottom = 88.dp)
+                    ) {
+                        state.groups.forEach { group ->
+                            item(key = "section_${group.section.name}") {
+                                SectionHeader(group.section)
+                            }
+                            items(items = group.items, key = { it.id }) { item ->
+                                ItemRow(item = item, onClick = { onItemClick(item.id) })
+                            }
+                        }
                     }
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun CategoryFilter(categories: List<CategoryUi>, selectedId: String?, onSelect: (String?) -> Unit) {
+    LazyRow(
+        modifier = Modifier.fillMaxWidth().selectableGroup(),
+        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        item(key = "all") {
+            CategoryChip(
+                text = stringResource(R.string.category_all),
+                selected = selectedId == null,
+                onClick = { onSelect(null) }
+            )
+        }
+        items(items = categories, key = { it.id }) { category ->
+            CategoryChip(
+                text = category.label(),
+                selected = category.id == selectedId,
+                onClick = { onSelect(category.id) }
+            )
+        }
+    }
+}
+
+@Composable
+private fun CategoryChip(text: String, selected: Boolean, onClick: () -> Unit) {
+    val background = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
+    val content = if (selected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
+    Box(
+        modifier = Modifier
+            .height(40.dp)
+            .clip(RoundedCornerShape(10.dp))
+            .background(background)
+            .selectable(selected = selected, onClick = onClick, role = Role.Tab)
+            .padding(horizontal = 16.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.labelLarge,
+            fontWeight = FontWeight.Medium,
+            color = content
+        )
     }
 }
 
@@ -145,7 +221,7 @@ private fun ItemRow(item: ItemUi, onClick: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        LetterBadge(name = item.name, urgency = item.urgency)
+        ItemBadge(item)
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = item.name,
@@ -167,23 +243,32 @@ private fun ItemRow(item: ItemUi, onClick: () -> Unit) {
 }
 
 @Composable
-private fun LetterBadge(name: String, urgency: Urgency) {
-    val expired = urgency == Urgency.EXPIRED
+private fun ItemBadge(item: ItemUi) {
+    val expired = item.urgency == Urgency.EXPIRED
+    val content = if (expired) item.urgency.color() else MaterialTheme.colorScheme.onSurfaceVariant
+    val background = if (expired) item.urgency.containerColor() else MaterialTheme.colorScheme.surfaceVariant
+    val builtIn = item.category?.builtIn
     Box(
         modifier = Modifier
             .size(40.dp)
-            .background(
-                color = if (expired) urgency.containerColor() else MaterialTheme.colorScheme.surfaceVariant,
-                shape = RoundedCornerShape(11.dp)
-            ),
+            .background(color = background, shape = RoundedCornerShape(11.dp)),
         contentAlignment = Alignment.Center
     ) {
-        Text(
-            text = name.take(1).uppercase(),
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-            color = if (expired) urgency.color() else MaterialTheme.colorScheme.onSurfaceVariant
-        )
+        if (builtIn != null) {
+            Icon(
+                painter = painterResource(builtIn.iconRes()),
+                contentDescription = item.category?.label(),
+                tint = content,
+                modifier = Modifier.size(22.dp)
+            )
+        } else {
+            Text(
+                text = item.name.take(1).uppercase(),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = content
+            )
+        }
     }
 }
 
@@ -228,27 +313,36 @@ private fun badgeText(daysLeft: Long): String {
 @Composable
 private fun ItemsScreenPreview() {
     val today = LocalDate.of(2026, 9, 25)
+    val food = CategoryUi("food", "food", DefaultCategory.FOOD)
+    val medicine = CategoryUi("medicine", "medicine", DefaultCategory.MEDICINE)
+    val cosmetics = CategoryUi("cosmetics", "cosmetics", DefaultCategory.COSMETICS)
     OutDateAppTheme {
         ItemsScreen(
-            groups = listOf(
-                ItemsGroup(
-                    ItemsSection.EXPIRED,
-                    listOf(ItemUi("1", "Сметана", -2, Urgency.EXPIRED, today.minusDays(5), true))
-                ),
-                ItemsGroup(
-                    ItemsSection.SOON,
-                    listOf(
-                        ItemUi("2", "Молоко", 1, Urgency.CRITICAL, today.minusDays(1), true),
-                        ItemUi("3", "Творог", 4, Urgency.SOON, null, false)
+            state = ItemsUiState(
+                isLoading = false,
+                categories = listOf(food, medicine, cosmetics),
+                hasItems = true,
+                groups = listOf(
+                    ItemsGroup(
+                        ItemsSection.EXPIRED,
+                        listOf(ItemUi("1", "Сметана", -2, Urgency.EXPIRED, today.minusDays(5), true, food))
+                    ),
+                    ItemsGroup(
+                        ItemsSection.SOON,
+                        listOf(
+                            ItemUi("2", "Молоко", 1, Urgency.CRITICAL, today.minusDays(1), true, food),
+                            ItemUi("3", "Капли", 4, Urgency.SOON, null, false, medicine)
+                        )
+                    ),
+                    ItemsGroup(
+                        ItemsSection.LATER,
+                        listOf(ItemUi("4", "Крем для рук", 63, Urgency.OK, null, false, cosmetics))
                     )
-                ),
-                ItemsGroup(
-                    ItemsSection.LATER,
-                    listOf(ItemUi("4", "Крем для рук", 63, Urgency.OK, null, false))
                 )
             ),
             onAddClick = {},
-            onItemClick = {}
+            onItemClick = {},
+            onCategorySelect = {}
         )
     }
 }

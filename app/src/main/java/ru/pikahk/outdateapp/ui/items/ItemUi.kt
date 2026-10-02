@@ -2,6 +2,7 @@ package ru.pikahk.outdateapp.ui.items
 
 import java.time.LocalDate
 import ru.pikahk.outdateapp.domain.Urgency
+import ru.pikahk.outdateapp.ui.CategoryUi
 
 data class ItemUi(
     val id: String,
@@ -9,9 +10,18 @@ data class ItemUi(
     val daysLeft: Long,
     val urgency: Urgency,
     val openedAt: LocalDate?,
-    val limitedByOpening: Boolean
+    val limitedByOpening: Boolean,
+    val category: CategoryUi?
 )
 
 enum class ItemsSection { EXPIRED, SOON, LATER }
 
 data class ItemsGroup(val section: ItemsSection, val items: List<ItemUi>)
+
+data class ItemsUiState(
+    val isLoading: Boolean = true,
+    val categories: List<CategoryUi> = emptyList(),
+    val selectedCategoryId: String? = null,
+    val groups: List<ItemsGroup> = emptyList(),
+    val hasItems: Boolean = false
+)

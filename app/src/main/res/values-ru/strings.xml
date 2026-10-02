@@ -12,6 +12,8 @@
   <string name="category_food">Еда</string>
   <string name="category_medicine">Лекарства</string>
   <string name="category_cosmetics">Косметика</string>
+  <string name="category_all">Все</string>
+  <string name="items_empty_category">В этой категории пока пусто</string>
 
   <string name="section_expired">Просрочено</string>
   <string name="section_soon">Ближайшие дни</string>
@@ -24,6 +26,8 @@
 
   <string name="add_title">Новый продукт</string>
   <string name="field_name">Название</string>
+  <string name="field_category">Категория</string>
+  <string name="category_none">Без категории</string>
   <string name="mode_expiry">Годен до</string>
   <string name="mode_production">Изготовлен</string>
   <string name="field_expires">Годен до</string>

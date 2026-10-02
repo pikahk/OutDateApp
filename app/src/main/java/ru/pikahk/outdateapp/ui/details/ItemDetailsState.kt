@@ -2,9 +2,11 @@ package ru.pikahk.outdateapp.ui.details
 
 import java.time.LocalDate
 import ru.pikahk.outdateapp.domain.Urgency
+import ru.pikahk.outdateapp.ui.CategoryUi
 
 data class ItemDetailsUi(
     val name: String,
+    val category: CategoryUi?,
     val expiresAt: LocalDate,
     val openedAt: LocalDate?,
     val daysAfterOpening: Int?,

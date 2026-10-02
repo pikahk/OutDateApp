@@ -6,11 +6,13 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import java.time.LocalDate
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import ru.pikahk.outdateapp.data.CategoryRepository
 import ru.pikahk.outdateapp.data.DatabaseProvider
 import ru.pikahk.outdateapp.data.Item
 import ru.pikahk.outdateapp.data.ItemRepository
@@ -18,47 +20,46 @@ import ru.pikahk.outdateapp.domain.Urgency
 import ru.pikahk.outdateapp.domain.daysLeft
 import ru.pikahk.outdateapp.domain.effectiveExpiryDate
 import ru.pikahk.outdateapp.domain.urgency
+import ru.pikahk.outdateapp.ui.CategoryUi
 import ru.pikahk.outdateapp.ui.add.ItemDraft
+import ru.pikahk.outdateapp.ui.toUi
 
-class ItemsViewModel(private val repository: ItemRepository) : ViewModel() {
+class ItemsViewModel(private val items: ItemRepository, private val categories: CategoryRepository) : ViewModel() {
 
-    val groups: StateFlow<List<ItemsGroup>> =
-        repository.observeAll()
-            .map { list -> list.toUiModels(LocalDate.now()).toGroups() }
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(5_000),
-                initialValue = emptyList()
+    private val selectedCategoryId = MutableStateFlow<String?>(null)
+
+    val state: StateFlow<ItemsUiState> =
+        combine(items.observeAll(), categories.observeAll(), selectedCategoryId) { itemList, categoryList, selectedId ->
+            val categoryUis = categoryList.map { it.toUi() }
+            val selected = selectedId?.takeIf { id -> categoryUis.any { it.id == id } }
+            val visible = if (selected == null) itemList else itemList.filter { it.categoryId == selected }
+            ItemsUiState(
+                isLoading = false,
+                categories = categoryUis,
+                selectedCategoryId = selected,
+                groups = visible.toUiModels(LocalDate.now(), categoryUis).toGroups(),
+                hasItems = itemList.isNotEmpty()
             )
-
-    private fun List<Item>.toUiModels(today: LocalDate): List<ItemUi> = map { item ->
-        val left = daysLeft(item, today)
-        ItemUi(
-            id = item.id,
-            name = item.name,
-            daysLeft = left,
-            urgency = urgency(left),
-            openedAt = item.openedAt,
-            limitedByOpening = effectiveExpiryDate(item) < item.expiresAt
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = ItemsUiState()
         )
-    }.sortedBy { it.daysLeft }
 
-    private fun List<ItemUi>.toGroups(): List<ItemsGroup> = groupBy { it.urgency.toSection() }
-        .map { (section, items) -> ItemsGroup(section, items) }
-        .sortedBy { it.section }
+    init {
+        viewModelScope.launch { categories.addDefaults() }
+    }
 
-    private fun Urgency.toSection(): ItemsSection = when (this) {
-        Urgency.EXPIRED -> ItemsSection.EXPIRED
-        Urgency.CRITICAL, Urgency.SOON -> ItemsSection.SOON
-        Urgency.OK -> ItemsSection.LATER
+    fun selectCategory(id: String?) {
+        selectedCategoryId.value = id
     }
 
     fun addItem(draft: ItemDraft) {
         viewModelScope.launch {
-            repository.save(
+            items.save(
                 Item(
                     name = draft.name,
-                    categoryId = null,
+                    categoryId = draft.categoryId,
                     barcode = null,
                     expiresAt = draft.expiresAt,
                     daysAfterOpening = draft.daysAfterOpening,
@@ -68,11 +69,37 @@ class ItemsViewModel(private val repository: ItemRepository) : ViewModel() {
         }
     }
 
+    private fun List<Item>.toUiModels(today: LocalDate, categoryUis: List<CategoryUi>): List<ItemUi> {
+        val categoriesById = categoryUis.associateBy { it.id }
+        return map { item ->
+            val left = daysLeft(item, today)
+            ItemUi(
+                id = item.id,
+                name = item.name,
+                daysLeft = left,
+                urgency = urgency(left),
+                openedAt = item.openedAt,
+                limitedByOpening = effectiveExpiryDate(item) < item.expiresAt,
+                category = item.categoryId?.let { categoriesById[it] }
+            )
+        }.sortedBy { it.daysLeft }
+    }
+
+    private fun List<ItemUi>.toGroups(): List<ItemsGroup> = groupBy { it.urgency.toSection() }
+        .map { (section, sectionItems) -> ItemsGroup(section, sectionItems) }
+        .sortedBy { it.section }
+
+    private fun Urgency.toSection(): ItemsSection = when (this) {
+        Urgency.EXPIRED -> ItemsSection.EXPIRED
+        Urgency.CRITICAL, Urgency.SOON -> ItemsSection.SOON
+        Urgency.OK -> ItemsSection.LATER
+    }
+
     companion object {
         fun factory(context: Context) = viewModelFactory {
             initializer {
-                val dao = DatabaseProvider.get(context).itemDao()
-                ItemsViewModel(ItemRepository(dao))
+                val database = DatabaseProvider.get(context)
+                ItemsViewModel(ItemRepository(database.itemDao()), CategoryRepository(database.categoryDao()))
             }
         }
     }
