@@ -8,23 +8,23 @@
 
   <string name="items_title">Мои сроки</string>
   <string name="add_item">Добавить</string>
-  <string name="items_empty">Пока пусто. Нажмите «+»</string>
+  <string name="items_empty">Нет продуктов</string>
 
   <string name="category_food">Еда</string>
   <string name="category_medicine">Лекарства</string>
   <string name="category_cosmetics">Косметика</string>
   <string name="category_all">Все</string>
-  <string name="items_empty_category">В этой категории пока пусто</string>
+  <string name="items_empty_category">Нет продуктов в категории</string>
   <string name="category_create">Создать категорию</string>
   <string name="category_new_title">Новая категория</string>
-  <string name="category_name_hint">Например, Молочное</string>
+  <string name="category_name_hint">Название</string>
 
   <string name="section_expired">Просрочено</string>
-  <string name="section_soon">Ближайшие дни</string>
+  <string name="section_soon">Скоро</string>
   <string name="section_later">Позже</string>
   <string name="list_sealed">Не вскрыто</string>
   <string name="list_opened">Вскрыто %1$s</string>
-  <string name="list_opened_limited">Вскрыто %1$s · по сроку вскрытия</string>
+  <string name="list_opened_limited">Вскрыто %1$s · срок вскрытия</string>
   <string name="badge_today">Сегодня</string>
   <string name="badge_tomorrow">Завтра</string>
 
@@ -43,10 +43,9 @@
   <string name="hint_after_opening">Необязательно</string>
   <string name="field_opened">Дата вскрытия</string>
   <string name="already_opened">Уже вскрыт</string>
-  <string name="already_opened_hint">Включите, если упаковку уже открыли</string>
-  <string name="summary_expires">Истекает %1$s</string>
-  <string name="summary_expires_opening">Истекает %1$s — по сроку вскрытия, он наступает раньше</string>
-  <string name="summary_expired">Срок уже истёк %1$s</string>
+  <string name="summary_expires">Годен до %1$s</string>
+  <string name="summary_expires_opening">Годен до %1$s (после вскрытия)</string>
+  <string name="summary_expired">Истёк %1$s</string>
   <string name="error_no_such_date">Нет такой даты</string>
   <string name="pick_date">Выбрать дату</string>
 
@@ -55,27 +54,26 @@
   <string name="unit_months">месяцы</string>
   <string name="unit_years">годы</string>
 
-  <string name="details_package_date">Срок на упаковке</string>
+  <string name="details_package_date">На упаковке</string>
   <string name="details_after_opening">После вскрытия</string>
   <string name="details_not_set">Не указан</string>
 
   <string name="details_status_left">Осталось</string>
-  <string name="details_status_expires">Срок истекает</string>
+  <string name="details_status_expires">Истекает</string>
   <string name="details_status_expired">Просрочено</string>
   <string name="details_until">до %1$s</string>
-  <string name="details_was_due">срок был до %1$s</string>
-  <string name="details_used_now">%1$s — сейчас считаем по нему</string>
-  <string name="details_opening_not_started">%1$s — отсчёт ещё не начат</string>
+  <string name="details_was_due">истёк %1$s</string>
+  <string name="details_opening_not_started">%1$s, не вскрыто</string>
   <string name="details_opening_running">Вскрыто %1$s, годен до %2$s</string>
   <string name="details_opened_no_limit">Вскрыто %1$s, срок не указан</string>
-  <string name="details_open_hint">Отсчёт после вскрытия начнётся сегодня. Продукт будет годен до %1$s.</string>
+  <string name="details_open_hint">После вскрытия годен до %1$s</string>
   <string name="details_added">Добавлено</string>
 
   <string name="open_today">Открыть сегодня</string>
   <string name="undo_open">Отменить вскрытие</string>
 
   <string name="delete_title">Удалить продукт?</string>
-  <string name="delete_message">Продукт пропадёт из списка.</string>
+  <string name="delete_message">Отменить будет нельзя.</string>
 
   <plurals name="days">
     <item quantity="one">%d день</item>

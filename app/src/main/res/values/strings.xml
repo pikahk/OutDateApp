@@ -10,23 +10,23 @@
 
   <string name="items_title">Expiry dates</string>
   <string name="add_item">Add</string>
-  <string name="items_empty">Nothing here yet. Tap “+”</string>
+  <string name="items_empty">No items</string>
 
   <string name="category_food">Food</string>
   <string name="category_medicine">Medicine</string>
   <string name="category_cosmetics">Cosmetics</string>
   <string name="category_all">All</string>
-  <string name="items_empty_category">Nothing in this category yet</string>
+  <string name="items_empty_category">No items in this category</string>
   <string name="category_create">Create category</string>
   <string name="category_new_title">New category</string>
-  <string name="category_name_hint">For example, Dairy</string>
+  <string name="category_name_hint">Name</string>
 
   <string name="section_expired">Expired</string>
-  <string name="section_soon">Coming up</string>
+  <string name="section_soon">Soon</string>
   <string name="section_later">Later</string>
   <string name="list_sealed">Sealed</string>
   <string name="list_opened">Opened %1$s</string>
-  <string name="list_opened_limited">Opened %1$s · counting from opening</string>
+  <string name="list_opened_limited">Opened %1$s · opening limit</string>
   <string name="badge_today">Today</string>
   <string name="badge_tomorrow">Tomorrow</string>
 
@@ -45,10 +45,9 @@
   <string name="hint_after_opening">Optional</string>
   <string name="field_opened">Opening date</string>
   <string name="already_opened">Already opened</string>
-  <string name="already_opened_hint">Turn on if the package is already open</string>
-  <string name="summary_expires">Expires %1$s</string>
-  <string name="summary_expires_opening">Expires %1$s — the after-opening limit comes first</string>
-  <string name="summary_expired">Already expired on %1$s</string>
+  <string name="summary_expires">Good until %1$s</string>
+  <string name="summary_expires_opening">Good until %1$s (after opening)</string>
+  <string name="summary_expired">Expired %1$s</string>
   <string name="error_no_such_date">No such date</string>
   <string name="pick_date">Pick a date</string>
 
@@ -57,7 +56,7 @@
   <string name="unit_months">months</string>
   <string name="unit_years">years</string>
 
-  <string name="details_package_date">Date on package</string>
+  <string name="details_package_date">On package</string>
   <string name="details_after_opening">After opening</string>
   <string name="details_not_set">Not set</string>
 
@@ -65,19 +64,18 @@
   <string name="details_status_expires">Expires</string>
   <string name="details_status_expired">Expired</string>
   <string name="details_until">until %1$s</string>
-  <string name="details_was_due">was due %1$s</string>
-  <string name="details_used_now">%1$s — used now</string>
-  <string name="details_opening_not_started">%1$s — not started yet</string>
+  <string name="details_was_due">expired %1$s</string>
+  <string name="details_opening_not_started">%1$s, sealed</string>
   <string name="details_opening_running">Opened %1$s, good until %2$s</string>
   <string name="details_opened_no_limit">Opened %1$s, no limit set</string>
-  <string name="details_open_hint">The countdown after opening starts today. It will be good until %1$s.</string>
+  <string name="details_open_hint">After opening: good until %1$s</string>
   <string name="details_added">Added</string>
 
   <string name="open_today">Open today</string>
   <string name="undo_open">Undo opening</string>
 
-  <string name="delete_title">Delete this item?</string>
-  <string name="delete_message">It will be removed from the list.</string>
+  <string name="delete_title">Delete item?</string>
+  <string name="delete_message">This can\'t be undone.</string>
 
   <plurals name="days">
     <item quantity="one">%d day</item>
