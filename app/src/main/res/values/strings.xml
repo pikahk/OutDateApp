@@ -11,6 +11,10 @@
   <string name="items_title">Expiry dates</string>
   <string name="add_item">Add</string>
   <string name="items_empty">No items</string>
+  
+  <string name="search">Search</string>
+  <string name="search_clear">Clear</string>
+  <string name="search_empty">Nothing found</string>
 
   <string name="category_food">Food</string>
   <string name="category_medicine">Medicine</string>

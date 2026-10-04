@@ -22,6 +22,7 @@ data class ItemsUiState(
     val isLoading: Boolean = true,
     val categories: List<CategoryUi> = emptyList(),
     val selectedCategoryId: String? = null,
+    val isSearching: Boolean = false,
     val groups: List<ItemsGroup> = emptyList(),
     val hasItems: Boolean = false
 )

@@ -5,20 +5,22 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -42,32 +44,23 @@ fun ItemsScreen(viewModel: ItemsViewModel, onAddClick: () -> Unit, onItemClick: 
     val state by viewModel.state.collectAsStateWithLifecycle()
     ItemsScreen(
         state = state,
+        query = viewModel.query,
         onAddClick = onAddClick,
         onItemClick = onItemClick,
         onCategorySelect = viewModel::selectCategory
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ItemsScreen(
     state: ItemsUiState,
+    query: TextFieldState,
     onAddClick: () -> Unit,
     onItemClick: (String) -> Unit,
     onCategorySelect: (String?) -> Unit
 ) {
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(R.string.items_title),
-                        style = MaterialTheme.typography.headlineSmall,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            )
-        },
+        topBar = { ItemsTopBar(query) },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onAddClick,
@@ -83,14 +76,24 @@ private fun ItemsScreen(
         }
     ) { padding ->
         if (!state.isLoading) {
-            Column(modifier = Modifier.fillMaxSize().padding(padding)) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .consumeWindowInsets(padding)
+                    .imePadding()
+            ) {
                 CategoryFilter(
                     categories = state.categories,
                     selectedId = state.selectedCategoryId,
                     onSelect = onCategorySelect
                 )
                 if (state.groups.isEmpty()) {
-                    val message = if (state.hasItems) R.string.items_empty_category else R.string.items_empty
+                    val message = when {
+                        !state.hasItems -> R.string.items_empty
+                        state.isSearching -> R.string.search_empty
+                        else -> R.string.items_empty_category
+                    }
                     Box(
                         modifier = Modifier.fillMaxWidth().weight(1f),
                         contentAlignment = Alignment.Center
@@ -178,6 +181,7 @@ private fun ItemsScreenPreview() {
                     )
                 )
             ),
+            query = rememberTextFieldState(),
             onAddClick = {},
             onItemClick = {},
             onCategorySelect = {}

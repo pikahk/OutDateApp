@@ -1,6 +1,8 @@
 package ru.pikahk.outdateapp.ui.items
 
 import android.content.Context
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
@@ -27,17 +29,27 @@ import ru.pikahk.outdateapp.ui.toUi
 
 class ItemsViewModel(private val items: ItemRepository, private val categories: CategoryRepository) : ViewModel() {
 
+    val query = TextFieldState()
+
     private val selectedCategoryId = MutableStateFlow<String?>(null)
 
     val state: StateFlow<ItemsUiState> =
-        combine(items.observeAll(), categories.observeAll(), selectedCategoryId) { itemList, categoryList, selectedId ->
+        combine(
+            items.observeAll(),
+            categories.observeAll(),
+            selectedCategoryId,
+            snapshotFlow { query.text.toString().trim() }
+        ) { itemList, categoryList, selectedId, search ->
             val categoryUis = categoryList.map { it.toUi() }
             val selected = selectedId?.takeIf { id -> categoryUis.any { it.id == id } }
-            val visible = if (selected == null) itemList else itemList.filter { it.categoryId == selected }
+            val visible = itemList.filter { item ->
+                (selected == null || item.categoryId == selected) && item.name.contains(search, ignoreCase = true)
+            }
             ItemsUiState(
                 isLoading = false,
                 categories = categoryUis,
                 selectedCategoryId = selected,
+                isSearching = search.isNotEmpty(),
                 groups = visible.toUiModels(LocalDate.now(), categoryUis).toGroups(),
                 hasItems = itemList.isNotEmpty()
             )

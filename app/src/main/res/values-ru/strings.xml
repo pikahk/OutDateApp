@@ -9,6 +9,10 @@
   <string name="items_title">Мои сроки</string>
   <string name="add_item">Добавить</string>
   <string name="items_empty">Нет продуктов</string>
+  
+  <string name="search">Поиск</string>
+  <string name="search_clear">Очистить</string>
+  <string name="search_empty">Ничего не найдено</string>
 
   <string name="category_food">Еда</string>
   <string name="category_medicine">Лекарства</string>
