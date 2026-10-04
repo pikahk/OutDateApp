@@ -47,7 +47,9 @@ fun ItemsScreen(viewModel: ItemsViewModel, onAddClick: () -> Unit, onItemClick: 
         query = viewModel.query,
         onAddClick = onAddClick,
         onItemClick = onItemClick,
-        onCategorySelect = viewModel::selectCategory
+        onCategorySelect = viewModel::selectCategory,
+        onSortSelect = viewModel::selectSort,
+        onOpenedSelect = viewModel::selectOpened
     )
 }
 
@@ -57,10 +59,20 @@ private fun ItemsScreen(
     query: TextFieldState,
     onAddClick: () -> Unit,
     onItemClick: (String) -> Unit,
-    onCategorySelect: (String?) -> Unit
+    onCategorySelect: (String?) -> Unit,
+    onSortSelect: (ItemsSort) -> Unit,
+    onOpenedSelect: (OpenedFilter) -> Unit
 ) {
     Scaffold(
-        topBar = { ItemsTopBar(query) },
+        topBar = {
+            ItemsTopBar(
+                query = query,
+                sort = state.sort,
+                opened = state.opened,
+                onSortSelect = onSortSelect,
+                onOpenedSelect = onOpenedSelect
+            )
+        },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onAddClick,
@@ -91,7 +103,7 @@ private fun ItemsScreen(
                 if (state.groups.isEmpty()) {
                     val message = when {
                         !state.hasItems -> R.string.items_empty
-                        state.isSearching -> R.string.search_empty
+                        state.isSearching || state.opened != OpenedFilter.ALL -> R.string.search_empty
                         else -> R.string.items_empty_category
                     }
                     Box(
@@ -184,7 +196,9 @@ private fun ItemsScreenPreview() {
             query = rememberTextFieldState(),
             onAddClick = {},
             onItemClick = {},
-            onCategorySelect = {}
+            onCategorySelect = {},
+            onSortSelect = {},
+            onOpenedSelect = {}
         )
     }
 }

@@ -15,6 +15,15 @@
   <string name="search">Search</string>
   <string name="search_clear">Clear</string>
   <string name="search_empty">Nothing found</string>
+  <string name="list_options">Sort and filter</string>
+  <string name="sort_title">Sort</string>
+  <string name="sort_expiry">By expiry date</string>
+  <string name="sort_name">By name</string>
+  <string name="sort_added">Newest first</string>
+  <string name="show_title">Show</string>
+  <string name="show_all">All</string>
+  <string name="show_opened">Opened</string>
+  <string name="show_sealed">Sealed</string>
 
   <string name="category_food">Food</string>
   <string name="category_medicine">Medicine</string>

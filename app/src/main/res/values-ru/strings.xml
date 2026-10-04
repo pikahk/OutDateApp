@@ -13,6 +13,16 @@
   <string name="search">Поиск</string>
   <string name="search_clear">Очистить</string>
   <string name="search_empty">Ничего не найдено</string>
+  <string name="list_options">Сортировка и фильтр</string>
+  <string name="sort_title">Сортировка</string>
+  <string name="sort_expiry">По сроку</string>
+  <string name="sort_name">По названию</string>
+  <string name="sort_added">Сначала новые</string>
+  <string name="show_title">Показывать</string>
+  <string name="show_all">Все</string>
+  <string name="show_opened">Вскрытые</string>
+  <string name="show_sealed">Не вскрытые</string>
+  
 
   <string name="category_food">Еда</string>
   <string name="category_medicine">Лекарства</string>

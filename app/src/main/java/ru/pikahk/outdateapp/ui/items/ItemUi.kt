@@ -18,10 +18,16 @@ enum class ItemsSection { EXPIRED, SOON, LATER }
 
 data class ItemsGroup(val section: ItemsSection, val items: List<ItemUi>)
 
+enum class ItemsSort { EXPIRY, NAME, ADDED }
+
+enum class OpenedFilter { ALL, OPENED, SEALED }
+
 data class ItemsUiState(
     val isLoading: Boolean = true,
     val categories: List<CategoryUi> = emptyList(),
     val selectedCategoryId: String? = null,
+    val sort: ItemsSort = ItemsSort.EXPIRY,
+    val opened: OpenedFilter = OpenedFilter.ALL,
     val isSearching: Boolean = false,
     val groups: List<ItemsGroup> = emptyList(),
     val hasItems: Boolean = false

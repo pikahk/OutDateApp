@@ -7,12 +7,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import java.text.Collator
 import java.time.LocalDate
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.pikahk.outdateapp.data.Category
 import ru.pikahk.outdateapp.data.CategoryRepository
@@ -31,24 +33,32 @@ class ItemsViewModel(private val items: ItemRepository, private val categories: 
 
     val query = TextFieldState()
 
-    private val selectedCategoryId = MutableStateFlow<String?>(null)
+    private val filter = MutableStateFlow(ItemsFilter())
+
+    private val collator = Collator.getInstance()
 
     val state: StateFlow<ItemsUiState> =
         combine(
             items.observeAll(),
             categories.observeAll(),
-            selectedCategoryId,
+            filter,
             snapshotFlow { query.text.toString().trim() }
-        ) { itemList, categoryList, selectedId, search ->
+        ) { itemList, categoryList, current, search ->
             val categoryUis = categoryList.map { it.toUi() }
-            val selected = selectedId?.takeIf { id -> categoryUis.any { it.id == id } }
-            val visible = itemList.filter { item ->
-                (selected == null || item.categoryId == selected) && item.name.contains(search, ignoreCase = true)
-            }
+            val selected = current.categoryId?.takeIf { id -> categoryUis.any { it.id == id } }
+            val visible = itemList
+                .filter { item ->
+                    (selected == null || item.categoryId == selected) &&
+                        current.opened.matches(item) &&
+                        item.name.contains(search, ignoreCase = true)
+                }
+                .sortedWith(current.sort.comparator())
             ItemsUiState(
                 isLoading = false,
                 categories = categoryUis,
                 selectedCategoryId = selected,
+                sort = current.sort,
+                opened = current.opened,
                 isSearching = search.isNotEmpty(),
                 groups = visible.toUiModels(LocalDate.now(), categoryUis).toGroups(),
                 hasItems = itemList.isNotEmpty()
@@ -64,7 +74,15 @@ class ItemsViewModel(private val items: ItemRepository, private val categories: 
     }
 
     fun selectCategory(id: String?) {
-        selectedCategoryId.value = id
+        filter.update { it.copy(categoryId = id) }
+    }
+
+    fun selectSort(sort: ItemsSort) {
+        filter.update { it.copy(sort = sort) }
+    }
+
+    fun selectOpened(opened: OpenedFilter) {
+        filter.update { it.copy(opened = opened) }
     }
 
     fun createCategory(name: String): String {
@@ -88,6 +106,18 @@ class ItemsViewModel(private val items: ItemRepository, private val categories: 
         }
     }
 
+    private fun OpenedFilter.matches(item: Item): Boolean = when (this) {
+        OpenedFilter.ALL -> true
+        OpenedFilter.OPENED -> item.openedAt != null
+        OpenedFilter.SEALED -> item.openedAt == null
+    }
+
+    private fun ItemsSort.comparator(): Comparator<Item> = when (this) {
+        ItemsSort.EXPIRY -> compareBy { effectiveExpiryDate(it) }
+        ItemsSort.NAME -> compareBy(collator) { it.name }
+        ItemsSort.ADDED -> compareByDescending { it.createdAt }
+    }
+
     private fun List<Item>.toUiModels(today: LocalDate, categoryUis: List<CategoryUi>): List<ItemUi> {
         val categoriesById = categoryUis.associateBy { it.id }
         return map { item ->
@@ -101,7 +131,7 @@ class ItemsViewModel(private val items: ItemRepository, private val categories: 
                 limitedByOpening = effectiveExpiryDate(item) < item.expiresAt,
                 category = item.categoryId?.let { categoriesById[it] }
             )
-        }.sortedBy { it.daysLeft }
+        }
     }
 
     private fun List<ItemUi>.toGroups(): List<ItemsGroup> = groupBy { it.urgency.toSection() }
@@ -123,3 +153,9 @@ class ItemsViewModel(private val items: ItemRepository, private val categories: 
         }
     }
 }
+
+private data class ItemsFilter(
+    val categoryId: String? = null,
+    val sort: ItemsSort = ItemsSort.EXPIRY,
+    val opened: OpenedFilter = OpenedFilter.ALL
+)
