@@ -120,6 +120,8 @@
   <string name="notification_channel">Expiry dates</string>
   <string name="notification_today">%1$s — today</string>
   <string name="notification_tomorrow">%1$s — tomorrow</string>
+  <string name="notification_expires_today">Expires today</string>
+  <string name="notification_expires_tomorrow">Expires tomorrow</string>
 
   <plurals name="notification_title">
     <item quantity="one">%d item expires soon</item>
@@ -129,5 +131,10 @@
   <plurals name="notification_in_days">
     <item quantity="one">%1$s — in %2$d day</item>
     <item quantity="other">%1$s — in %2$d days</item>
+  </plurals>
+
+  <plurals name="notification_expires_in">
+    <item quantity="one">Expires in %d day</item>
+    <item quantity="other">Expires in %d days</item>
   </plurals>
 </resources>

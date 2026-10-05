@@ -22,9 +22,7 @@ class ExpiryWorker(context: Context, params: WorkerParameters) : CoroutineWorker
         val database = DatabaseProvider.get(applicationContext)
         val today = LocalDate.now()
         val items = itemsToRemind(ItemRepository(database.itemDao()).observeAll().first(), today)
-        if (items.isNotEmpty()) {
-            ExpiryNotification.show(applicationContext, items, today)
-        }
+        ExpiryNotification.show(applicationContext, items, today)
         return Result.success()
     }
 

@@ -19,6 +19,7 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navDeepLink
 import androidx.navigation.toRoute
 import kotlinx.serialization.Serializable
 import ru.pikahk.outdateapp.notifications.NotificationPermissionRequest
@@ -29,6 +30,8 @@ import ru.pikahk.outdateapp.ui.items.ItemsScreen
 import ru.pikahk.outdateapp.ui.items.ItemsViewModel
 
 private const val TRANSITION_MILLIS = 250
+
+const val ITEM_DEEP_LINK = "outdate://item"
 
 @Serializable
 private object ItemsRoute
@@ -96,7 +99,9 @@ fun OutDateApp() {
                     onCancel = dropUnlessResumed { navController.popBackStack() }
                 )
             }
-            composable<ItemDetailsRoute> { entry ->
+            composable<ItemDetailsRoute>(
+                deepLinks = listOf(navDeepLink<ItemDetailsRoute>(basePath = ITEM_DEEP_LINK))
+            ) { entry ->
                 val route = entry.toRoute<ItemDetailsRoute>()
                 val detailsViewModel: ItemDetailsViewModel =
                     viewModel(factory = ItemDetailsViewModel.factory(context, route.id))
