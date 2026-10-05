@@ -21,6 +21,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import kotlinx.serialization.Serializable
+import ru.pikahk.outdateapp.notifications.NotificationPermissionRequest
 import ru.pikahk.outdateapp.ui.add.AddItemScreen
 import ru.pikahk.outdateapp.ui.details.ItemDetailsScreen
 import ru.pikahk.outdateapp.ui.details.ItemDetailsViewModel
@@ -42,7 +43,10 @@ private data class ItemDetailsRoute(val id: String)
 fun OutDateApp() {
     val context = LocalContext.current
     val itemsViewModel: ItemsViewModel = viewModel(factory = ItemsViewModel.factory(context))
+    val itemsState by itemsViewModel.state.collectAsStateWithLifecycle()
     val navController = rememberNavController()
+
+    NotificationPermissionRequest(shouldAsk = itemsState.hasItems)
 
     Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
         NavHost(
@@ -79,7 +83,6 @@ fun OutDateApp() {
                 )
             }
             composable<AddItemRoute> { entry ->
-                val itemsState by itemsViewModel.state.collectAsStateWithLifecycle()
                 AddItemScreen(
                     categories = itemsState.categories,
                     initialCategoryId = itemsState.selectedCategoryId,

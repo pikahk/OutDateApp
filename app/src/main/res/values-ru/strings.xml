@@ -113,4 +113,22 @@
     <item quantity="many">дней назад</item>
     <item quantity="other">дня назад</item>
   </plurals>
+
+  <string name="notification_channel">Сроки годности</string>
+  <string name="notification_today">%1$s — сегодня</string>
+  <string name="notification_tomorrow">%1$s — завтра</string>
+
+  <plurals name="notification_title">
+    <item quantity="one">Скоро истекает %d продукт</item>
+    <item quantity="few">Скоро истекают %d продукта</item>
+    <item quantity="many">Скоро истекают %d продуктов</item>
+    <item quantity="other">Скоро истекают %d продукта</item>
+  </plurals>
+
+  <plurals name="notification_in_days">
+    <item quantity="one">%1$s — через %2$d день</item>
+    <item quantity="few">%1$s — через %2$d дня</item>
+    <item quantity="many">%1$s — через %2$d дней</item>
+    <item quantity="other">%1$s — через %2$d дня</item>
+  </plurals>
 </resources>

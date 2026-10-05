@@ -106,4 +106,18 @@
     <item quantity="one">day ago</item>
     <item quantity="other">days ago</item>
   </plurals>
+
+  <string name="notification_channel">Expiry dates</string>
+  <string name="notification_today">%1$s — today</string>
+  <string name="notification_tomorrow">%1$s — tomorrow</string>
+
+  <plurals name="notification_title">
+    <item quantity="one">%d item expires soon</item>
+    <item quantity="other">%d items expire soon</item>
+  </plurals>
+
+  <plurals name="notification_in_days">
+    <item quantity="one">%1$s — in %2$d day</item>
+    <item quantity="other">%1$s — in %2$d days</item>
+  </plurals>
 </resources>
