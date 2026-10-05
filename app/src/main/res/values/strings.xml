@@ -60,6 +60,11 @@
   <string name="hint_after_opening">Optional</string>
   <string name="field_opened">Opening date</string>
   <string name="already_opened">Already opened</string>
+  <string name="field_reminder">Reminder</string>
+  <string name="reminder_off">Off</string>
+  <string name="reminder_1">1 day</string>
+  <string name="reminder_3">3 days</string>
+  <string name="reminder_7">1 week</string>
   <string name="summary_expires">Good until %1$s</string>
   <string name="summary_expires_opening">Good until %1$s (after opening)</string>
   <string name="summary_expired">Expired %1$s</string>
@@ -76,6 +81,7 @@
   <string name="details_not_set">Not set</string>
   <string name="details_opened">Opened</string>
   <string name="details_not_opened">No</string>
+  <string name="details_reminder">Reminder</string>
   <string name="details_until">until %1$s</string>
   <string name="details_was_due">expired %1$s</string>
   <string name="details_open_hint">After opening: good until %1$s</string>

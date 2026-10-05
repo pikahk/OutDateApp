@@ -51,6 +51,12 @@ class ReminderTest {
     }
 
     @Test
+    fun `не напоминает, если напоминание выключено`() {
+        val items = listOf(item("Выключено", "2026-10-05", notifyDaysBefore = REMINDER_OFF))
+        assertEquals(emptyList<String>(), names(items))
+    }
+
+    @Test
     fun `не напоминает об удалённом`() {
         assertEquals(emptyList<String>(), names(listOf(item("Удалён", "2026-10-06", isDeleted = true))))
     }

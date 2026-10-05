@@ -212,7 +212,8 @@ private fun ItemDetailsContentPreview() {
                 urgency = Urgency.SOON,
                 limitedByOpening = false,
                 expiresIfOpenedToday = LocalDate.of(2026, 9, 28),
-                createdAt = LocalDate.of(2026, 9, 20)
+                createdAt = LocalDate.of(2026, 9, 20),
+                notifyDaysBefore = 3
             )
         )
     }

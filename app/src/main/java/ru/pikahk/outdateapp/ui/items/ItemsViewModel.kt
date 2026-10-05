@@ -104,7 +104,8 @@ class ItemsViewModel(private val items: ItemRepository, private val categories: 
                     barcode = null,
                     expiresAt = draft.expiresAt,
                     daysAfterOpening = draft.daysAfterOpening,
-                    openedAt = draft.openedAt
+                    openedAt = draft.openedAt,
+                    notifyDaysBefore = draft.notifyDaysBefore
                 )
             )
         }

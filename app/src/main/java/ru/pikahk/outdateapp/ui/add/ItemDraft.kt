@@ -7,5 +7,6 @@ data class ItemDraft(
     val categoryId: String?,
     val expiresAt: LocalDate,
     val daysAfterOpening: Int?,
-    val openedAt: LocalDate?
+    val openedAt: LocalDate?,
+    val notifyDaysBefore: Int
 )

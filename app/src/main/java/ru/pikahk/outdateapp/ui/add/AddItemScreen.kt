@@ -26,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -53,6 +54,7 @@ import ru.pikahk.outdateapp.domain.urgency
 import ru.pikahk.outdateapp.ui.CategoryUi
 import ru.pikahk.outdateapp.ui.color
 import ru.pikahk.outdateapp.ui.containerColor
+import ru.pikahk.outdateapp.ui.reminderOptions
 import ru.pikahk.outdateapp.ui.theme.OutDateAppTheme
 
 private enum class InputMode { EXPIRY_DATE, PRODUCTION }
@@ -91,6 +93,7 @@ fun AddItemScreen(
     var openedUnit by rememberSaveable { mutableStateOf(ShelfLifeUnit.DAYS) }
     var alreadyOpened by rememberSaveable { mutableStateOf(false) }
     var openedText by rememberSaveable { mutableStateOf("") }
+    var notifyDaysBefore by rememberSaveable { mutableIntStateOf(3) }
 
     val expiresAt = when (mode) {
         InputMode.EXPIRY_DATE -> parseExpiryDate(expiryText)
@@ -146,7 +149,8 @@ fun AddItemScreen(
                                         categoryId = categoryId,
                                         expiresAt = expiresAt,
                                         daysAfterOpening = daysAfterOpening,
-                                        openedAt = openedAt
+                                        openedAt = openedAt,
+                                        notifyDaysBefore = notifyDaysBefore
                                     )
                                 )
                             }
@@ -248,6 +252,11 @@ fun AddItemScreen(
                     hint = stringResource(R.string.hint_date_format),
                     parse = ::parseDate
                 )
+            }
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+
+            LabeledField(label = stringResource(R.string.field_reminder)) {
+                Segmented(options = reminderOptions, selected = notifyDaysBefore, onSelect = { notifyDaysBefore = it })
             }
         }
     }

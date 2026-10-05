@@ -69,7 +69,8 @@ class ItemDetailsViewModel(
             urgency = urgency(left),
             limitedByOpening = effective < expiresAt,
             expiresIfOpenedToday = daysAfterOpening?.let { effectiveExpiryDate(copy(openedAt = today)) },
-            createdAt = Instant.ofEpochMilli(createdAt).atZone(ZoneId.systemDefault()).toLocalDate()
+            createdAt = Instant.ofEpochMilli(createdAt).atZone(ZoneId.systemDefault()).toLocalDate(),
+            notifyDaysBefore = notifyDaysBefore
         )
     }
 
