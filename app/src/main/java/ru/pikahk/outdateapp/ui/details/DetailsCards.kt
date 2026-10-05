@@ -134,6 +134,7 @@ internal fun DetailRows(item: ItemDetailsUi, longDate: DateTimeFormatter, shortD
             label = stringResource(R.string.details_opened),
             value = item.openedAt?.format(shortDate) ?: stringResource(R.string.details_not_opened)
         )
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
         DetailRow(
             label = stringResource(R.string.details_reminder),
             value = reminderLabel(item.notifyDaysBefore)

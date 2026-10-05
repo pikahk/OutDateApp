@@ -9,10 +9,11 @@
   <string name="items_title">Мои сроки</string>
   <string name="add_item">Добавить</string>
   <string name="items_empty">Нет продуктов</string>
-  
+
   <string name="search">Поиск</string>
   <string name="search_clear">Очистить</string>
   <string name="search_empty">Ничего не найдено</string>
+  <string name="reset_filters">Сбросить фильтры</string>
   <string name="list_options">Сортировка и фильтр</string>
   <string name="sort_title">Сортировка</string>
   <string name="sort_expiry">По сроку</string>
@@ -22,7 +23,6 @@
   <string name="show_all">Все</string>
   <string name="show_opened">Вскрытые</string>
   <string name="show_sealed">Не вскрытые</string>
-  
 
   <string name="category_food">Еда</string>
   <string name="category_medicine">Лекарства</string>
@@ -79,8 +79,8 @@
   <string name="details_after_opening">После вскрытия</string>
   <string name="details_not_set">Не указан</string>
   <string name="details_opened">Вскрыто</string>
-  <string name="details_reminder">Напоминание</string>
   <string name="details_not_opened">Нет</string>
+  <string name="details_reminder">Напоминание</string>
   <string name="details_until">до %1$s</string>
   <string name="details_was_due">истёк %1$s</string>
   <string name="details_open_hint">После вскрытия годен до %1$s</string>

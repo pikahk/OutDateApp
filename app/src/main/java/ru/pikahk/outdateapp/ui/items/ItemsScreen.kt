@@ -1,7 +1,6 @@
 package ru.pikahk.outdateapp.ui.items
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -21,6 +20,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -50,8 +50,8 @@ fun ItemsScreen(viewModel: ItemsViewModel, onAddClick: () -> Unit, onItemClick: 
         onCategorySelect = viewModel::selectCategory,
         onCategoryDelete = viewModel::deleteCategory,
         onSortSelect = viewModel::selectSort,
-        onOpenedSelect = viewModel::selectOpened
-
+        onOpenedSelect = viewModel::selectOpened,
+        onResetFilters = viewModel::resetFilters
     )
 }
 
@@ -64,7 +64,8 @@ private fun ItemsScreen(
     onCategorySelect: (String?) -> Unit,
     onCategoryDelete: (String) -> Unit,
     onSortSelect: (ItemsSort) -> Unit,
-    onOpenedSelect: (OpenedFilter) -> Unit
+    onOpenedSelect: (OpenedFilter) -> Unit,
+    onResetFilters: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -110,14 +111,20 @@ private fun ItemsScreen(
                         state.isSearching || state.opened != OpenedFilter.ALL -> R.string.search_empty
                         else -> R.string.items_empty_category
                     }
-                    Box(
+                    Column(
                         modifier = Modifier.fillMaxWidth().weight(1f),
-                        contentAlignment = Alignment.Center
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
                             text = stringResource(message),
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
+                        if (state.hasItems) {
+                            TextButton(onClick = onResetFilters) {
+                                Text(stringResource(R.string.reset_filters))
+                            }
+                        }
                     }
                 } else {
                     LazyColumn(
@@ -203,7 +210,8 @@ private fun ItemsScreenPreview() {
             onCategorySelect = {},
             onCategoryDelete = {},
             onSortSelect = {},
-            onOpenedSelect = {}
+            onOpenedSelect = {},
+            onResetFilters = {}
         )
     }
 }

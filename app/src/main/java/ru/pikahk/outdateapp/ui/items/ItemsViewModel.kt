@@ -2,6 +2,7 @@ package ru.pikahk.outdateapp.ui.items
 
 import android.content.Context
 import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.clearText
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -83,6 +84,11 @@ class ItemsViewModel(private val items: ItemRepository, private val categories: 
 
     fun selectOpened(opened: OpenedFilter) {
         filter.update { it.copy(opened = opened) }
+    }
+
+    fun resetFilters() {
+        query.clearText()
+        filter.update { it.copy(categoryId = null, opened = OpenedFilter.ALL) }
     }
 
     fun createCategory(name: String): String {

@@ -11,10 +11,11 @@
   <string name="items_title">Expiry dates</string>
   <string name="add_item">Add</string>
   <string name="items_empty">No items</string>
-  
+
   <string name="search">Search</string>
   <string name="search_clear">Clear</string>
   <string name="search_empty">Nothing found</string>
+  <string name="reset_filters">Reset filters</string>
   <string name="list_options">Sort and filter</string>
   <string name="sort_title">Sort</string>
   <string name="sort_expiry">By expiry date</string>
