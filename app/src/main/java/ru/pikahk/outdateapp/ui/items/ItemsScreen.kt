@@ -48,8 +48,10 @@ fun ItemsScreen(viewModel: ItemsViewModel, onAddClick: () -> Unit, onItemClick: 
         onAddClick = onAddClick,
         onItemClick = onItemClick,
         onCategorySelect = viewModel::selectCategory,
+        onCategoryDelete = viewModel::deleteCategory,
         onSortSelect = viewModel::selectSort,
         onOpenedSelect = viewModel::selectOpened
+
     )
 }
 
@@ -60,6 +62,7 @@ private fun ItemsScreen(
     onAddClick: () -> Unit,
     onItemClick: (String) -> Unit,
     onCategorySelect: (String?) -> Unit,
+    onCategoryDelete: (String) -> Unit,
     onSortSelect: (ItemsSort) -> Unit,
     onOpenedSelect: (OpenedFilter) -> Unit
 ) {
@@ -98,7 +101,8 @@ private fun ItemsScreen(
                 CategoryFilter(
                     categories = state.categories,
                     selectedId = state.selectedCategoryId,
-                    onSelect = onCategorySelect
+                    onSelect = onCategorySelect,
+                    onDelete = onCategoryDelete
                 )
                 if (state.groups.isEmpty()) {
                     val message = when {
@@ -197,6 +201,7 @@ private fun ItemsScreenPreview() {
             onAddClick = {},
             onItemClick = {},
             onCategorySelect = {},
+            onCategoryDelete = {},
             onSortSelect = {},
             onOpenedSelect = {}
         )

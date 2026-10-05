@@ -33,6 +33,8 @@
   <string name="category_create">Create category</string>
   <string name="category_new_title">New category</string>
   <string name="category_name_hint">Name</string>
+  <string name="category_delete_title">Delete category “%1$s”?</string>
+  <string name="category_delete_message">Items from it will stay without a category.</string>
 
   <string name="section_expired">Expired</string>
   <string name="section_soon">Soon</string>

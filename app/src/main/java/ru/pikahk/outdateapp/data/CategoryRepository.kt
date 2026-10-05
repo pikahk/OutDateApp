@@ -14,6 +14,11 @@ class CategoryRepository(private val dao: CategoryDao) {
         dao.upsert(category.copy(updatedAt = System.currentTimeMillis(), isPendingSync = true))
     }
 
+    suspend fun delete(id: String) {
+        if (DefaultCategory.of(id) != null) return
+        dao.delete(id, System.currentTimeMillis())
+    }
+
     suspend fun addDefaults() {
         val defaults = DefaultCategory.entries.map {
             Category(id = it.id, name = it.id, isDefault = true, isPendingSync = false)

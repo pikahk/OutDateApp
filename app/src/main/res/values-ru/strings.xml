@@ -32,6 +32,8 @@
   <string name="category_create">Создать категорию</string>
   <string name="category_new_title">Новая категория</string>
   <string name="category_name_hint">Название</string>
+  <string name="category_delete_title">Удалить категорию «%1$s»?</string>
+  <string name="category_delete_message">Продукты из неё останутся без категории.</string>
 
   <string name="section_expired">Просрочено</string>
   <string name="section_soon">Скоро</string>

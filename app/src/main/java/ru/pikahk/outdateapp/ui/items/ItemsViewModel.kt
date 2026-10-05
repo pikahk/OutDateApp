@@ -91,6 +91,10 @@ class ItemsViewModel(private val items: ItemRepository, private val categories: 
         return category.id
     }
 
+    fun deleteCategory(id: String) {
+        viewModelScope.launch { categories.delete(id) }
+    }
+
     fun addItem(draft: ItemDraft) {
         viewModelScope.launch {
             items.save(
