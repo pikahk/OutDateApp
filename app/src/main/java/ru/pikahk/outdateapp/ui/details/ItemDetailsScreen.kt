@@ -52,6 +52,7 @@ import ru.pikahk.outdateapp.ui.theme.OutDateAppTheme
 fun ItemDetailsScreen(viewModel: ItemDetailsViewModel, onBack: () -> Unit, onGone: () -> Unit) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     var confirmDelete by rememberSaveable { mutableStateOf(false) }
+    var askOpening by rememberSaveable { mutableStateOf(false) }
 
     if (state is ItemDetailsState.Gone) {
         LaunchedEffect(Unit) { onGone() }
@@ -85,7 +86,9 @@ fun ItemDetailsScreen(viewModel: ItemDetailsViewModel, onBack: () -> Unit, onGon
             if (current is ItemDetailsState.Loaded) {
                 DetailsActions(
                     item = current.item,
-                    onOpen = viewModel::markOpened,
+                    onOpen = {
+                        if (current.item.daysAfterOpening == null) askOpening = true else viewModel.markOpened(null)
+                    },
                     onUndoOpen = viewModel::markSealed
                 )
             }
@@ -94,6 +97,16 @@ fun ItemDetailsScreen(viewModel: ItemDetailsViewModel, onBack: () -> Unit, onGon
         if (current is ItemDetailsState.Loaded) {
             ItemDetailsContent(item = current.item, modifier = Modifier.padding(padding))
         }
+    }
+
+    if (askOpening) {
+        OpeningDialog(
+            onConfirm = { days ->
+                askOpening = false
+                viewModel.markOpened(days)
+            },
+            onDismiss = { askOpening = false }
+        )
     }
 
     if (confirmDelete) {

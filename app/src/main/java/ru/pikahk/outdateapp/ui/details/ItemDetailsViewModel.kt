@@ -43,8 +43,8 @@ class ItemDetailsViewModel(
             initialValue = ItemDetailsState.Loading
         )
 
-    fun markOpened() {
-        viewModelScope.launch { repository.setOpenedAt(itemId, LocalDate.now()) }
+    fun markOpened(daysAfterOpening: Int?) {
+        viewModelScope.launch { repository.open(itemId, LocalDate.now(), daysAfterOpening) }
     }
 
     fun markSealed() {

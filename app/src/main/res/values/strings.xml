@@ -89,6 +89,8 @@
 
   <string name="open_today">Open today</string>
   <string name="undo_open">Undo opening</string>
+  <string name="open">Open</string>
+  <string name="opening_no_limit">No limit</string>
 
   <string name="delete_title">Delete item?</string>
   <string name="delete_message">This can\'t be undone.</string>

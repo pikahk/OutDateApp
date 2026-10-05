@@ -13,6 +13,11 @@ class ItemRepository(private val dao: ItemDao) {
         dao.upsert(item.copy(updatedAt = System.currentTimeMillis(), isPendingSync = true))
     }
 
+    suspend fun open(id: String, date: LocalDate, daysAfterOpening: Int?) {
+        val item = dao.findById(id) ?: return
+        save(item.copy(openedAt = date, daysAfterOpening = daysAfterOpening ?: item.daysAfterOpening))
+    }
+
     suspend fun setOpenedAt(id: String, date: LocalDate?) {
         val item = dao.findById(id) ?: return
         save(item.copy(openedAt = date))

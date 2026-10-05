@@ -64,7 +64,7 @@ private val modeOptions = listOf(
     InputMode.PRODUCTION to R.string.mode_production
 )
 
-private val unitOptions = listOf(
+internal val unitOptions = listOf(
     ShelfLifeUnit.HOURS to R.string.unit_hours,
     ShelfLifeUnit.DAYS to R.string.unit_days,
     ShelfLifeUnit.MONTHS to R.string.unit_months,
