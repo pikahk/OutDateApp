@@ -77,11 +77,17 @@ internal fun DateField(
     onValueChange: (String) -> Unit,
     label: String,
     hint: String,
-    parse: (String) -> LocalDate?
+    parse: (String) -> LocalDate?,
+    missing: Boolean = false
 ) {
     var showPicker by rememberSaveable { mutableStateOf(false) }
     val date = parse(value)
     val showError = date == null && isYearTyped(value)
+    val supporting = when {
+        showError -> stringResource(R.string.error_no_such_date)
+        missing -> stringResource(R.string.field_required)
+        else -> hint
+    }
 
     LabeledField(label = label) {
         OutlinedTextField(
@@ -96,8 +102,8 @@ internal fun DateField(
                     )
                 }
             },
-            isError = showError,
-            supportingText = { Text(if (showError) stringResource(R.string.error_no_such_date) else hint) },
+            isError = showError || missing,
+            supportingText = { Text(supporting) },
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             shape = FieldShape,
@@ -142,13 +148,21 @@ private fun DatePickerModal(initial: LocalDate?, onPick: (LocalDate) -> Unit, on
 }
 
 @Composable
-internal fun AmountField(value: String, onValueChange: (String) -> Unit, label: String, hint: String? = null) {
+internal fun AmountField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    label: String,
+    hint: String? = null,
+    missing: Boolean = false
+) {
+    val supporting = if (missing) stringResource(R.string.field_required) else hint
     LabeledField(label = label) {
         OutlinedTextField(
             value = value,
             onValueChange = { onValueChange(it.filter(Char::isDigit).take(4)) },
-            supportingText = if (hint != null) {
-                { Text(hint) }
+            isError = missing,
+            supportingText = if (supporting != null) {
+                { Text(supporting) }
             } else {
                 null
             },

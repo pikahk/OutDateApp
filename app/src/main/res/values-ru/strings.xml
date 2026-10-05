@@ -68,6 +68,7 @@
   <string name="summary_expires_opening">Годен до %1$s (после вскрытия)</string>
   <string name="summary_expired">Истёк %1$s</string>
   <string name="error_no_such_date">Нет такой даты</string>
+  <string name="field_required">Обязательное поле</string>
   <string name="pick_date">Выбрать дату</string>
 
   <string name="unit_hours">часы</string>

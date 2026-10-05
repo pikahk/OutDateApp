@@ -70,6 +70,7 @@
   <string name="summary_expires_opening">Good until %1$s (after opening)</string>
   <string name="summary_expired">Expired %1$s</string>
   <string name="error_no_such_date">No such date</string>
+  <string name="field_required">Required</string>
   <string name="pick_date">Pick a date</string>
 
   <string name="unit_hours">hours</string>

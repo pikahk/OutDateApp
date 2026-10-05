@@ -1,7 +1,9 @@
 package ru.pikahk.outdateapp.ui.add
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -94,6 +96,7 @@ fun AddItemScreen(
     var alreadyOpened by rememberSaveable { mutableStateOf(false) }
     var openedText by rememberSaveable { mutableStateOf("") }
     var notifyDaysBefore by rememberSaveable { mutableIntStateOf(3) }
+    var showMissing by rememberSaveable { mutableStateOf(false) }
 
     val expiresAt = when (mode) {
         InputMode.EXPIRY_DATE -> parseExpiryDate(expiryText)
@@ -102,6 +105,7 @@ fun AddItemScreen(
     val daysAfterOpening = parseAmount(openedAmountText)?.let { shelfLifeInDays(it, openedUnit) }
     val openedAt = if (alreadyOpened) parseDate(openedText) else null
     val canSave = name.isNotBlank() && expiresAt != null && (!alreadyOpened || openedAt != null)
+    val nameMissing = showMissing && name.isBlank()
 
     Scaffold(
         modifier = modifier,
@@ -140,26 +144,35 @@ fun AddItemScreen(
                             today = today
                         )
                     }
-                    Button(
-                        onClick = {
-                            if (expiresAt != null) {
-                                onSave(
-                                    ItemDraft(
-                                        name = name.trim(),
-                                        categoryId = categoryId,
-                                        expiresAt = expiresAt,
-                                        daysAfterOpening = daysAfterOpening,
-                                        openedAt = openedAt,
-                                        notifyDaysBefore = notifyDaysBefore
+                    Box {
+                        Button(
+                            onClick = {
+                                if (expiresAt != null) {
+                                    onSave(
+                                        ItemDraft(
+                                            name = name.trim(),
+                                            categoryId = categoryId,
+                                            expiresAt = expiresAt,
+                                            daysAfterOpening = daysAfterOpening,
+                                            openedAt = openedAt,
+                                            notifyDaysBefore = notifyDaysBefore
+                                        )
                                     )
-                                )
-                            }
-                        },
-                        enabled = canSave,
-                        shape = RoundedCornerShape(13.dp),
-                        modifier = Modifier.fillMaxWidth().height(54.dp)
-                    ) {
-                        Text(stringResource(R.string.save), style = MaterialTheme.typography.titleMedium)
+                                }
+                            },
+                            enabled = canSave,
+                            shape = RoundedCornerShape(13.dp),
+                            modifier = Modifier.fillMaxWidth().height(54.dp)
+                        ) {
+                            Text(stringResource(R.string.save), style = MaterialTheme.typography.titleMedium)
+                        }
+                        if (!canSave) {
+                            Box(
+                                modifier = Modifier
+                                    .matchParentSize()
+                                    .clickable(interactionSource = null, indication = null) { showMissing = true }
+                            )
+                        }
                     }
                 }
             }
@@ -177,6 +190,12 @@ fun AddItemScreen(
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
+                    isError = nameMissing,
+                    supportingText = if (nameMissing) {
+                        { Text(stringResource(R.string.field_required)) }
+                    } else {
+                        null
+                    },
                     singleLine = true,
                     shape = FieldShape,
                     colors = fieldColors(),
@@ -199,7 +218,8 @@ fun AddItemScreen(
                     onValueChange = { expiryText = it },
                     label = stringResource(R.string.field_expires),
                     hint = stringResource(R.string.hint_expiry_format),
-                    parse = ::parseExpiryDate
+                    parse = ::parseExpiryDate,
+                    missing = showMissing && expiresAt == null
                 )
 
                 InputMode.PRODUCTION -> {
@@ -208,12 +228,14 @@ fun AddItemScreen(
                         onValueChange = { producedText = it },
                         label = stringResource(R.string.field_produced),
                         hint = stringResource(R.string.hint_date_format),
-                        parse = ::parseDate
+                        parse = ::parseDate,
+                        missing = showMissing && parseDate(producedText) == null
                     )
                     AmountField(
                         value = amountText,
                         onValueChange = { amountText = it },
-                        label = stringResource(R.string.field_shelf_life)
+                        label = stringResource(R.string.field_shelf_life),
+                        missing = showMissing && parseAmount(amountText) == null
                     )
                     Segmented(options = unitOptions, selected = unit, onSelect = { unit = it })
                 }
@@ -250,9 +272,11 @@ fun AddItemScreen(
                     onValueChange = { openedText = it },
                     label = stringResource(R.string.field_opened),
                     hint = stringResource(R.string.hint_date_format),
-                    parse = ::parseDate
+                    parse = ::parseDate,
+                    missing = showMissing && openedAt == null
                 )
             }
+
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 
             LabeledField(label = stringResource(R.string.field_reminder)) {
