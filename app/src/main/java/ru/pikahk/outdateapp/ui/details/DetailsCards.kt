@@ -30,6 +30,7 @@ import ru.pikahk.outdateapp.ui.color
 import ru.pikahk.outdateapp.ui.containerColor
 import ru.pikahk.outdateapp.ui.iconRes
 import ru.pikahk.outdateapp.ui.label
+import ru.pikahk.outdateapp.ui.reminderLabel
 
 @Composable
 internal fun CategoryTag(category: CategoryUi) {
@@ -132,6 +133,10 @@ internal fun DetailRows(item: ItemDetailsUi, longDate: DateTimeFormatter, shortD
         DetailRow(
             label = stringResource(R.string.details_opened),
             value = item.openedAt?.format(shortDate) ?: stringResource(R.string.details_not_opened)
+        )
+        DetailRow(
+            label = stringResource(R.string.details_reminder),
+            value = reminderLabel(item.notifyDaysBefore)
         )
         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
         DetailRow(
