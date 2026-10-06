@@ -119,6 +119,12 @@
   <string name="theme_dark">Тёмная</string>
   <string name="settings_language">Язык</string>
 
+  <string name="away_title">Пока вас не было</string>
+  <string name="away_expired">Истёк срок: %1$s</string>
+  <string name="away_and_more">%1$s и ещё %2$d</string>
+  <string name="away_ok">Понятно</string>
+  <string name="not_now">Не сейчас</string>
+
   <plurals name="days">
     <item quantity="one">%d день</item>
     <item quantity="few">%d дня</item>

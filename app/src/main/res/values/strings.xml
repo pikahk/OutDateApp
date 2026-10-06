@@ -121,6 +121,12 @@
   <string name="theme_dark">Dark</string>
   <string name="settings_language">Language</string>
 
+  <string name="away_title">While you were away</string>
+  <string name="away_expired">Expired: %1$s</string>
+  <string name="away_and_more">%1$s and %2$d more</string>
+  <string name="away_ok">Got it</string>
+  <string name="not_now">Not now</string>
+
   <plurals name="days">
     <item quantity="one">%d day</item>
     <item quantity="other">%d days</item>

@@ -30,6 +30,7 @@ import ru.pikahk.outdateapp.data.SettingsRepository
 import ru.pikahk.outdateapp.domain.Urgency
 import ru.pikahk.outdateapp.domain.daysLeft
 import ru.pikahk.outdateapp.domain.effectiveExpiryDate
+import ru.pikahk.outdateapp.domain.expiredWhileAway
 import ru.pikahk.outdateapp.domain.urgency
 import ru.pikahk.outdateapp.ui.CategoryUi
 import ru.pikahk.outdateapp.ui.add.ItemDraft
@@ -44,6 +45,8 @@ class ItemsViewModel(
     val query = TextFieldState()
 
     private val filter = MutableStateFlow<ItemsFilter?>(null)
+
+    private val lastOpened = MutableStateFlow<LocalDate?>(null)
 
     private val collator = Collator.getInstance()
 
@@ -81,8 +84,18 @@ class ItemsViewModel(
             initialValue = ItemsUiState()
         )
 
+    val missedExpiries: StateFlow<List<String>> =
+        combine(items.observeAll(), lastOpened) { itemList, since ->
+            if (since == null) emptyList() else expiredWhileAway(itemList, since, LocalDate.now()).map { it.name }
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = emptyList()
+        )
+
     init {
         viewModelScope.launch { categories.addDefaults() }
+        viewModelScope.launch { lastOpened.value = settings.markOpened(LocalDate.now()) }
         viewModelScope.launch {
             filter.value = settings.listPreferences.first().toFilter()
             filter.filterNotNull().drop(1).collect { settings.saveListPreferences(it.toPreferences()) }
@@ -104,6 +117,10 @@ class ItemsViewModel(
     fun resetFilters() {
         query.clearText()
         filter.update { it?.copy(categoryId = null, opened = OpenedFilter.ALL) }
+    }
+
+    fun dismissMissedExpiries() {
+        lastOpened.value = null
     }
 
     fun createCategory(name: String): String {

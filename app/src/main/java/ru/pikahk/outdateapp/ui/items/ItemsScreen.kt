@@ -23,18 +23,27 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import java.time.LocalDate
 import ru.pikahk.outdateapp.R
 import ru.pikahk.outdateapp.data.DefaultCategory
 import ru.pikahk.outdateapp.domain.Urgency
+import ru.pikahk.outdateapp.notifications.areNotificationsEnabled
+import ru.pikahk.outdateapp.notifications.openNotificationSettings
 import ru.pikahk.outdateapp.ui.CategoryUi
 import ru.pikahk.outdateapp.ui.color
 import ru.pikahk.outdateapp.ui.theme.OutDateAppTheme
@@ -47,9 +56,23 @@ fun ItemsScreen(
     onProfileClick: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val missedExpiries by viewModel.missedExpiries.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    var notificationsEnabled by remember { mutableStateOf(areNotificationsEnabled(context)) }
+    var notificationsBannerHidden by rememberSaveable { mutableStateOf(false) }
+
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+        notificationsEnabled = areNotificationsEnabled(context)
+    }
+
     ItemsScreen(
         state = state,
         query = viewModel.query,
+        missedExpiries = missedExpiries,
+        showNotificationsOff = state.hasItems && !notificationsEnabled && !notificationsBannerHidden,
+        onDismissMissed = viewModel::dismissMissedExpiries,
+        onEnableNotifications = { openNotificationSettings(context) },
+        onDismissNotifications = { notificationsBannerHidden = true },
         onAddClick = onAddClick,
         onItemClick = onItemClick,
         onProfileClick = onProfileClick,
@@ -65,6 +88,11 @@ fun ItemsScreen(
 private fun ItemsScreen(
     state: ItemsUiState,
     query: TextFieldState,
+    missedExpiries: List<String>,
+    showNotificationsOff: Boolean,
+    onDismissMissed: () -> Unit,
+    onEnableNotifications: () -> Unit,
+    onDismissNotifications: () -> Unit,
     onAddClick: () -> Unit,
     onItemClick: (String) -> Unit,
     onProfileClick: () -> Unit,
@@ -74,6 +102,16 @@ private fun ItemsScreen(
     onOpenedSelect: (OpenedFilter) -> Unit,
     onResetFilters: () -> Unit
 ) {
+    val banners: @Composable () -> Unit = {
+        ItemsBanners(
+            missedExpiries = missedExpiries,
+            showNotificationsOff = showNotificationsOff,
+            onDismissMissed = onDismissMissed,
+            onEnableNotifications = onEnableNotifications,
+            onDismissNotifications = onDismissNotifications
+        )
+    }
+
     Scaffold(
         topBar = {
             ItemsTopBar(
@@ -114,6 +152,7 @@ private fun ItemsScreen(
                     onDelete = onCategoryDelete
                 )
                 if (state.groups.isEmpty()) {
+                    banners()
                     val message = when {
                         !state.hasItems -> R.string.items_empty
                         state.isSearching || state.opened != OpenedFilter.ALL -> R.string.search_empty
@@ -139,6 +178,7 @@ private fun ItemsScreen(
                         modifier = Modifier.fillMaxWidth().weight(1f),
                         contentPadding = PaddingValues(bottom = 88.dp)
                     ) {
+                        item(key = "banners") { banners() }
                         state.groups.forEach { group ->
                             item(key = "section_${group.section.name}") {
                                 SectionHeader(group.section)
@@ -213,6 +253,11 @@ private fun ItemsScreenPreview() {
                 )
             ),
             query = rememberTextFieldState(),
+            missedExpiries = listOf("Кефир", "Сметана"),
+            showNotificationsOff = true,
+            onDismissMissed = {},
+            onEnableNotifications = {},
+            onDismissNotifications = {},
             onAddClick = {},
             onItemClick = {},
             onProfileClick = {},

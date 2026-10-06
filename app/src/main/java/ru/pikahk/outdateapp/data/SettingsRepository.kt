@@ -6,8 +6,10 @@ import androidx.datastore.preferences.core.MutablePreferences
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import java.time.LocalDate
 import java.time.LocalTime
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -65,6 +67,15 @@ class SettingsRepository(context: Context) {
         }
     }
 
+    suspend fun markOpened(today: LocalDate): LocalDate? {
+        var previous: LocalDate? = null
+        store.edit { prefs ->
+            previous = prefs[LAST_OPENED_DAY]?.let(LocalDate::ofEpochDay)
+            prefs[LAST_OPENED_DAY] = today.toEpochDay()
+        }
+        return previous
+    }
+
     private fun MutablePreferences.put(key: Preferences.Key<String>, value: String?) {
         if (value == null) remove(key) else this[key] = value
     }
@@ -77,5 +88,6 @@ class SettingsRepository(context: Context) {
         val LIST_CATEGORY = stringPreferencesKey("list_category")
         val LIST_SORT = stringPreferencesKey("list_sort")
         val LIST_OPENED = stringPreferencesKey("list_opened")
+        val LAST_OPENED_DAY = longPreferencesKey("last_opened_day")
     }
 }
