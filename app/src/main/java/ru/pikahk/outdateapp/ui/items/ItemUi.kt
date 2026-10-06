@@ -1,6 +1,7 @@
 package ru.pikahk.outdateapp.ui.items
 
 import java.time.LocalDate
+import ru.pikahk.outdateapp.domain.DEFAULT_REMINDER_DAYS
 import ru.pikahk.outdateapp.domain.Urgency
 import ru.pikahk.outdateapp.ui.CategoryUi
 
@@ -30,5 +31,6 @@ data class ItemsUiState(
     val opened: OpenedFilter = OpenedFilter.ALL,
     val isSearching: Boolean = false,
     val groups: List<ItemsGroup> = emptyList(),
-    val hasItems: Boolean = false
+    val hasItems: Boolean = false,
+    val defaultNotifyDaysBefore: Int = DEFAULT_REMINDER_DAYS
 )

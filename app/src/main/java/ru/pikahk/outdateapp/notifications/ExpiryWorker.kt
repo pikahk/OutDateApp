@@ -14,6 +14,7 @@ import java.time.LocalTime
 import kotlinx.coroutines.flow.first
 import ru.pikahk.outdateapp.data.DatabaseProvider
 import ru.pikahk.outdateapp.data.ItemRepository
+import ru.pikahk.outdateapp.data.SettingsRepository
 import ru.pikahk.outdateapp.domain.itemsToRemind
 
 class ExpiryWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
@@ -28,18 +29,25 @@ class ExpiryWorker(context: Context, params: WorkerParameters) : CoroutineWorker
 
     companion object {
         private const val WORK_NAME = "expiry_reminders"
-        private val REMIND_AT: LocalTime = LocalTime.of(9, 0)
 
-        fun schedule(context: Context) {
-            val request = PeriodicWorkRequestBuilder<ExpiryWorker>(Duration.ofDays(1))
-                .setInitialDelay(delayUntil(REMIND_AT))
-                .build()
-            WorkManager.getInstance(context)
-                .enqueueUniquePeriodicWork(WORK_NAME, ExistingPeriodicWorkPolicy.KEEP, request)
+        suspend fun schedule(context: Context) {
+            val time = SettingsRepository(context).settings.first().reminderTime
+            enqueue(context, time, ExistingPeriodicWorkPolicy.KEEP)
+        }
+
+        fun reschedule(context: Context, time: LocalTime) {
+            enqueue(context, time, ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE)
         }
 
         fun runNow(context: Context) {
             WorkManager.getInstance(context).enqueue(OneTimeWorkRequestBuilder<ExpiryWorker>().build())
+        }
+
+        private fun enqueue(context: Context, time: LocalTime, policy: ExistingPeriodicWorkPolicy) {
+            val request = PeriodicWorkRequestBuilder<ExpiryWorker>(Duration.ofDays(1))
+                .setInitialDelay(delayUntil(time))
+                .build()
+            WorkManager.getInstance(context).enqueueUniquePeriodicWork(WORK_NAME, policy, request)
         }
 
         private fun delayUntil(time: LocalTime): Duration {

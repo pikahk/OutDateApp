@@ -45,6 +45,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import ru.pikahk.outdateapp.R
+import ru.pikahk.outdateapp.domain.DEFAULT_REMINDER_DAYS
 import ru.pikahk.outdateapp.domain.ShelfLifeUnit
 import ru.pikahk.outdateapp.domain.effectiveExpiryDate
 import ru.pikahk.outdateapp.domain.expiryFromProduction
@@ -78,6 +79,7 @@ internal val unitOptions = listOf(
 fun AddItemScreen(
     categories: List<CategoryUi>,
     initialCategoryId: String?,
+    defaultNotifyDaysBefore: Int,
     onCreateCategory: (String) -> String,
     onSave: (ItemDraft) -> Unit,
     onCancel: () -> Unit,
@@ -95,7 +97,7 @@ fun AddItemScreen(
     var openedUnit by rememberSaveable { mutableStateOf(ShelfLifeUnit.DAYS) }
     var alreadyOpened by rememberSaveable { mutableStateOf(false) }
     var openedText by rememberSaveable { mutableStateOf("") }
-    var notifyDaysBefore by rememberSaveable { mutableIntStateOf(3) }
+    var notifyDaysBefore by rememberSaveable { mutableIntStateOf(defaultNotifyDaysBefore) }
     var showMissing by rememberSaveable { mutableStateOf(false) }
 
     val expiresAt = when (mode) {
@@ -324,6 +326,7 @@ private fun AddItemScreenPreview() {
         AddItemScreen(
             categories = emptyList(),
             initialCategoryId = null,
+            defaultNotifyDaysBefore = DEFAULT_REMINDER_DAYS,
             onCreateCategory = { "" },
             onSave = {},
             onCancel = {}

@@ -1,7 +1,6 @@
 package ru.pikahk.outdateapp.ui.add
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -48,6 +47,7 @@ import java.time.ZoneOffset
 import ru.pikahk.outdateapp.R
 import ru.pikahk.outdateapp.domain.formatDate
 import ru.pikahk.outdateapp.domain.formatDateDigits
+import ru.pikahk.outdateapp.ui.theme.isAppInDarkTheme
 
 @Composable
 internal fun LabeledField(label: String, content: @Composable () -> Unit) {
@@ -178,7 +178,7 @@ internal fun AmountField(
 @Composable
 internal fun <T> Segmented(options: List<Pair<T, Int>>, selected: T, onSelect: (T) -> Unit) {
     val selectedText = MaterialTheme.colorScheme.primary
-    val selectedBackground = if (isSystemInDarkTheme()) {
+    val selectedBackground = if (isAppInDarkTheme()) {
         MaterialTheme.colorScheme.surfaceContainerHighest
     } else {
         MaterialTheme.colorScheme.surface

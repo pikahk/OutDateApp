@@ -14,6 +14,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -22,6 +25,8 @@ import ru.pikahk.outdateapp.data.CategoryRepository
 import ru.pikahk.outdateapp.data.DatabaseProvider
 import ru.pikahk.outdateapp.data.Item
 import ru.pikahk.outdateapp.data.ItemRepository
+import ru.pikahk.outdateapp.data.ListPreferences
+import ru.pikahk.outdateapp.data.SettingsRepository
 import ru.pikahk.outdateapp.domain.Urgency
 import ru.pikahk.outdateapp.domain.daysLeft
 import ru.pikahk.outdateapp.domain.effectiveExpiryDate
@@ -30,11 +35,15 @@ import ru.pikahk.outdateapp.ui.CategoryUi
 import ru.pikahk.outdateapp.ui.add.ItemDraft
 import ru.pikahk.outdateapp.ui.toUi
 
-class ItemsViewModel(private val items: ItemRepository, private val categories: CategoryRepository) : ViewModel() {
+class ItemsViewModel(
+    private val items: ItemRepository,
+    private val categories: CategoryRepository,
+    private val settings: SettingsRepository
+) : ViewModel() {
 
     val query = TextFieldState()
 
-    private val filter = MutableStateFlow(ItemsFilter())
+    private val filter = MutableStateFlow<ItemsFilter?>(null)
 
     private val collator = Collator.getInstance()
 
@@ -42,9 +51,10 @@ class ItemsViewModel(private val items: ItemRepository, private val categories: 
         combine(
             items.observeAll(),
             categories.observeAll(),
-            filter,
-            snapshotFlow { query.text.toString().trim() }
-        ) { itemList, categoryList, current, search ->
+            filter.filterNotNull(),
+            snapshotFlow { query.text.toString().trim() },
+            settings.settings
+        ) { itemList, categoryList, current, search, appSettings ->
             val categoryUis = categoryList.map { it.toUi() }
             val selected = current.categoryId?.takeIf { id -> categoryUis.any { it.id == id } }
             val visible = itemList
@@ -62,7 +72,8 @@ class ItemsViewModel(private val items: ItemRepository, private val categories: 
                 opened = current.opened,
                 isSearching = search.isNotEmpty(),
                 groups = visible.toUiModels(LocalDate.now(), categoryUis).toGroups(),
-                hasItems = itemList.isNotEmpty()
+                hasItems = itemList.isNotEmpty(),
+                defaultNotifyDaysBefore = appSettings.defaultNotifyDaysBefore
             )
         }.stateIn(
             scope = viewModelScope,
@@ -72,23 +83,27 @@ class ItemsViewModel(private val items: ItemRepository, private val categories: 
 
     init {
         viewModelScope.launch { categories.addDefaults() }
+        viewModelScope.launch {
+            filter.value = settings.listPreferences.first().toFilter()
+            filter.filterNotNull().drop(1).collect { settings.saveListPreferences(it.toPreferences()) }
+        }
     }
 
     fun selectCategory(id: String?) {
-        filter.update { it.copy(categoryId = id) }
+        filter.update { it?.copy(categoryId = id) }
     }
 
     fun selectSort(sort: ItemsSort) {
-        filter.update { it.copy(sort = sort) }
+        filter.update { it?.copy(sort = sort) }
     }
 
     fun selectOpened(opened: OpenedFilter) {
-        filter.update { it.copy(opened = opened) }
+        filter.update { it?.copy(opened = opened) }
     }
 
     fun resetFilters() {
         query.clearText()
-        filter.update { it.copy(categoryId = null, opened = OpenedFilter.ALL) }
+        filter.update { it?.copy(categoryId = null, opened = OpenedFilter.ALL) }
     }
 
     fun createCategory(name: String): String {
@@ -159,7 +174,11 @@ class ItemsViewModel(private val items: ItemRepository, private val categories: 
         fun factory(context: Context) = viewModelFactory {
             initializer {
                 val database = DatabaseProvider.get(context)
-                ItemsViewModel(ItemRepository(database.itemDao()), CategoryRepository(database.categoryDao()))
+                ItemsViewModel(
+                    items = ItemRepository(database.itemDao()),
+                    categories = CategoryRepository(database.categoryDao()),
+                    settings = SettingsRepository(context)
+                )
             }
         }
     }
@@ -169,4 +188,16 @@ private data class ItemsFilter(
     val categoryId: String? = null,
     val sort: ItemsSort = ItemsSort.EXPIRY,
     val opened: OpenedFilter = OpenedFilter.ALL
+)
+
+private fun ListPreferences.toFilter() = ItemsFilter(
+    categoryId = categoryId,
+    sort = ItemsSort.entries.firstOrNull { it.name == sort } ?: ItemsSort.EXPIRY,
+    opened = OpenedFilter.entries.firstOrNull { it.name == opened } ?: OpenedFilter.ALL
+)
+
+private fun ItemsFilter.toPreferences() = ListPreferences(
+    categoryId = categoryId,
+    sort = sort.name,
+    opened = opened.name
 )

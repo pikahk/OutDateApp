@@ -104,6 +104,21 @@
   <string name="stats_used">Использовано вовремя</string>
   <string name="stats_wasted">Выброшено</string>
 
+  <string name="settings_title">Настройки</string>
+  <string name="settings_notifications">Уведомления</string>
+  <string name="settings_notifications_on">Включены</string>
+  <string name="settings_notifications_off">Уведомления выключены</string>
+  <string name="settings_notifications_off_hint">Напоминаний о сроках не будет</string>
+  <string name="settings_enable">Включить</string>
+  <string name="settings_time">Время</string>
+  <string name="settings_default_reminder">Напоминание по умолчанию</string>
+  <string name="settings_appearance">Оформление</string>
+  <string name="settings_theme">Тема</string>
+  <string name="theme_system">Как в системе</string>
+  <string name="theme_light">Светлая</string>
+  <string name="theme_dark">Тёмная</string>
+  <string name="settings_language">Язык</string>
+
   <plurals name="days">
     <item quantity="one">%d день</item>
     <item quantity="few">%d дня</item>

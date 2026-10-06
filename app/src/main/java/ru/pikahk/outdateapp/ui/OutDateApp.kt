@@ -30,6 +30,8 @@ import ru.pikahk.outdateapp.ui.items.ItemsScreen
 import ru.pikahk.outdateapp.ui.items.ItemsViewModel
 import ru.pikahk.outdateapp.ui.profile.ProfileScreen
 import ru.pikahk.outdateapp.ui.profile.ProfileViewModel
+import ru.pikahk.outdateapp.ui.settings.SettingsScreen
+import ru.pikahk.outdateapp.ui.settings.SettingsViewModel
 
 private const val TRANSITION_MILLIS = 250
 
@@ -46,6 +48,9 @@ private data class ItemDetailsRoute(val id: String)
 
 @Serializable
 private object ProfileRoute
+
+@Serializable
+private object SettingsRoute
 
 @Composable
 fun OutDateApp() {
@@ -95,6 +100,7 @@ fun OutDateApp() {
                 AddItemScreen(
                     categories = itemsState.categories,
                     initialCategoryId = itemsState.selectedCategoryId,
+                    defaultNotifyDaysBefore = itemsState.defaultNotifyDaysBefore,
                     onCreateCategory = itemsViewModel::createCategory,
                     onSave = { draft ->
                         if (entry.isResumed()) {
@@ -123,6 +129,14 @@ fun OutDateApp() {
                 val profileViewModel: ProfileViewModel = viewModel(factory = ProfileViewModel.factory(context))
                 ProfileScreen(
                     viewModel = profileViewModel,
+                    onBack = dropUnlessResumed { navController.popBackStack() },
+                    onSettingsClick = dropUnlessResumed { navController.navigate(SettingsRoute) }
+                )
+            }
+            composable<SettingsRoute> {
+                val settingsViewModel: SettingsViewModel = viewModel(factory = SettingsViewModel.factory(context))
+                SettingsScreen(
+                    viewModel = settingsViewModel,
                     onBack = dropUnlessResumed { navController.popBackStack() }
                 )
             }

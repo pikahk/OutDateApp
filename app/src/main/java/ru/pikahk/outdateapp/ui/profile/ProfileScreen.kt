@@ -41,18 +41,20 @@ import java.time.format.DateTimeFormatter
 import ru.pikahk.outdateapp.R
 import ru.pikahk.outdateapp.domain.ItemStats
 import ru.pikahk.outdateapp.domain.Urgency
+import ru.pikahk.outdateapp.ui.LinkRow
+import ru.pikahk.outdateapp.ui.SectionTitle
 import ru.pikahk.outdateapp.ui.color
 import ru.pikahk.outdateapp.ui.theme.OutDateAppTheme
 
 @Composable
-fun ProfileScreen(viewModel: ProfileViewModel, onBack: () -> Unit) {
+fun ProfileScreen(viewModel: ProfileViewModel, onBack: () -> Unit, onSettingsClick: () -> Unit) {
     val stats by viewModel.stats.collectAsStateWithLifecycle()
-    ProfileScreen(stats = stats, month = viewModel.month, onBack = onBack)
+    ProfileScreen(stats = stats, month = viewModel.month, onBack = onBack, onSettingsClick = onSettingsClick)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ProfileScreen(stats: ItemStats?, month: YearMonth, onBack: () -> Unit) {
+private fun ProfileScreen(stats: ItemStats?, month: YearMonth, onBack: () -> Unit, onSettingsClick: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -125,6 +127,11 @@ private fun ProfileScreen(stats: ItemStats?, month: YearMonth, onBack: () -> Uni
                     )
                 }
             }
+            LinkRow(
+                title = stringResource(R.string.settings_title),
+                onClick = onSettingsClick,
+                modifier = Modifier.padding(top = 28.dp)
+            )
         }
     }
 }
@@ -154,17 +161,6 @@ private fun AccountRow() {
             fontWeight = FontWeight.Medium
         )
     }
-}
-
-@Composable
-private fun SectionTitle(text: String) {
-    Text(
-        text = text.uppercase(),
-        style = MaterialTheme.typography.labelMedium,
-        fontWeight = FontWeight.Bold,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = Modifier.padding(top = 24.dp, bottom = 10.dp)
-    )
 }
 
 @Composable
@@ -216,7 +212,8 @@ private fun ProfileScreenPreview() {
                 wastedThisMonth = 2
             ),
             month = YearMonth.of(2026, 10),
-            onBack = {}
+            onBack = {},
+            onSettingsClick = {}
         )
     }
 }

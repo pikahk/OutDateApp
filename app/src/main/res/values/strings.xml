@@ -106,6 +106,21 @@
   <string name="stats_used">Used in time</string>
   <string name="stats_wasted">Thrown away</string>
 
+  <string name="settings_title">Settings</string>
+  <string name="settings_notifications">Notifications</string>
+  <string name="settings_notifications_on">On</string>
+  <string name="settings_notifications_off">Notifications are off</string>
+  <string name="settings_notifications_off_hint">You won\'t get expiry reminders</string>
+  <string name="settings_enable">Turn on</string>
+  <string name="settings_time">Time</string>
+  <string name="settings_default_reminder">Default reminder</string>
+  <string name="settings_appearance">Appearance</string>
+  <string name="settings_theme">Theme</string>
+  <string name="theme_system">System</string>
+  <string name="theme_light">Light</string>
+  <string name="theme_dark">Dark</string>
+  <string name="settings_language">Language</string>
+
   <plurals name="days">
     <item quantity="one">%d day</item>
     <item quantity="other">%d days</item>
