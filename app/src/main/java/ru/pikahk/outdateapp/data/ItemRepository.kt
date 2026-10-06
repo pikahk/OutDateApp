@@ -9,6 +9,8 @@ class ItemRepository(private val dao: ItemDao) {
 
     fun observeById(id: String): Flow<Item?> = dao.observeById(id)
 
+    fun observeDeletedSince(since: Long): Flow<List<Item>> = dao.observeDeletedSince(since)
+
     suspend fun save(item: Item) {
         dao.upsert(item.copy(updatedAt = System.currentTimeMillis(), isPendingSync = true))
     }

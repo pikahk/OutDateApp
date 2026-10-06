@@ -97,6 +97,15 @@
   <string name="delete_title">Delete item?</string>
   <string name="delete_message">This can\'t be undone.</string>
 
+  <string name="profile_title">Profile</string>
+  <string name="profile_signed_out">Not signed in</string>
+  <string name="stats_now">Now</string>
+  <string name="stats_tracked">Tracked</string>
+  <string name="stats_this_week">Expire this week</string>
+  <string name="stats_expired">Expired</string>
+  <string name="stats_used">Used in time</string>
+  <string name="stats_wasted">Thrown away</string>
+
   <plurals name="days">
     <item quantity="one">%d day</item>
     <item quantity="other">%d days</item>

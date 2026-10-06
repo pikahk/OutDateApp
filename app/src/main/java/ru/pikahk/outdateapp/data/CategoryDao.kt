@@ -29,7 +29,10 @@ interface CategoryDao {
     @Query("UPDATE categories SET isDeleted = 1, isPendingSync = 1, updatedAt = :now WHERE id = :id")
     suspend fun markDeleted(id: String, now: Long)
 
-    @Query("UPDATE items SET categoryId = NULL, isPendingSync = 1, updatedAt = :now WHERE categoryId = :id")
+    @Query(
+        "UPDATE items SET categoryId = NULL, isPendingSync = 1, updatedAt = :now " +
+            "WHERE categoryId = :id AND isDeleted = 0"
+    )
     suspend fun detachItems(id: String, now: Long)
 
     @Query("UPDATE products SET categoryId = NULL, isPendingSync = 1, updatedAt = :now WHERE categoryId = :id")

@@ -95,6 +95,15 @@
   <string name="delete_title">Удалить продукт?</string>
   <string name="delete_message">Отменить будет нельзя.</string>
 
+  <string name="profile_title">Профиль</string>
+  <string name="profile_signed_out">Вход не выполнен</string>
+  <string name="stats_now">Сейчас</string>
+  <string name="stats_tracked">Отслеживается</string>
+  <string name="stats_this_week">Истекает на неделе</string>
+  <string name="stats_expired">Просрочено</string>
+  <string name="stats_used">Использовано вовремя</string>
+  <string name="stats_wasted">Выброшено</string>
+
   <plurals name="days">
     <item quantity="one">%d день</item>
     <item quantity="few">%d дня</item>

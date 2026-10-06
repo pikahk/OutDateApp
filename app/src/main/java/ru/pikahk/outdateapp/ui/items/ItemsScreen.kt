@@ -40,13 +40,19 @@ import ru.pikahk.outdateapp.ui.color
 import ru.pikahk.outdateapp.ui.theme.OutDateAppTheme
 
 @Composable
-fun ItemsScreen(viewModel: ItemsViewModel, onAddClick: () -> Unit, onItemClick: (String) -> Unit) {
+fun ItemsScreen(
+    viewModel: ItemsViewModel,
+    onAddClick: () -> Unit,
+    onItemClick: (String) -> Unit,
+    onProfileClick: () -> Unit
+) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     ItemsScreen(
         state = state,
         query = viewModel.query,
         onAddClick = onAddClick,
         onItemClick = onItemClick,
+        onProfileClick = onProfileClick,
         onCategorySelect = viewModel::selectCategory,
         onCategoryDelete = viewModel::deleteCategory,
         onSortSelect = viewModel::selectSort,
@@ -61,6 +67,7 @@ private fun ItemsScreen(
     query: TextFieldState,
     onAddClick: () -> Unit,
     onItemClick: (String) -> Unit,
+    onProfileClick: () -> Unit,
     onCategorySelect: (String?) -> Unit,
     onCategoryDelete: (String) -> Unit,
     onSortSelect: (ItemsSort) -> Unit,
@@ -74,7 +81,8 @@ private fun ItemsScreen(
                 sort = state.sort,
                 opened = state.opened,
                 onSortSelect = onSortSelect,
-                onOpenedSelect = onOpenedSelect
+                onOpenedSelect = onOpenedSelect,
+                onProfileClick = onProfileClick
             )
         },
         floatingActionButton = {
@@ -207,6 +215,7 @@ private fun ItemsScreenPreview() {
             query = rememberTextFieldState(),
             onAddClick = {},
             onItemClick = {},
+            onProfileClick = {},
             onCategorySelect = {},
             onCategoryDelete = {},
             onSortSelect = {},

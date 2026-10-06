@@ -46,7 +46,8 @@ internal fun ItemsTopBar(
     sort: ItemsSort,
     opened: OpenedFilter,
     onSortSelect: (ItemsSort) -> Unit,
-    onOpenedSelect: (OpenedFilter) -> Unit
+    onOpenedSelect: (OpenedFilter) -> Unit,
+    onProfileClick: () -> Unit
 ) {
     var searching by rememberSaveable { mutableStateOf(false) }
     val closeSearch = {
@@ -91,6 +92,12 @@ internal fun ItemsTopBar(
                     onSortSelect = onSortSelect,
                     onOpenedSelect = onOpenedSelect
                 )
+                IconButton(onClick = onProfileClick) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_person),
+                        contentDescription = stringResource(R.string.profile_title)
+                    )
+                }
             } else if (query.text.isNotEmpty()) {
                 IconButton(onClick = { query.clearText() }) {
                     Icon(

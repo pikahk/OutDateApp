@@ -28,6 +28,8 @@ import ru.pikahk.outdateapp.ui.details.ItemDetailsScreen
 import ru.pikahk.outdateapp.ui.details.ItemDetailsViewModel
 import ru.pikahk.outdateapp.ui.items.ItemsScreen
 import ru.pikahk.outdateapp.ui.items.ItemsViewModel
+import ru.pikahk.outdateapp.ui.profile.ProfileScreen
+import ru.pikahk.outdateapp.ui.profile.ProfileViewModel
 
 private const val TRANSITION_MILLIS = 250
 
@@ -41,6 +43,9 @@ private object AddItemRoute
 
 @Serializable
 private data class ItemDetailsRoute(val id: String)
+
+@Serializable
+private object ProfileRoute
 
 @Composable
 fun OutDateApp() {
@@ -82,7 +87,8 @@ fun OutDateApp() {
                     onAddClick = dropUnlessResumed { navController.navigate(AddItemRoute) },
                     onItemClick = { id ->
                         if (entry.isResumed()) navController.navigate(ItemDetailsRoute(id))
-                    }
+                    },
+                    onProfileClick = dropUnlessResumed { navController.navigate(ProfileRoute) }
                 )
             }
             composable<AddItemRoute> { entry ->
@@ -111,6 +117,13 @@ fun OutDateApp() {
                     onGone = {
                         if (entry.isResumed()) navController.popBackStack()
                     }
+                )
+            }
+            composable<ProfileRoute> {
+                val profileViewModel: ProfileViewModel = viewModel(factory = ProfileViewModel.factory(context))
+                ProfileScreen(
+                    viewModel = profileViewModel,
+                    onBack = dropUnlessResumed { navController.popBackStack() }
                 )
             }
         }
