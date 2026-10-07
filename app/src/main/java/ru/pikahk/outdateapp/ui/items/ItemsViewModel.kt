@@ -20,10 +20,10 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import ru.pikahk.outdateapp.data.model.Category
-import ru.pikahk.outdateapp.data.repository.CategoryRepository
 import ru.pikahk.outdateapp.data.DatabaseProvider
+import ru.pikahk.outdateapp.data.model.Category
 import ru.pikahk.outdateapp.data.model.Item
+import ru.pikahk.outdateapp.data.repository.CategoryRepository
 import ru.pikahk.outdateapp.data.repository.ItemRepository
 import ru.pikahk.outdateapp.data.repository.ListPreferences
 import ru.pikahk.outdateapp.data.repository.SettingsRepository

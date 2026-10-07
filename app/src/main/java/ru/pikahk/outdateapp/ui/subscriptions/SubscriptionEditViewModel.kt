@@ -12,8 +12,8 @@ import java.time.LocalDate
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import ru.pikahk.outdateapp.data.DatabaseProvider
-import ru.pikahk.outdateapp.data.repository.SettingsRepository
 import ru.pikahk.outdateapp.data.model.Subscription
+import ru.pikahk.outdateapp.data.repository.SettingsRepository
 import ru.pikahk.outdateapp.data.repository.SubscriptionRepository
 
 class SubscriptionEditViewModel(

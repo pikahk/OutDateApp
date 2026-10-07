@@ -1,8 +1,8 @@
 package ru.pikahk.outdateapp.data
 
 import androidx.room.TypeConverter
-import ru.pikahk.outdateapp.data.model.PeriodType
 import java.time.LocalDate
+import ru.pikahk.outdateapp.data.model.PeriodType
 
 class Converters {
     @TypeConverter
