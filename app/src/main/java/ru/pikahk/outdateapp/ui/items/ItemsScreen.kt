@@ -40,7 +40,7 @@ import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import java.time.LocalDate
 import ru.pikahk.outdateapp.R
-import ru.pikahk.outdateapp.data.DefaultCategory
+import ru.pikahk.outdateapp.data.model.DefaultCategory
 import ru.pikahk.outdateapp.domain.Urgency
 import ru.pikahk.outdateapp.notifications.areNotificationsEnabled
 import ru.pikahk.outdateapp.notifications.openNotificationSettings
@@ -49,12 +49,7 @@ import ru.pikahk.outdateapp.ui.color
 import ru.pikahk.outdateapp.ui.theme.OutDateAppTheme
 
 @Composable
-fun ItemsScreen(
-    viewModel: ItemsViewModel,
-    onAddClick: () -> Unit,
-    onItemClick: (String) -> Unit,
-    onProfileClick: () -> Unit
-) {
+fun ItemsScreen(viewModel: ItemsViewModel, onAddClick: () -> Unit, onItemClick: (String) -> Unit) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val missedExpiries by viewModel.missedExpiries.collectAsStateWithLifecycle()
     val context = LocalContext.current
@@ -75,7 +70,6 @@ fun ItemsScreen(
         onDismissNotifications = { notificationsBannerHidden = true },
         onAddClick = onAddClick,
         onItemClick = onItemClick,
-        onProfileClick = onProfileClick,
         onCategorySelect = viewModel::selectCategory,
         onCategoryDelete = viewModel::deleteCategory,
         onSortSelect = viewModel::selectSort,
@@ -95,7 +89,6 @@ private fun ItemsScreen(
     onDismissNotifications: () -> Unit,
     onAddClick: () -> Unit,
     onItemClick: (String) -> Unit,
-    onProfileClick: () -> Unit,
     onCategorySelect: (String?) -> Unit,
     onCategoryDelete: (String) -> Unit,
     onSortSelect: (ItemsSort) -> Unit,
@@ -119,8 +112,7 @@ private fun ItemsScreen(
                 sort = state.sort,
                 opened = state.opened,
                 onSortSelect = onSortSelect,
-                onOpenedSelect = onOpenedSelect,
-                onProfileClick = onProfileClick
+                onOpenedSelect = onOpenedSelect
             )
         },
         floatingActionButton = {
@@ -260,7 +252,6 @@ private fun ItemsScreenPreview() {
             onDismissNotifications = {},
             onAddClick = {},
             onItemClick = {},
-            onProfileClick = {},
             onCategorySelect = {},
             onCategoryDelete = {},
             onSortSelect = {},

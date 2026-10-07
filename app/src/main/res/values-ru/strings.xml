@@ -125,6 +125,44 @@
   <string name="away_ok">Понятно</string>
   <string name="not_now">Не сейчас</string>
 
+  <string name="tab_items">Сроки</string>
+  <string name="subscriptions_title">Подписки</string>
+  <string name="subscriptions_empty">Подписок пока нет</string>
+  <string name="subscriptions_monthly">В месяц</string>
+  <string name="subscriptions_cancelled">Отменённые</string>
+  <string name="subscription_cancelled">%1$s · отменена</string>
+  <string name="period_month">%1$s в месяц</string>
+  <string name="period_year">%1$s в год</string>
+  <string name="subscription_new">Новая подписка</string>
+  <string name="subscription_title">Подписка</string>
+  <string name="field_price">Стоимость, ₽</string>
+  <string name="field_started">Дата оформления</string>
+  <string name="field_period">Период</string>
+  <string name="period_option_month">Месяц</string>
+  <string name="period_option_year">Год</string>
+  <string name="period_option_days">Дни</string>
+  <string name="field_every_days">Каждые, дней</string>
+  <string name="field_charge_reminder">Напомнить о списании</string>
+  <string name="error_not_number">Введите число</string>
+  <string name="error_future_date">Дата ещё не наступила</string>
+  <string name="summary_next_charge">Ближайшее списание — %1$s</string>
+  <string name="subscription_cancel">Отменить подписку</string>
+  <string name="subscription_resume">Возобновить</string>
+  <string name="subscription_delete_title">Удалить подписку?</string>
+  <string name="charge_channel">Списания по подпискам</string>
+  <string name="charge_when_today">сегодня</string>
+  <string name="charge_when_tomorrow">завтра</string>
+  <string name="charge_text">Списание %1$s · %2$s</string>
+  <string name="charge_line">%1$s — %2$s · %3$s</string>
+  <string name="charge_summary">Предстоящие списания: %d</string>
+
+  <plurals name="period_days">
+    <item quantity="one">%1$s каждый %2$d день</item>
+    <item quantity="few">%1$s каждые %2$d дня</item>
+    <item quantity="many">%1$s каждые %2$d дней</item>
+    <item quantity="other">%1$s каждые %2$d дня</item>
+  </plurals>
+
   <plurals name="days">
     <item quantity="one">%d день</item>
     <item quantity="few">%d дня</item>
@@ -178,5 +216,12 @@
     <item quantity="few">Истекает через %d дня</item>
     <item quantity="many">Истекает через %d дней</item>
     <item quantity="other">Истекает через %d дня</item>
+  </plurals>
+
+  <plurals name="charge_when_days">
+    <item quantity="one">через %d день</item>
+    <item quantity="few">через %d дня</item>
+    <item quantity="many">через %d дней</item>
+    <item quantity="other">через %d дня</item>
   </plurals>
 </resources>

@@ -4,7 +4,7 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.ZoneId
-import ru.pikahk.outdateapp.data.Item
+import ru.pikahk.outdateapp.data.model.Item
 
 private const val WEEK_DAYS = 7L
 

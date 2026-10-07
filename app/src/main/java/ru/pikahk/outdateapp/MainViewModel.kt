@@ -9,8 +9,8 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import ru.pikahk.outdateapp.data.SettingsRepository
-import ru.pikahk.outdateapp.data.ThemeMode
+import ru.pikahk.outdateapp.data.repository.SettingsRepository
+import ru.pikahk.outdateapp.data.repository.ThemeMode
 
 class MainViewModel(settings: SettingsRepository) : ViewModel() {
 

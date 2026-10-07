@@ -1,4 +1,4 @@
-package ru.pikahk.outdateapp.data
+package ru.pikahk.outdateapp.data.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

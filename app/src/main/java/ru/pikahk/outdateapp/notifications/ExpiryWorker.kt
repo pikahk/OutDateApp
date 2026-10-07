@@ -1,6 +1,7 @@
 package ru.pikahk.outdateapp.notifications
 
 import android.content.Context
+import androidx.core.app.NotificationManagerCompat
 import androidx.work.CoroutineWorker
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
@@ -13,9 +14,11 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import kotlinx.coroutines.flow.first
 import ru.pikahk.outdateapp.data.DatabaseProvider
-import ru.pikahk.outdateapp.data.ItemRepository
-import ru.pikahk.outdateapp.data.SettingsRepository
+import ru.pikahk.outdateapp.data.repository.ItemRepository
+import ru.pikahk.outdateapp.data.repository.SettingsRepository
+import ru.pikahk.outdateapp.data.repository.SubscriptionRepository
 import ru.pikahk.outdateapp.domain.itemsToRemind
+import ru.pikahk.outdateapp.domain.upcomingCharges
 
 class ExpiryWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
 
@@ -23,7 +26,10 @@ class ExpiryWorker(context: Context, params: WorkerParameters) : CoroutineWorker
         val database = DatabaseProvider.get(applicationContext)
         val today = LocalDate.now()
         val items = itemsToRemind(ItemRepository(database.itemDao()).observeAll().first(), today)
+        val charges = upcomingCharges(SubscriptionRepository(database.subscriptionDao()).observeAll().first(), today)
+        NotificationManagerCompat.from(applicationContext).cancelAll()
         ExpiryNotification.show(applicationContext, items, today)
+        ChargeNotification.show(applicationContext, charges, today)
         return Result.success()
     }
 

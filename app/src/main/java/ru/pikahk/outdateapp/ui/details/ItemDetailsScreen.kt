@@ -42,7 +42,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import ru.pikahk.outdateapp.R
-import ru.pikahk.outdateapp.data.DefaultCategory
+import ru.pikahk.outdateapp.data.model.DefaultCategory
 import ru.pikahk.outdateapp.domain.Urgency
 import ru.pikahk.outdateapp.ui.CategoryUi
 import ru.pikahk.outdateapp.ui.theme.OutDateAppTheme

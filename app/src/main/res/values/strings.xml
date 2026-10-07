@@ -127,6 +127,43 @@
   <string name="away_ok">Got it</string>
   <string name="not_now">Not now</string>
 
+  <string name="tab_items">Expiry</string>
+  <string name="subscriptions_title">Subscriptions</string>
+  <string name="subscriptions_empty">No subscriptions yet</string>
+  <string name="subscriptions_monthly">Per month</string>
+  <string name="subscriptions_cancelled">Cancelled</string>
+  <string name="subscription_cancelled">%1$s · cancelled</string>
+  <string name="price" translatable="false">%1$s\u00A0₽</string>
+  <string name="period_month">%1$s a month</string>
+  <string name="period_year">%1$s a year</string>
+  <string name="subscription_new">New subscription</string>
+  <string name="subscription_title">Subscription</string>
+  <string name="field_price">Price, ₽</string>
+  <string name="field_started">Start date</string>
+  <string name="field_period">Period</string>
+  <string name="period_option_month">Month</string>
+  <string name="period_option_year">Year</string>
+  <string name="period_option_days">Days</string>
+  <string name="field_every_days">Every, days</string>
+  <string name="field_charge_reminder">Remind before charge</string>
+  <string name="error_not_number">Enter a number</string>
+  <string name="error_future_date">This date hasn\'t come yet</string>
+  <string name="summary_next_charge">Next charge: %1$s</string>
+  <string name="subscription_cancel">Cancel subscription</string>
+  <string name="subscription_resume">Resume</string>
+  <string name="subscription_delete_title">Delete subscription?</string>
+  <string name="charge_channel">Subscription charges</string>
+  <string name="charge_when_today">today</string>
+  <string name="charge_when_tomorrow">tomorrow</string>
+  <string name="charge_text">Charge %1$s · %2$s</string>
+  <string name="charge_line">%1$s — %2$s · %3$s</string>
+  <string name="charge_summary">Upcoming charges: %d</string>
+
+  <plurals name="period_days">
+    <item quantity="one">%1$s every %2$d day</item>
+    <item quantity="other">%1$s every %2$d days</item>
+  </plurals>
+
   <plurals name="days">
     <item quantity="one">%d day</item>
     <item quantity="other">%d days</item>
@@ -166,5 +203,10 @@
   <plurals name="notification_expires_in">
     <item quantity="one">Expires in %d day</item>
     <item quantity="other">Expires in %d days</item>
+  </plurals>
+
+  <plurals name="charge_when_days">
+    <item quantity="one">in %d day</item>
+    <item quantity="other">in %d days</item>
   </plurals>
 </resources>

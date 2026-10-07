@@ -78,13 +78,15 @@ internal fun DateField(
     label: String,
     hint: String,
     parse: (String) -> LocalDate?,
-    missing: Boolean = false
+    missing: Boolean = false,
+    error: String? = null
 ) {
     var showPicker by rememberSaveable { mutableStateOf(false) }
     val date = parse(value)
     val showError = date == null && isYearTyped(value)
     val supporting = when {
         showError -> stringResource(R.string.error_no_such_date)
+        error != null -> error
         missing -> stringResource(R.string.field_required)
         else -> hint
     }
@@ -102,7 +104,7 @@ internal fun DateField(
                     )
                 }
             },
-            isError = showError || missing,
+            isError = showError || error != null || missing,
             supportingText = { Text(supporting) },
             singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),

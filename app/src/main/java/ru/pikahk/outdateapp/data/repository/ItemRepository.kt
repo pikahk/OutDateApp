@@ -1,7 +1,9 @@
-package ru.pikahk.outdateapp.data
+package ru.pikahk.outdateapp.data.repository
 
 import java.time.LocalDate
 import kotlinx.coroutines.flow.Flow
+import ru.pikahk.outdateapp.data.dao.ItemDao
+import ru.pikahk.outdateapp.data.model.Item
 
 class ItemRepository(private val dao: ItemDao) {
 

@@ -14,7 +14,7 @@ import androidx.core.net.toUri
 import java.time.LocalDate
 import ru.pikahk.outdateapp.MainActivity
 import ru.pikahk.outdateapp.R
-import ru.pikahk.outdateapp.data.Item
+import ru.pikahk.outdateapp.data.model.Item
 import ru.pikahk.outdateapp.domain.daysLeft
 import ru.pikahk.outdateapp.ui.ITEM_DEEP_LINK
 
@@ -27,10 +27,9 @@ object ExpiryNotification {
     fun show(context: Context, items: List<Item>, today: LocalDate) {
         val permission = ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS)
         if (permission != PackageManager.PERMISSION_GRANTED) return
+        if (items.isEmpty()) return
 
         val manager = NotificationManagerCompat.from(context)
-        manager.cancelAll()
-        if (items.isEmpty()) return
 
         manager.createNotificationChannel(
             NotificationChannelCompat.Builder(CHANNEL_ID, NotificationManagerCompat.IMPORTANCE_DEFAULT)

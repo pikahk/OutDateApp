@@ -1,7 +1,7 @@
 package ru.pikahk.outdateapp.domain
 
 import java.time.LocalDate
-import ru.pikahk.outdateapp.data.Item
+import ru.pikahk.outdateapp.data.model.Item
 
 const val REMINDER_OFF = -1
 

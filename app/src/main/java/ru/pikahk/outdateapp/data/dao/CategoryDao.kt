@@ -1,4 +1,4 @@
-package ru.pikahk.outdateapp.data
+package ru.pikahk.outdateapp.data.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
@@ -7,6 +7,7 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
+import ru.pikahk.outdateapp.data.model.Category
 
 @Dao
 interface CategoryDao {

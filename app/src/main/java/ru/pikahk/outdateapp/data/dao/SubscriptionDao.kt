@@ -1,9 +1,10 @@
-package ru.pikahk.outdateapp.data
+package ru.pikahk.outdateapp.data.dao
 
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Upsert
 import kotlinx.coroutines.flow.Flow
+import ru.pikahk.outdateapp.data.model.Subscription
 
 @Dao
 interface SubscriptionDao {

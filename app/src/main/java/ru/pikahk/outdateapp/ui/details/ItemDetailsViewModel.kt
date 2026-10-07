@@ -13,10 +13,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import ru.pikahk.outdateapp.data.CategoryRepository
+import ru.pikahk.outdateapp.data.repository.CategoryRepository
 import ru.pikahk.outdateapp.data.DatabaseProvider
-import ru.pikahk.outdateapp.data.Item
-import ru.pikahk.outdateapp.data.ItemRepository
+import ru.pikahk.outdateapp.data.model.Item
+import ru.pikahk.outdateapp.data.repository.ItemRepository
 import ru.pikahk.outdateapp.domain.daysLeft
 import ru.pikahk.outdateapp.domain.effectiveExpiryDate
 import ru.pikahk.outdateapp.domain.urgency

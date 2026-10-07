@@ -12,7 +12,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
-import ru.pikahk.outdateapp.data.ThemeMode
+import ru.pikahk.outdateapp.data.repository.ThemeMode
 import ru.pikahk.outdateapp.notifications.ExpiryWorker
 import ru.pikahk.outdateapp.ui.OutDateApp
 import ru.pikahk.outdateapp.ui.theme.OutDateAppTheme

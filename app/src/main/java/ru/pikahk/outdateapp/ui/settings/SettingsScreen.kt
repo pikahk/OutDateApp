@@ -48,8 +48,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import ru.pikahk.outdateapp.R
-import ru.pikahk.outdateapp.data.AppSettings
-import ru.pikahk.outdateapp.data.ThemeMode
+import ru.pikahk.outdateapp.data.repository.AppSettings
+import ru.pikahk.outdateapp.data.repository.ThemeMode
 import ru.pikahk.outdateapp.domain.Urgency
 import ru.pikahk.outdateapp.notifications.areNotificationsEnabled
 import ru.pikahk.outdateapp.notifications.openNotificationSettings

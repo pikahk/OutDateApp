@@ -10,9 +10,9 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import ru.pikahk.outdateapp.data.AppSettings
-import ru.pikahk.outdateapp.data.SettingsRepository
-import ru.pikahk.outdateapp.data.ThemeMode
+import ru.pikahk.outdateapp.data.repository.AppSettings
+import ru.pikahk.outdateapp.data.repository.SettingsRepository
+import ru.pikahk.outdateapp.data.repository.ThemeMode
 import ru.pikahk.outdateapp.notifications.ExpiryWorker
 
 class SettingsViewModel(

@@ -1,7 +1,10 @@
-package ru.pikahk.outdateapp.data
+package ru.pikahk.outdateapp.data.repository
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import ru.pikahk.outdateapp.data.dao.CategoryDao
+import ru.pikahk.outdateapp.data.model.Category
+import ru.pikahk.outdateapp.data.model.DefaultCategory
 
 class CategoryRepository(private val dao: CategoryDao) {
 

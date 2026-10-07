@@ -4,7 +4,7 @@ import java.time.LocalDate
 import java.time.ZoneOffset
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import ru.pikahk.outdateapp.data.Item
+import ru.pikahk.outdateapp.data.model.Item
 
 class ItemStatsTest {
 

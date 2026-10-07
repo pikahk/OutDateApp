@@ -2,7 +2,7 @@ package ru.pikahk.outdateapp.domain
 
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
-import ru.pikahk.outdateapp.data.Item
+import ru.pikahk.outdateapp.data.model.Item
 
 enum class Urgency { EXPIRED, CRITICAL, SOON, OK }
 

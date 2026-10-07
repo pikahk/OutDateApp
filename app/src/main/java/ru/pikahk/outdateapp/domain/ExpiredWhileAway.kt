@@ -2,7 +2,7 @@ package ru.pikahk.outdateapp.domain
 
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
-import ru.pikahk.outdateapp.data.Item
+import ru.pikahk.outdateapp.data.model.Item
 
 const val AWAY_MIN_DAYS = 2L
 

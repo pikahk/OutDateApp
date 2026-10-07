@@ -3,8 +3,8 @@ package ru.pikahk.outdateapp.ui
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import ru.pikahk.outdateapp.R
-import ru.pikahk.outdateapp.data.Category
-import ru.pikahk.outdateapp.data.DefaultCategory
+import ru.pikahk.outdateapp.data.model.Category
+import ru.pikahk.outdateapp.data.model.DefaultCategory
 
 data class CategoryUi(val id: String, val name: String, val builtIn: DefaultCategory?)
 

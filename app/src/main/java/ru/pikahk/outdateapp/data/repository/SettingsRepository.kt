@@ -1,4 +1,4 @@
-package ru.pikahk.outdateapp.data
+package ru.pikahk.outdateapp.data.repository
 
 import android.content.Context
 import androidx.datastore.core.DataStore

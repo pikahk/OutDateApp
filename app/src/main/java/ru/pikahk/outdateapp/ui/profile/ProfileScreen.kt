@@ -18,7 +18,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -47,14 +46,14 @@ import ru.pikahk.outdateapp.ui.color
 import ru.pikahk.outdateapp.ui.theme.OutDateAppTheme
 
 @Composable
-fun ProfileScreen(viewModel: ProfileViewModel, onBack: () -> Unit, onSettingsClick: () -> Unit) {
+fun ProfileScreen(viewModel: ProfileViewModel, onSettingsClick: () -> Unit) {
     val stats by viewModel.stats.collectAsStateWithLifecycle()
-    ProfileScreen(stats = stats, month = viewModel.month, onBack = onBack, onSettingsClick = onSettingsClick)
+    ProfileScreen(stats = stats, month = viewModel.month, onSettingsClick = onSettingsClick)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ProfileScreen(stats: ItemStats?, month: YearMonth, onBack: () -> Unit, onSettingsClick: () -> Unit) {
+private fun ProfileScreen(stats: ItemStats?, month: YearMonth, onSettingsClick: () -> Unit) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -64,14 +63,6 @@ private fun ProfileScreen(stats: ItemStats?, month: YearMonth, onBack: () -> Uni
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold
                     )
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_arrow_back),
-                            contentDescription = stringResource(R.string.back)
-                        )
-                    }
                 }
             )
         }
@@ -212,7 +203,6 @@ private fun ProfileScreenPreview() {
                 wastedThisMonth = 2
             ),
             month = YearMonth.of(2026, 10),
-            onBack = {},
             onSettingsClick = {}
         )
     }
