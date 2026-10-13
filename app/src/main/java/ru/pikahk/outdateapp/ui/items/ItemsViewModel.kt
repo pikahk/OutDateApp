@@ -133,6 +133,10 @@ class ItemsViewModel(
         viewModelScope.launch { categories.delete(id) }
     }
 
+    fun deleteItem(id: String) {
+        viewModelScope.launch { items.markDeleted(id) }
+    }
+
     fun addItem(draft: ItemDraft) {
         viewModelScope.launch {
             items.save(

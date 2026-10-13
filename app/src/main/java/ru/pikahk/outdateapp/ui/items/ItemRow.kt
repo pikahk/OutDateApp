@@ -1,7 +1,7 @@
 package ru.pikahk.outdateapp.ui.items
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,11 +34,15 @@ import ru.pikahk.outdateapp.ui.iconRes
 import ru.pikahk.outdateapp.ui.label
 
 @Composable
-internal fun ItemRow(item: ItemUi, onClick: () -> Unit) {
+internal fun ItemRow(item: ItemUi, onClick: () -> Unit, onLongClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
+            .combinedClickable(
+                onLongClickLabel = stringResource(R.string.delete),
+                onLongClick = onLongClick,
+                onClick = onClick
+            )
             .padding(horizontal = 16.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)

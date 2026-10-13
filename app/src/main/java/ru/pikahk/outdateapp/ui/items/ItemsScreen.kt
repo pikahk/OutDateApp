@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -70,6 +71,7 @@ fun ItemsScreen(viewModel: ItemsViewModel, onAddClick: () -> Unit, onItemClick: 
         onDismissNotifications = { notificationsBannerHidden = true },
         onAddClick = onAddClick,
         onItemClick = onItemClick,
+        onItemDelete = viewModel::deleteItem,
         onCategorySelect = viewModel::selectCategory,
         onCategoryDelete = viewModel::deleteCategory,
         onSortSelect = viewModel::selectSort,
@@ -89,12 +91,15 @@ private fun ItemsScreen(
     onDismissNotifications: () -> Unit,
     onAddClick: () -> Unit,
     onItemClick: (String) -> Unit,
+    onItemDelete: (String) -> Unit,
     onCategorySelect: (String?) -> Unit,
     onCategoryDelete: (String) -> Unit,
     onSortSelect: (ItemsSort) -> Unit,
     onOpenedSelect: (OpenedFilter) -> Unit,
     onResetFilters: () -> Unit
 ) {
+    var deletingId by rememberSaveable { mutableStateOf<String?>(null) }
+
     val banners: @Composable () -> Unit = {
         ItemsBanners(
             missedExpiries = missedExpiries,
@@ -176,7 +181,11 @@ private fun ItemsScreen(
                                 SectionHeader(group.section)
                             }
                             items(items = group.items, key = { it.id }) { item ->
-                                ItemRow(item = item, onClick = { onItemClick(item.id) })
+                                ItemRow(
+                                    item = item,
+                                    onClick = { onItemClick(item.id) },
+                                    onLongClick = { deletingId = item.id }
+                                )
                             }
                         }
                     }
@@ -184,6 +193,37 @@ private fun ItemsScreen(
             }
         }
     }
+
+    val deleting = state.groups.flatMap { it.items }.firstOrNull { it.id == deletingId }
+    if (deleting != null) {
+        DeleteItemDialog(
+            name = deleting.name,
+            onConfirm = {
+                onItemDelete(deleting.id)
+                deletingId = null
+            },
+            onDismiss = { deletingId = null }
+        )
+    }
+}
+
+@Composable
+private fun DeleteItemDialog(name: String, onConfirm: () -> Unit, onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.item_delete_title, name)) },
+        text = { Text(stringResource(R.string.delete_message)) },
+        confirmButton = {
+            TextButton(onClick = onConfirm) {
+                Text(stringResource(R.string.delete), color = MaterialTheme.colorScheme.error)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.cancel))
+            }
+        }
+    )
 }
 
 @Composable
@@ -252,6 +292,7 @@ private fun ItemsScreenPreview() {
             onDismissNotifications = {},
             onAddClick = {},
             onItemClick = {},
+            onItemDelete = {},
             onCategorySelect = {},
             onCategoryDelete = {},
             onSortSelect = {},

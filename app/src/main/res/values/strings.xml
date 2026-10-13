@@ -95,6 +95,7 @@
   <string name="opening_no_limit">No limit</string>
 
   <string name="delete_title">Delete item?</string>
+  <string name="item_delete_title">Delete “%1$s”?</string>
   <string name="delete_message">This can\'t be undone.</string>
 
   <string name="profile_title">Profile</string>
