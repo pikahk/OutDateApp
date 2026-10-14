@@ -24,3 +24,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "OutDateApp"
 include(":app")
+include(":server")

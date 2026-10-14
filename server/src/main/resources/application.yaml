@@ -1,0 +1,6 @@
+ktor:
+  deployment:
+    port: "$PORT:8080"
+  application:
+    modules:
+      - ru.pikahk.outdate.server.ApplicationKt.module
