@@ -4,3 +4,8 @@ ktor:
   application:
     modules:
       - ru.pikahk.outdate.server.ApplicationKt.module
+
+database:
+  url: "$DATABASE_URL:jdbc:postgresql://localhost:5432/outdate"
+  user: "$DATABASE_USER:outdate"
+  password: "$DATABASE_PASSWORD:outdate"
