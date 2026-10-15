@@ -5,11 +5,14 @@ import io.ktor.server.application.ApplicationStopped
 import io.ktor.server.netty.EngineMain
 import io.ktor.server.routing.routing
 import org.jetbrains.exposed.v1.jdbc.Database
+import ru.pikahk.outdate.server.auth.AuthService
 import ru.pikahk.outdate.server.db.connectDatabase
 import ru.pikahk.outdate.server.db.databaseSettings
 import ru.pikahk.outdate.server.plugins.configureMonitoring
+import ru.pikahk.outdate.server.plugins.configureSecurity
 import ru.pikahk.outdate.server.plugins.configureSerialization
 import ru.pikahk.outdate.server.plugins.configureStatusPages
+import ru.pikahk.outdate.server.routes.authRoutes
 import ru.pikahk.outdate.server.routes.healthRoutes
 
 fun main(args: Array<String>) = EngineMain.main(args)
@@ -21,10 +24,13 @@ fun Application.module() {
 }
 
 fun Application.configure(database: Database) {
+    val authService = AuthService(database)
     configureSerialization()
     configureMonitoring()
     configureStatusPages()
+    configureSecurity(authService)
     routing {
         healthRoutes(database)
+        authRoutes(authService)
     }
 }

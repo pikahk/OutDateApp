@@ -7,15 +7,21 @@ import ru.pikahk.outdate.server.TestDatabase
 
 class MigrationsTest {
 
+    private fun columns(table: String): List<String> = transaction(TestDatabase.connected.database) {
+        exec(
+            "SELECT column_name FROM information_schema.columns WHERE table_name = '$table' ORDER BY column_name"
+        ) { result ->
+            buildList { while (result.next()) add(result.getString(1)) }
+        }.orEmpty()
+    }
+
     @Test
     fun `миграции создают таблицу пользователей`() {
-        val columns = transaction(TestDatabase.connected.database) {
-            exec(
-                "SELECT column_name FROM information_schema.columns WHERE table_name = 'users' ORDER BY column_name"
-            ) { result ->
-                buildList { while (result.next()) add(result.getString(1)) }
-            }
-        }
-        assertEquals(listOf("created_at", "email", "email_verified", "id", "password_hash"), columns)
+        assertEquals(listOf("created_at", "email", "email_verified", "id", "password_hash"), columns("users"))
+    }
+
+    @Test
+    fun `миграции создают таблицу сессий`() {
+        assertEquals(listOf("created_at", "expires_at", "token_hash", "user_id"), columns("sessions"))
     }
 }

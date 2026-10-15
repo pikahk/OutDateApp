@@ -12,8 +12,13 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ErrorResponse(val error: String)
 
+class ApiException(val status: HttpStatusCode, val code: String) : RuntimeException(code)
+
 fun Application.configureStatusPages() {
     install(StatusPages) {
+        exception<ApiException> { call, cause ->
+            call.respond(cause.status, ErrorResponse(cause.code))
+        }
         exception<BadRequestException> { call, _ ->
             call.respond(HttpStatusCode.BadRequest, ErrorResponse("bad_request"))
         }
@@ -23,6 +28,9 @@ fun Application.configureStatusPages() {
         }
         status(HttpStatusCode.NotFound) { call, status ->
             call.respond(status, ErrorResponse("not_found"))
+        }
+        status(HttpStatusCode.Unauthorized) { call, status ->
+            call.respond(status, ErrorResponse("unauthorized"))
         }
     }
 }
