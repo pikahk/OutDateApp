@@ -4,10 +4,14 @@ import io.ktor.server.application.Application
 import io.ktor.server.application.ApplicationStopped
 import io.ktor.server.netty.EngineMain
 import io.ktor.server.routing.routing
+import java.time.Clock
 import org.jetbrains.exposed.v1.jdbc.Database
 import ru.pikahk.outdate.server.auth.AuthService
 import ru.pikahk.outdate.server.db.connectDatabase
 import ru.pikahk.outdate.server.db.databaseSettings
+import ru.pikahk.outdate.server.mail.Mailer
+import ru.pikahk.outdate.server.mail.SmtpMailer
+import ru.pikahk.outdate.server.mail.mailSettings
 import ru.pikahk.outdate.server.plugins.configureMonitoring
 import ru.pikahk.outdate.server.plugins.configureSecurity
 import ru.pikahk.outdate.server.plugins.configureSerialization
@@ -20,11 +24,11 @@ fun main(args: Array<String>) = EngineMain.main(args)
 fun Application.module() {
     val connected = connectDatabase(environment.config.databaseSettings())
     monitor.subscribe(ApplicationStopped) { connected.close() }
-    configure(connected.database)
+    configure(connected.database, SmtpMailer(environment.config.mailSettings()))
 }
 
-fun Application.configure(database: Database) {
-    val authService = AuthService(database)
+fun Application.configure(database: Database, mailer: Mailer, clock: Clock = Clock.systemUTC()) {
+    val authService = AuthService(database, mailer, clock)
     configureSerialization()
     configureMonitoring()
     configureStatusPages()

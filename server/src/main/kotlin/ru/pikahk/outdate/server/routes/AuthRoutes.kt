@@ -19,10 +19,19 @@ import ru.pikahk.outdate.server.plugins.AUTH_SESSION
 data class CredentialsRequest(val email: String, val password: String)
 
 @Serializable
+data class EmailRequest(val email: String)
+
+@Serializable
+data class CodeRequest(val code: String)
+
+@Serializable
+data class ResetPasswordRequest(val email: String, val code: String, val password: String)
+
+@Serializable
 data class AuthResponse(val token: String, val email: String)
 
 @Serializable
-data class MeResponse(val email: String)
+data class MeResponse(val email: String, val emailVerified: Boolean)
 
 fun Route.authRoutes(authService: AuthService) {
     route("/auth") {
@@ -36,16 +45,36 @@ fun Route.authRoutes(authService: AuthService) {
             val session = authService.login(request.email, request.password)
             call.respond(AuthResponse(session.token, session.email))
         }
+        post("/password/forgot") {
+            val request = call.receive<EmailRequest>()
+            authService.requestPasswordReset(request.email)
+            call.respond(HttpStatusCode.NoContent)
+        }
+        post("/password/reset") {
+            val request = call.receive<ResetPasswordRequest>()
+            val session = authService.resetPassword(request.email, request.code, request.password)
+            call.respond(AuthResponse(session.token, session.email))
+        }
         authenticate(AUTH_SESSION) {
             post("/logout") {
                 authService.logout(call.user().token)
+                call.respond(HttpStatusCode.NoContent)
+            }
+            post("/email/verify") {
+                val request = call.receive<CodeRequest>()
+                authService.verifyEmail(call.user(), request.code)
+                call.respond(HttpStatusCode.NoContent)
+            }
+            post("/email/resend") {
+                authService.resendVerification(call.user())
                 call.respond(HttpStatusCode.NoContent)
             }
         }
     }
     authenticate(AUTH_SESSION) {
         get("/me") {
-            call.respond(MeResponse(call.user().email))
+            val user = call.user()
+            call.respond(MeResponse(user.email, user.emailVerified))
         }
     }
 }

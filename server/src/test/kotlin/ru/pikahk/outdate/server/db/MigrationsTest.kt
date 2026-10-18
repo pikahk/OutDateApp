@@ -24,4 +24,12 @@ class MigrationsTest {
     fun `миграции создают таблицу сессий`() {
         assertEquals(listOf("created_at", "expires_at", "token_hash", "user_id"), columns("sessions"))
     }
+
+    @Test
+    fun `миграции создают таблицу кодов из писем`() {
+        assertEquals(
+            listOf("attempts", "code", "created_at", "expires_at", "purpose", "user_id"),
+            columns("email_codes")
+        )
+    }
 }

@@ -20,3 +20,14 @@ object SessionsTable : Table("sessions") {
 
     override val primaryKey = PrimaryKey(tokenHash)
 }
+
+object EmailCodesTable : Table("email_codes") {
+    val userId = javaUUID("user_id").references(UsersTable.id)
+    val purpose = text("purpose")
+    val code = text("code")
+    val attempts = integer("attempts").default(0)
+    val createdAt = timestampWithTimeZone("created_at")
+    val expiresAt = timestampWithTimeZone("expires_at")
+
+    override val primaryKey = PrimaryKey(userId, purpose)
+}

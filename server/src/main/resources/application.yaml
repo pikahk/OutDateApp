@@ -9,3 +9,11 @@ database:
   url: "$DATABASE_URL:jdbc:postgresql://localhost:5432/outdate"
   user: "$DATABASE_USER:outdate"
   password: "$DATABASE_PASSWORD:outdate"
+
+mail:
+  host: "$SMTP_HOST:localhost"
+  port: "$SMTP_PORT:1025"
+  user: "$SMTP_USER:"
+  password: "$SMTP_PASSWORD:"
+  security: "$SMTP_SECURITY:none"
+  from: "$MAIL_FROM:outDate <noreply@outdateapp.ru>"
