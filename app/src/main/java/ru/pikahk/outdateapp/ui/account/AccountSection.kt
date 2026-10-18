@@ -25,6 +25,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
@@ -86,7 +87,7 @@ private fun Avatar(email: String?) {
 }
 
 @Composable
-fun LogoutRow(onLogout: () -> Unit, modifier: Modifier = Modifier) {
+fun LogoutRow(pendingChanges: Int, onLogout: () -> Unit, modifier: Modifier = Modifier) {
     var confirm by rememberSaveable { mutableStateOf(false) }
     Text(
         text = stringResource(R.string.account_logout),
@@ -102,6 +103,11 @@ fun LogoutRow(onLogout: () -> Unit, modifier: Modifier = Modifier) {
         AlertDialog(
             onDismissRequest = { confirm = false },
             title = { Text(stringResource(R.string.account_logout_title)) },
+            text = if (pendingChanges > 0) {
+                { Text(pluralStringResource(R.plurals.account_logout_pending, pendingChanges, pendingChanges)) }
+            } else {
+                null
+            },
             confirmButton = {
                 TextButton(
                     onClick = {

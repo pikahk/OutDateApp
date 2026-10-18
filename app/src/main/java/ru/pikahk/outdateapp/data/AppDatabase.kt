@@ -7,6 +7,7 @@ import ru.pikahk.outdateapp.data.dao.CategoryDao
 import ru.pikahk.outdateapp.data.dao.ItemDao
 import ru.pikahk.outdateapp.data.dao.ProductDao
 import ru.pikahk.outdateapp.data.dao.SubscriptionDao
+import ru.pikahk.outdateapp.data.dao.SyncDao
 import ru.pikahk.outdateapp.data.model.Category
 import ru.pikahk.outdateapp.data.model.Item
 import ru.pikahk.outdateapp.data.model.Product
@@ -28,4 +29,5 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun categoryDao(): CategoryDao
     abstract fun productDao(): ProductDao
     abstract fun subscriptionDao(): SubscriptionDao
+    abstract fun syncDao(): SyncDao
 }

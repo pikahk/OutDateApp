@@ -6,5 +6,9 @@ import ru.pikahk.outdateapp.data.model.Session
 interface SessionStore {
     val session: Flow<Session?>
 
+    val syncVersion: Flow<Long>
+
     suspend fun save(session: Session?)
+
+    suspend fun saveSyncVersion(version: Long)
 }

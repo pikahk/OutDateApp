@@ -247,4 +247,9 @@
   <string name="account_logout">Sign out</string>
   <string name="account_logout_title">Sign out?</string>
   <string name="account_logout_confirm">Sign out</string>
+  
+  <plurals name="account_logout_pending">
+    <item quantity="one">%d change hasn\'t been sent to the server yet and will be lost.</item>
+    <item quantity="other">%d changes haven\'t been sent to the server yet and will be lost.</item>
+  </plurals>
 </resources>

@@ -23,9 +23,14 @@ class AuthRepositoryTest {
     private class FakeSessionStore(initial: Session? = null) : SessionStore {
         val current = MutableStateFlow(initial)
         override val session = current
+        override val syncVersion = MutableStateFlow(0L)
 
         override suspend fun save(session: Session?) {
             current.value = session
+        }
+
+        override suspend fun saveSyncVersion(version: Long) {
+            syncVersion.value = version
         }
     }
 

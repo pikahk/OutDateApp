@@ -74,6 +74,11 @@ class OutDateApi(baseUrl: String, engine: HttpClientEngine) {
     suspend fun resetPassword(email: String, code: String, password: String): AuthResponse =
         post("auth/password/reset") { setJson(ResetPasswordRequest(email, code, password)) }.read()
 
+    suspend fun sync(token: String, request: SyncRequest): SyncResponse = post("sync") {
+        bearerAuth(token)
+        setJson(request)
+    }.read()
+
     private suspend fun post(path: String, block: HttpRequestBuilder.() -> Unit): HttpResponse =
         send(HttpMethod.Post, path, block)
 

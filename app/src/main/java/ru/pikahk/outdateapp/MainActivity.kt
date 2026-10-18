@@ -14,6 +14,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 import ru.pikahk.outdateapp.data.repository.ThemeMode
 import ru.pikahk.outdateapp.notifications.ExpiryWorker
+import ru.pikahk.outdateapp.sync.SyncScheduler
 import ru.pikahk.outdateapp.ui.OutDateApp
 import ru.pikahk.outdateapp.ui.theme.OutDateAppTheme
 
@@ -22,6 +23,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         lifecycleScope.launch { ExpiryWorker.schedule(applicationContext) }
+        SyncScheduler.start(applicationContext)
         setContent {
             val mainViewModel: MainViewModel = viewModel(factory = MainViewModel.factory(this))
             val theme by mainViewModel.theme.collectAsStateWithLifecycle()

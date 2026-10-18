@@ -56,10 +56,12 @@ fun ProfileScreen(
 ) {
     val stats by viewModel.stats.collectAsStateWithLifecycle()
     val email by accountViewModel.email.collectAsStateWithLifecycle()
+    val pendingChanges by accountViewModel.pendingChanges.collectAsStateWithLifecycle()
     ProfileScreen(
         stats = stats,
         month = viewModel.month,
         email = email,
+        pendingChanges = pendingChanges,
         onSettingsClick = onSettingsClick,
         onSignIn = onSignIn,
         onLogout = accountViewModel::logout
@@ -72,6 +74,7 @@ private fun ProfileScreen(
     stats: ItemStats?,
     month: YearMonth,
     email: String?,
+    pendingChanges: Int,
     onSettingsClick: () -> Unit,
     onSignIn: () -> Unit,
     onLogout: () -> Unit
@@ -147,7 +150,7 @@ private fun ProfileScreen(
             )
             if (email != null) {
                 HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-                LogoutRow(onLogout = onLogout)
+                LogoutRow(pendingChanges = pendingChanges, onLogout = onLogout)
             }
         }
     }
@@ -203,6 +206,7 @@ private fun ProfileScreenPreview() {
             ),
             month = YearMonth.of(2026, 10),
             email = "misha@mail.ru",
+            pendingChanges = 0,
             onSettingsClick = {},
             onSignIn = {},
             onLogout = {}
