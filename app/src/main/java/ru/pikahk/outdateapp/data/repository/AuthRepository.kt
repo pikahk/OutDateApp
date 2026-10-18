@@ -15,10 +15,12 @@ class AuthRepository(private val api: OutDateApi, private val store: SessionStor
         store.save(Session(response.token, response.email, emailVerified = false))
     }
 
-    suspend fun login(email: String, password: String) {
+    suspend fun login(email: String, password: String): Session {
         val response = api.login(email, password)
         val me = api.me(response.token)
-        store.save(Session(response.token, me.email, me.emailVerified))
+        val session = Session(response.token, me.email, me.emailVerified)
+        store.save(session)
+        return session
     }
 
     suspend fun verifyEmail(code: String) {

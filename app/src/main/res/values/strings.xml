@@ -210,4 +210,37 @@
     <item quantity="one">in %d day</item>
     <item quantity="other">in %d days</item>
   </plurals>
+
+  <string name="auth_sign_in_title">Sign in</string>
+  <string name="auth_email">Email</string>
+  <string name="auth_password">Password</string>
+  <string name="auth_new_password">New password</string>
+  <string name="auth_forgot_password">Forgot password?</string>
+  <string name="auth_sign_in">Sign in</string>
+  <string name="auth_create_account">Create account</string>
+  <string name="auth_skip">Continue without signing in</string>
+  <string name="auth_register_title">Sign up</string>
+  <string name="auth_register">Sign up</string>
+  <string name="auth_have_account">I already have an account</string>
+  <string name="auth_password_hint">8 to 64 characters</string>
+  <string name="auth_show_password">Show password</string>
+  <string name="auth_hide_password">Hide password</string>
+  <string name="auth_verify_title">Confirm email</string>
+  <string name="auth_code_sent">Code sent to %1$s</string>
+  <string name="auth_confirm">Confirm</string>
+  <string name="auth_resend">Send a new code</string>
+  <string name="auth_resend_in">New code in %1$s</string>
+  <string name="auth_change_email">Change email</string>
+  <string name="auth_reset_title">Reset password</string>
+  <string name="auth_get_code">Get code</string>
+  <string name="auth_save_password">Save password</string>
+  <string name="auth_error_invalid_email">Check the email address</string>
+  <string name="auth_error_email_taken">This email is already registered</string>
+  <string name="auth_error_invalid_credentials">Wrong email or password</string>
+  <string name="auth_error_invalid_code">Wrong code</string>
+  <string name="auth_error_code_expired">The code has expired, request a new one</string>
+  <string name="auth_error_too_soon">You can request a new code in a minute</string>
+  <string name="auth_error_mail">Couldn\'t send the email, try again later</string>
+  <string name="auth_error_network">No internet connection</string>
+  <string name="auth_error_server">The server is unavailable, try again later</string>
 </resources>

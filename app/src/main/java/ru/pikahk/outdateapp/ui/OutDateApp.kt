@@ -16,6 +16,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -36,8 +39,10 @@ import androidx.navigation.navDeepLink
 import androidx.navigation.toRoute
 import kotlinx.serialization.Serializable
 import ru.pikahk.outdateapp.R
+import ru.pikahk.outdateapp.StartScreen
 import ru.pikahk.outdateapp.notifications.NotificationPermissionRequest
 import ru.pikahk.outdateapp.ui.add.AddItemScreen
+import ru.pikahk.outdateapp.ui.auth.AuthFlow
 import ru.pikahk.outdateapp.ui.details.ItemDetailsScreen
 import ru.pikahk.outdateapp.ui.details.ItemDetailsViewModel
 import ru.pikahk.outdateapp.ui.items.ItemsScreen
@@ -85,7 +90,23 @@ private enum class Tab(val route: Any, @StringRes val label: Int, @DrawableRes v
 }
 
 @Composable
-fun OutDateApp() {
+fun OutDateApp(start: StartScreen, onAuthFinished: () -> Unit) {
+    var showAuth by rememberSaveable { mutableStateOf(start != StartScreen.MAIN) }
+    if (showAuth) {
+        AuthFlow(
+            startWithCode = start == StartScreen.VERIFY_EMAIL,
+            onFinished = {
+                onAuthFinished()
+                showAuth = false
+            }
+        )
+    } else {
+        MainNavigation()
+    }
+}
+
+@Composable
+private fun MainNavigation() {
     val context = LocalContext.current
     val itemsViewModel: ItemsViewModel = viewModel(factory = ItemsViewModel.factory(context))
     val itemsState by itemsViewModel.state.collectAsStateWithLifecycle()

@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.MutablePreferences
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.longPreferencesKey
@@ -47,6 +48,8 @@ class SettingsRepository(context: Context) {
         )
     }
 
+    val authPromptDone: Flow<Boolean> = store.data.map { it[AUTH_PROMPT_DONE] ?: false }
+
     suspend fun setReminderTime(time: LocalTime) {
         store.edit { it[REMINDER_MINUTES] = time.hour * 60 + time.minute }
     }
@@ -76,6 +79,10 @@ class SettingsRepository(context: Context) {
         return previous
     }
 
+    suspend fun markAuthPromptDone() {
+        store.edit { it[AUTH_PROMPT_DONE] = true }
+    }
+
     private fun MutablePreferences.put(key: Preferences.Key<String>, value: String?) {
         if (value == null) remove(key) else this[key] = value
     }
@@ -89,5 +96,6 @@ class SettingsRepository(context: Context) {
         val LIST_SORT = stringPreferencesKey("list_sort")
         val LIST_OPENED = stringPreferencesKey("list_opened")
         val LAST_OPENED_DAY = longPreferencesKey("last_opened_day")
+        val AUTH_PROMPT_DONE = booleanPreferencesKey("auth_prompt_done")
     }
 }

@@ -25,7 +25,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             val mainViewModel: MainViewModel = viewModel(factory = MainViewModel.factory(this))
             val theme by mainViewModel.theme.collectAsStateWithLifecycle()
+            val start by mainViewModel.start.collectAsStateWithLifecycle()
             val mode = theme ?: return@setContent
+            val startScreen = start ?: return@setContent
             val darkTheme = when (mode) {
                 ThemeMode.SYSTEM -> isSystemInDarkTheme()
                 ThemeMode.LIGHT -> false
@@ -40,7 +42,7 @@ class MainActivity : ComponentActivity() {
             }
 
             OutDateAppTheme(darkTheme = darkTheme) {
-                OutDateApp()
+                OutDateApp(start = startScreen, onAuthFinished = mainViewModel::finishAuthPrompt)
             }
         }
     }

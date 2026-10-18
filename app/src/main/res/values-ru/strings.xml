@@ -225,4 +225,37 @@
     <item quantity="many">через %d дней</item>
     <item quantity="other">через %d дня</item>
   </plurals>
+
+  <string name="auth_sign_in_title">Вход</string>
+  <string name="auth_email">Почта</string>
+  <string name="auth_password">Пароль</string>
+  <string name="auth_new_password">Новый пароль</string>
+  <string name="auth_forgot_password">Забыли пароль?</string>
+  <string name="auth_sign_in">Войти</string>
+  <string name="auth_create_account">Создать аккаунт</string>
+  <string name="auth_skip">Продолжить без входа</string>
+  <string name="auth_register_title">Регистрация</string>
+  <string name="auth_register">Зарегистрироваться</string>
+  <string name="auth_have_account">У меня уже есть аккаунт</string>
+  <string name="auth_password_hint">От 8 до 64 символов</string>
+  <string name="auth_show_password">Показать пароль</string>
+  <string name="auth_hide_password">Скрыть пароль</string>
+  <string name="auth_verify_title">Подтверждение почты</string>
+  <string name="auth_code_sent">Код отправлен на %1$s</string>
+  <string name="auth_confirm">Подтвердить</string>
+  <string name="auth_resend">Отправить новый код</string>
+  <string name="auth_resend_in">Новый код — через %1$s</string>
+  <string name="auth_change_email">Изменить почту</string>
+  <string name="auth_reset_title">Сброс пароля</string>
+  <string name="auth_get_code">Получить код</string>
+  <string name="auth_save_password">Сохранить пароль</string>
+  <string name="auth_error_invalid_email">Проверьте адрес почты</string>
+  <string name="auth_error_email_taken">Почта уже зарегистрирована</string>
+  <string name="auth_error_invalid_credentials">Неверная почта или пароль</string>
+  <string name="auth_error_invalid_code">Неверный код</string>
+  <string name="auth_error_code_expired">Код устарел, запросите новый</string>
+  <string name="auth_error_too_soon">Новый код можно запросить через минуту</string>
+  <string name="auth_error_mail">Не удалось отправить письмо, попробуйте позже</string>
+  <string name="auth_error_network">Нет подключения к интернету</string>
+  <string name="auth_error_server">Сервер недоступен, попробуйте позже</string>
 </resources>
