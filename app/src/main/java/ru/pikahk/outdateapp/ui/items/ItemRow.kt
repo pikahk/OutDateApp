@@ -83,7 +83,7 @@ private fun ItemBadge(item: ItemUi) {
         if (builtIn != null) {
             Icon(
                 painter = painterResource(builtIn.iconRes()),
-                contentDescription = item.category?.label(),
+                contentDescription = item.category.label(),
                 tint = content,
                 modifier = Modifier.size(22.dp)
             )

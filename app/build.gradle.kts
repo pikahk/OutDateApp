@@ -8,6 +8,8 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
 }
 
+val debugApiUrl = providers.gradleProperty("outdate.apiUrl").getOrElse("http://10.0.2.2:8080/")
+
 android {
     namespace = "ru.pikahk.outdateapp"
 
@@ -23,9 +25,14 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "API_URL", "\"https://api.outdateapp.ru/\"")
     }
 
     buildTypes {
+        debug {
+            buildConfigField("String", "API_URL", "\"$debugApiUrl\"")
+        }
         release {
 
             optimization {
@@ -36,6 +43,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     compileOptions {
@@ -46,6 +54,7 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "/META-INF/versions/9/previous-compilation-data.bin"
         }
     }
 }
@@ -76,6 +85,10 @@ dependencies {
     implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.kotlinx.serialization.core)
+    implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.okhttp)
+    implementation(libs.ktor.client.content.negotiation)
+    implementation(libs.ktor.serialization.kotlinx.json)
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
@@ -85,6 +98,7 @@ dependencies {
 
     testImplementation(libs.junit)
     testImplementation(libs.androidx.room.testing)
+    testImplementation(libs.ktor.client.mock)
 
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.junit)
