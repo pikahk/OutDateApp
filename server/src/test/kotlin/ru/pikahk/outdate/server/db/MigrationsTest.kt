@@ -2,6 +2,7 @@ package ru.pikahk.outdate.server.db
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 import org.jetbrains.exposed.v1.jdbc.transactions.transaction
 import ru.pikahk.outdate.server.TestDatabase
 
@@ -17,7 +18,10 @@ class MigrationsTest {
 
     @Test
     fun `миграции создают таблицу пользователей`() {
-        assertEquals(listOf("created_at", "email", "email_verified", "id", "password_hash"), columns("users"))
+        assertEquals(
+            listOf("created_at", "email", "email_verified", "id", "password_hash", "sync_version"),
+            columns("users")
+        )
     }
 
     @Test
@@ -31,5 +35,12 @@ class MigrationsTest {
             listOf("attempts", "code", "created_at", "expires_at", "purpose", "user_id"),
             columns("email_codes")
         )
+    }
+
+    @Test
+    fun `миграции создают таблицы для синхронизации`() {
+        for (table in listOf("categories", "items", "subscriptions", "products")) {
+            assertTrue(columns(table).containsAll(listOf("user_id", "updated_at", "version")), table)
+        }
     }
 }

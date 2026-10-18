@@ -18,6 +18,8 @@ import ru.pikahk.outdate.server.plugins.configureSerialization
 import ru.pikahk.outdate.server.plugins.configureStatusPages
 import ru.pikahk.outdate.server.routes.authRoutes
 import ru.pikahk.outdate.server.routes.healthRoutes
+import ru.pikahk.outdate.server.routes.syncRoutes
+import ru.pikahk.outdate.server.sync.SyncService
 
 fun main(args: Array<String>) = EngineMain.main(args)
 
@@ -29,6 +31,7 @@ fun Application.module() {
 
 fun Application.configure(database: Database, mailer: Mailer, clock: Clock = Clock.systemUTC()) {
     val authService = AuthService(database, mailer, clock)
+    val syncService = SyncService(database)
     configureSerialization()
     configureMonitoring()
     configureStatusPages()
@@ -36,5 +39,6 @@ fun Application.configure(database: Database, mailer: Mailer, clock: Clock = Clo
     routing {
         healthRoutes(database)
         authRoutes(authService)
+        syncRoutes(syncService)
     }
 }

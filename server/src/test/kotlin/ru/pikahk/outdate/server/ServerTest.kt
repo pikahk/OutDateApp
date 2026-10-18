@@ -39,6 +39,19 @@ class ServerTest(val client: HttpClient, val mailer: FakeMailer, val clock: Test
         assertEquals(HttpStatusCode.Created, response.status)
         return checkNotNull(response.field("token"))
     }
+
+    suspend fun registerVerified(email: String = uniqueEmail()): String {
+        val token = register(email)
+        val response = post("/auth/email/verify", "code" to mailer.lastCode(email), token = token)
+        assertEquals(HttpStatusCode.NoContent, response.status)
+        return token
+    }
+
+    suspend fun login(email: String, password: String = PASSWORD): String {
+        val response = post("/auth/login", "email" to email, "password" to password)
+        assertEquals(HttpStatusCode.OK, response.status)
+        return checkNotNull(response.field("token"))
+    }
 }
 
 fun serverTest(block: suspend ServerTest.() -> Unit) = testApplication {

@@ -1,9 +1,7 @@
 package ru.pikahk.outdate.server.routes
 
 import io.ktor.http.HttpStatusCode
-import io.ktor.server.application.ApplicationCall
 import io.ktor.server.auth.authenticate
-import io.ktor.server.auth.principal
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
@@ -12,8 +10,8 @@ import io.ktor.server.routing.post
 import io.ktor.server.routing.route
 import kotlinx.serialization.Serializable
 import ru.pikahk.outdate.server.auth.AuthService
-import ru.pikahk.outdate.server.auth.UserPrincipal
 import ru.pikahk.outdate.server.plugins.AUTH_SESSION
+import ru.pikahk.outdate.server.plugins.user
 
 @Serializable
 data class CredentialsRequest(val email: String, val password: String)
@@ -78,5 +76,3 @@ fun Route.authRoutes(authService: AuthService) {
         }
     }
 }
-
-private fun ApplicationCall.user(): UserPrincipal = checkNotNull(principal<UserPrincipal>())
