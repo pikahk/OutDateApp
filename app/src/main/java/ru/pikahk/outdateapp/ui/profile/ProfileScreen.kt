@@ -17,7 +17,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -29,7 +29,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -42,18 +41,41 @@ import ru.pikahk.outdateapp.domain.ItemStats
 import ru.pikahk.outdateapp.domain.Urgency
 import ru.pikahk.outdateapp.ui.LinkRow
 import ru.pikahk.outdateapp.ui.SectionTitle
+import ru.pikahk.outdateapp.ui.account.AccountRow
+import ru.pikahk.outdateapp.ui.account.AccountViewModel
+import ru.pikahk.outdateapp.ui.account.LogoutRow
 import ru.pikahk.outdateapp.ui.color
 import ru.pikahk.outdateapp.ui.theme.OutDateAppTheme
 
 @Composable
-fun ProfileScreen(viewModel: ProfileViewModel, onSettingsClick: () -> Unit) {
+fun ProfileScreen(
+    viewModel: ProfileViewModel,
+    accountViewModel: AccountViewModel,
+    onSettingsClick: () -> Unit,
+    onSignIn: () -> Unit
+) {
     val stats by viewModel.stats.collectAsStateWithLifecycle()
-    ProfileScreen(stats = stats, month = viewModel.month, onSettingsClick = onSettingsClick)
+    val email by accountViewModel.email.collectAsStateWithLifecycle()
+    ProfileScreen(
+        stats = stats,
+        month = viewModel.month,
+        email = email,
+        onSettingsClick = onSettingsClick,
+        onSignIn = onSignIn,
+        onLogout = accountViewModel::logout
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ProfileScreen(stats: ItemStats?, month: YearMonth, onSettingsClick: () -> Unit) {
+private fun ProfileScreen(
+    stats: ItemStats?,
+    month: YearMonth,
+    email: String?,
+    onSettingsClick: () -> Unit,
+    onSignIn: () -> Unit,
+    onLogout: () -> Unit
+) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -74,7 +96,7 @@ private fun ProfileScreen(stats: ItemStats?, month: YearMonth, onSettingsClick: 
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 20.dp, vertical = 8.dp)
         ) {
-            AccountRow()
+            AccountRow(email = email, onSignIn = onSignIn)
             if (stats != null) {
                 SectionTitle(stringResource(R.string.stats_now))
                 Row(
@@ -123,34 +145,11 @@ private fun ProfileScreen(stats: ItemStats?, month: YearMonth, onSettingsClick: 
                 onClick = onSettingsClick,
                 modifier = Modifier.padding(top = 28.dp)
             )
+            if (email != null) {
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                LogoutRow(onLogout = onLogout)
+            }
         }
-    }
-}
-
-@Composable
-private fun AccountRow() {
-    Row(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(14.dp)
-    ) {
-        Box(
-            modifier = Modifier
-                .size(48.dp)
-                .background(MaterialTheme.colorScheme.surfaceVariant, CircleShape),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.ic_person),
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
-        Text(
-            text = stringResource(R.string.profile_signed_out),
-            style = MaterialTheme.typography.bodyLarge,
-            fontWeight = FontWeight.Medium
-        )
     }
 }
 
@@ -203,7 +202,10 @@ private fun ProfileScreenPreview() {
                 wastedThisMonth = 2
             ),
             month = YearMonth.of(2026, 10),
-            onSettingsClick = {}
+            email = "misha@mail.ru",
+            onSettingsClick = {},
+            onSignIn = {},
+            onLogout = {}
         )
     }
 }

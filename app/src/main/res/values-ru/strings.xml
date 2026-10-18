@@ -258,4 +258,8 @@
   <string name="auth_error_mail">Не удалось отправить письмо, попробуйте позже</string>
   <string name="auth_error_network">Нет подключения к интернету</string>
   <string name="auth_error_server">Сервер недоступен, попробуйте позже</string>
+  
+  <string name="account_logout">Выйти из аккаунта</string>
+  <string name="account_logout_title">Выйти из аккаунта?</string>
+  <string name="account_logout_confirm">Выйти</string>
 </resources>

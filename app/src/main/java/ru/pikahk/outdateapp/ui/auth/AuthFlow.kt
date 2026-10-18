@@ -1,5 +1,6 @@
 package ru.pikahk.outdateapp.ui.auth
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.dropUnlessResumed
@@ -26,9 +27,10 @@ private data class ResetRequestRoute(val email: String = "")
 private data class ResetPasswordRoute(val email: String)
 
 @Composable
-fun AuthFlow(startWithCode: Boolean, onFinished: () -> Unit) {
+fun AuthFlow(startWithCode: Boolean, onFinished: () -> Unit, onCancel: (() -> Unit)? = null) {
     val context = LocalContext.current
     val navController = rememberNavController()
+    if (onCancel != null) BackHandler(onBack = onCancel)
 
     NavHost(
         navController = navController,
@@ -44,7 +46,8 @@ fun AuthFlow(startWithCode: Boolean, onFinished: () -> Unit) {
                 },
                 onRegister = dropUnlessResumed { navController.navigate(RegisterRoute) },
                 onForgotPassword = { email -> navController.navigate(ResetRequestRoute(email)) },
-                onSkip = onFinished
+                onSkip = if (onCancel == null) onFinished else null,
+                onBack = onCancel
             )
         }
         composable<RegisterRoute> {

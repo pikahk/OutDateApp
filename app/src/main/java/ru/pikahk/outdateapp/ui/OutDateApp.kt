@@ -6,6 +6,7 @@ import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.padding
@@ -41,6 +42,7 @@ import kotlinx.serialization.Serializable
 import ru.pikahk.outdateapp.R
 import ru.pikahk.outdateapp.StartScreen
 import ru.pikahk.outdateapp.notifications.NotificationPermissionRequest
+import ru.pikahk.outdateapp.ui.account.AccountViewModel
 import ru.pikahk.outdateapp.ui.add.AddItemScreen
 import ru.pikahk.outdateapp.ui.auth.AuthFlow
 import ru.pikahk.outdateapp.ui.details.ItemDetailsScreen
@@ -89,24 +91,37 @@ private enum class Tab(val route: Any, @StringRes val label: Int, @DrawableRes v
     PROFILE(ProfileRoute, R.string.profile_title, R.drawable.ic_person)
 }
 
+private enum class AuthMode { FIRST_LAUNCH, FROM_PROFILE }
+
 @Composable
 fun OutDateApp(start: StartScreen, onAuthFinished: () -> Unit) {
-    var showAuth by rememberSaveable { mutableStateOf(start != StartScreen.MAIN) }
-    if (showAuth) {
+    var authMode by rememberSaveable {
+        mutableStateOf(if (start == StartScreen.MAIN) null else AuthMode.FIRST_LAUNCH)
+    }
+    if (authMode == AuthMode.FIRST_LAUNCH) {
         AuthFlow(
             startWithCode = start == StartScreen.VERIFY_EMAIL,
             onFinished = {
                 onAuthFinished()
-                showAuth = false
+                authMode = null
             }
         )
-    } else {
-        MainNavigation()
+        return
+    }
+    Box {
+        MainNavigation(onSignIn = { authMode = AuthMode.FROM_PROFILE })
+        if (authMode == AuthMode.FROM_PROFILE) {
+            AuthFlow(
+                startWithCode = false,
+                onFinished = { authMode = null },
+                onCancel = { authMode = null }
+            )
+        }
     }
 }
 
 @Composable
-private fun MainNavigation() {
+private fun MainNavigation(onSignIn: () -> Unit) {
     val context = LocalContext.current
     val itemsViewModel: ItemsViewModel = viewModel(factory = ItemsViewModel.factory(context))
     val itemsState by itemsViewModel.state.collectAsStateWithLifecycle()
@@ -230,9 +245,12 @@ private fun MainNavigation() {
             }
             composable<ProfileRoute> {
                 val profileViewModel: ProfileViewModel = viewModel(factory = ProfileViewModel.factory(context))
+                val accountViewModel: AccountViewModel = viewModel(factory = AccountViewModel.factory(context))
                 ProfileScreen(
                     viewModel = profileViewModel,
-                    onSettingsClick = dropUnlessResumed { navController.navigate(SettingsRoute) }
+                    accountViewModel = accountViewModel,
+                    onSettingsClick = dropUnlessResumed { navController.navigate(SettingsRoute) },
+                    onSignIn = onSignIn
                 )
             }
             composable<SettingsRoute> {

@@ -243,4 +243,8 @@
   <string name="auth_error_mail">Couldn\'t send the email, try again later</string>
   <string name="auth_error_network">No internet connection</string>
   <string name="auth_error_server">The server is unavailable, try again later</string>
+  
+  <string name="account_logout">Sign out</string>
+  <string name="account_logout_title">Sign out?</string>
+  <string name="account_logout_confirm">Sign out</string>
 </resources>

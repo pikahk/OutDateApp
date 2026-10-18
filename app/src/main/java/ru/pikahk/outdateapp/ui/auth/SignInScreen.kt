@@ -19,7 +19,8 @@ fun SignInScreen(
     onSignedIn: (Session) -> Unit,
     onRegister: () -> Unit,
     onForgotPassword: (String) -> Unit,
-    onSkip: () -> Unit
+    onSkip: (() -> Unit)?,
+    onBack: (() -> Unit)?
 ) {
     val outcome = viewModel.outcome
     LaunchedEffect(outcome) {
@@ -30,7 +31,7 @@ fun SignInScreen(
     }
     AuthScaffold(
         title = null,
-        onBack = null,
+        onBack = onBack,
         actions = {
             FormError(viewModel.error)
             PrimaryButton(
@@ -40,7 +41,9 @@ fun SignInScreen(
                 onClick = viewModel::submit
             )
             LinkButton(text = stringResource(R.string.auth_create_account), onClick = onRegister)
-            LinkButton(text = stringResource(R.string.auth_skip), onClick = onSkip, quiet = true)
+            if (onSkip != null) {
+                LinkButton(text = stringResource(R.string.auth_skip), onClick = onSkip, quiet = true)
+            }
         }
     ) {
         ScreenTitle(stringResource(R.string.auth_sign_in_title))
