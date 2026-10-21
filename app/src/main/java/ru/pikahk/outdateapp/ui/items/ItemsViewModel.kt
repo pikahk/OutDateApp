@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import io.ktor.client.engine.okhttp.OkHttp
 import java.text.Collator
 import java.time.LocalDate
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,12 +21,16 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import ru.pikahk.outdateapp.BuildConfig
 import ru.pikahk.outdateapp.data.DatabaseProvider
 import ru.pikahk.outdateapp.data.model.Category
 import ru.pikahk.outdateapp.data.model.Item
+import ru.pikahk.outdateapp.data.remote.OpenFactsApi
 import ru.pikahk.outdateapp.data.repository.CategoryRepository
 import ru.pikahk.outdateapp.data.repository.ItemRepository
 import ru.pikahk.outdateapp.data.repository.ListPreferences
+import ru.pikahk.outdateapp.data.repository.ProductLookup
+import ru.pikahk.outdateapp.data.repository.ProductRepository
 import ru.pikahk.outdateapp.data.repository.SettingsRepository
 import ru.pikahk.outdateapp.domain.Urgency
 import ru.pikahk.outdateapp.domain.daysLeft
@@ -36,9 +41,12 @@ import ru.pikahk.outdateapp.ui.CategoryUi
 import ru.pikahk.outdateapp.ui.add.ItemDraft
 import ru.pikahk.outdateapp.ui.toUi
 
+private const val OPEN_FACTS_USER_AGENT = "outDate/${BuildConfig.VERSION_NAME} (noreply@outdateapp.ru)"
+
 class ItemsViewModel(
     private val items: ItemRepository,
     private val categories: CategoryRepository,
+    private val products: ProductRepository,
     private val settings: SettingsRepository
 ) : ViewModel() {
 
@@ -137,19 +145,30 @@ class ItemsViewModel(
         viewModelScope.launch { items.markDeleted(id) }
     }
 
+    suspend fun lookupProduct(barcode: String): ProductLookup = products.lookup(barcode)
+
     fun addItem(draft: ItemDraft) {
         viewModelScope.launch {
             items.save(
                 Item(
                     name = draft.name,
                     categoryId = draft.categoryId,
-                    barcode = null,
+                    barcode = draft.barcode,
                     expiresAt = draft.expiresAt,
                     daysAfterOpening = draft.daysAfterOpening,
                     openedAt = draft.openedAt,
                     notifyDaysBefore = draft.notifyDaysBefore
                 )
             )
+            if (draft.barcode != null) {
+                products.remember(
+                    barcode = draft.barcode,
+                    name = draft.name,
+                    categoryId = draft.categoryId,
+                    daysAfterOpening = draft.daysAfterOpening,
+                    notifyDaysBefore = draft.notifyDaysBefore
+                )
+            }
         }
     }
 
@@ -198,6 +217,10 @@ class ItemsViewModel(
                 ItemsViewModel(
                     items = ItemRepository(database.itemDao()),
                     categories = CategoryRepository(database.categoryDao()),
+                    products = ProductRepository(
+                        dao = database.productDao(),
+                        openFacts = OpenFactsApi(OkHttp.create(), OPEN_FACTS_USER_AGENT)
+                    ),
                     settings = SettingsRepository(context)
                 )
             }

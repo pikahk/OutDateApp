@@ -8,5 +8,6 @@ data class ItemDraft(
     val expiresAt: LocalDate,
     val daysAfterOpening: Int?,
     val openedAt: LocalDate?,
-    val notifyDaysBefore: Int
+    val notifyDaysBefore: Int,
+    val barcode: String? = null
 )
