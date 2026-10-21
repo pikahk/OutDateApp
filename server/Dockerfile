@@ -4,7 +4,8 @@ COPY gradlew ./
 COPY gradle gradle
 COPY server/docker/settings.gradle.kts settings.gradle.kts
 COPY server server
-RUN ./gradlew --no-daemon -Dorg.gradle.jvmargs=-Xmx1g -Pkotlin.compiler.execution.strategy=in-process :server:installDist
+RUN ./gradlew --no-daemon -Dorg.gradle.jvmargs=-Xmx1g -Pkotlin.compiler.execution.strategy=in-process :server:installDist \
+    && chmod -R a+rX server/build/install
 
 FROM eclipse-temurin:25-jre-noble
 RUN useradd --system --uid 10001 outdate
