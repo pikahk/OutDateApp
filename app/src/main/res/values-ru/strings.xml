@@ -285,4 +285,6 @@
   <string name="help_subscriptions_text">На вкладке «Подписки» можно вести платные подписки: цена, период списания и напоминание перед списанием.</string>
   <string name="help_account_title">Аккаунт и синхронизация</string>
   <string name="help_account_text">Без входа данные хранятся только на этом телефоне. После входа они сохраняются на сервере и появляются на других устройствах с тем же аккаунтом.</string>
+
+  <string name="language_system">Как в системе</string>
 </resources>

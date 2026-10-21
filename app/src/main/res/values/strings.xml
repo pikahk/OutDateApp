@@ -267,4 +267,8 @@
   <string name="help_subscriptions_text">On the Subscriptions tab you can keep track of paid subscriptions: the price, the billing period and a reminder before each charge.</string>
   <string name="help_account_title">Account and sync</string>
   <string name="help_account_text">Without an account your data is stored only on this phone. Once you sign in, it is saved on the server and appears on your other devices with the same account.</string>
+
+  <string name="language_system">System</string>
+  <string name="language_russian" translatable="false">Русский</string>
+  <string name="language_english" translatable="false">English</string>
 </resources>

@@ -1,10 +1,5 @@
 package ru.pikahk.outdateapp.ui.settings
 
-import android.content.Context
-import android.content.Intent
-import android.net.Uri
-import android.os.Build
-import android.provider.Settings
 import android.text.format.DateFormat
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -67,11 +62,18 @@ private val themeOptions = listOf(
     ThemeMode.DARK to R.string.theme_dark
 )
 
+private val languageOptions = listOf(
+    AppLanguage.SYSTEM to R.string.language_system,
+    AppLanguage.RUSSIAN to R.string.language_russian,
+    AppLanguage.ENGLISH to R.string.language_english
+)
+
 @Composable
 fun SettingsScreen(viewModel: SettingsViewModel, onBack: () -> Unit) {
     val settings by viewModel.settings.collectAsStateWithLifecycle()
     val context = LocalContext.current
     var notificationsEnabled by remember { mutableStateOf(areNotificationsEnabled(context)) }
+    var language by remember { mutableStateOf(currentAppLanguage()) }
 
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
         notificationsEnabled = areNotificationsEnabled(context)
@@ -85,8 +87,11 @@ fun SettingsScreen(viewModel: SettingsViewModel, onBack: () -> Unit) {
         onReminderTimeChange = viewModel::setReminderTime,
         onDefaultReminderChange = viewModel::setDefaultNotifyDaysBefore,
         onThemeChange = viewModel::setTheme,
-        showLanguage = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU,
-        onLanguageClick = { openLanguageSettings(context) }
+        language = language,
+        onLanguageChange = {
+            language = it
+            setAppLanguage(it)
+        }
     )
 }
 
@@ -100,8 +105,8 @@ private fun SettingsScreen(
     onReminderTimeChange: (LocalTime) -> Unit,
     onDefaultReminderChange: (Int) -> Unit,
     onThemeChange: (ThemeMode) -> Unit,
-    showLanguage: Boolean,
-    onLanguageClick: () -> Unit
+    language: AppLanguage,
+    onLanguageChange: (AppLanguage) -> Unit
 ) {
     var pickingTime by rememberSaveable { mutableStateOf(false) }
 
@@ -164,13 +169,10 @@ private fun SettingsScreen(
             LabeledField(label = stringResource(R.string.settings_theme)) {
                 Segmented(options = themeOptions, selected = settings.theme, onSelect = onThemeChange)
             }
-            if (showLanguage) {
-                LinkRow(
-                    title = stringResource(R.string.settings_language),
-                    value = rememberLanguageName(),
-                    onClick = onLanguageClick,
-                    modifier = Modifier.padding(top = 8.dp)
-                )
+            Column(modifier = Modifier.padding(top = 12.dp)) {
+                LabeledField(label = stringResource(R.string.settings_language)) {
+                    Segmented(options = languageOptions, selected = language, onSelect = onLanguageChange)
+                }
             }
         }
 
@@ -231,18 +233,6 @@ private fun rememberTimeText(time: LocalTime): String {
     }
 }
 
-@Composable
-private fun rememberLanguageName(): String {
-    val locale = LocalConfiguration.current.locales[0]
-    return remember(locale) { locale.getDisplayLanguage(locale).replaceFirstChar { it.titlecase(locale) } }
-}
-
-private fun openLanguageSettings(context: Context) {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return
-    val intent = Intent(Settings.ACTION_APP_LOCALE_SETTINGS, Uri.fromParts("package", context.packageName, null))
-    context.startActivity(intent)
-}
-
 @Preview(showBackground = true)
 @Composable
 private fun SettingsScreenPreview() {
@@ -255,8 +245,8 @@ private fun SettingsScreenPreview() {
             onReminderTimeChange = {},
             onDefaultReminderChange = {},
             onThemeChange = {},
-            showLanguage = true,
-            onLanguageClick = {}
+            language = AppLanguage.SYSTEM,
+            onLanguageChange = {}
         )
     }
 }
