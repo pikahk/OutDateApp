@@ -52,6 +52,7 @@ fun ProfileScreen(
     viewModel: ProfileViewModel,
     accountViewModel: AccountViewModel,
     onSettingsClick: () -> Unit,
+    onHelpClick: () -> Unit,
     onSignIn: () -> Unit
 ) {
     val stats by viewModel.stats.collectAsStateWithLifecycle()
@@ -63,6 +64,7 @@ fun ProfileScreen(
         email = email,
         pendingChanges = pendingChanges,
         onSettingsClick = onSettingsClick,
+        onHelpClick = onHelpClick,
         onSignIn = onSignIn,
         onLogout = accountViewModel::logout
     )
@@ -76,6 +78,7 @@ private fun ProfileScreen(
     email: String?,
     pendingChanges: Int,
     onSettingsClick: () -> Unit,
+    onHelpClick: () -> Unit,
     onSignIn: () -> Unit,
     onLogout: () -> Unit
 ) {
@@ -148,6 +151,8 @@ private fun ProfileScreen(
                 onClick = onSettingsClick,
                 modifier = Modifier.padding(top = 28.dp)
             )
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+            LinkRow(title = stringResource(R.string.help_title), onClick = onHelpClick)
             if (email != null) {
                 HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                 LogoutRow(pendingChanges = pendingChanges, onLogout = onLogout)
@@ -208,6 +213,7 @@ private fun ProfileScreenPreview() {
             email = "misha@mail.ru",
             pendingChanges = 0,
             onSettingsClick = {},
+            onHelpClick = {},
             onSignIn = {},
             onLogout = {}
         )

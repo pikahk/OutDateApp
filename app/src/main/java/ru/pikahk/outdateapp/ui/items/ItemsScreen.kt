@@ -50,7 +50,12 @@ import ru.pikahk.outdateapp.ui.color
 import ru.pikahk.outdateapp.ui.theme.OutDateAppTheme
 
 @Composable
-fun ItemsScreen(viewModel: ItemsViewModel, onAddClick: () -> Unit, onItemClick: (String) -> Unit) {
+fun ItemsScreen(
+    viewModel: ItemsViewModel,
+    onAddClick: () -> Unit,
+    onItemClick: (String) -> Unit,
+    onHelpClick: () -> Unit
+) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val missedExpiries by viewModel.missedExpiries.collectAsStateWithLifecycle()
     val context = LocalContext.current
@@ -71,6 +76,7 @@ fun ItemsScreen(viewModel: ItemsViewModel, onAddClick: () -> Unit, onItemClick: 
         onDismissNotifications = { notificationsBannerHidden = true },
         onAddClick = onAddClick,
         onItemClick = onItemClick,
+        onHelpClick = onHelpClick,
         onItemDelete = viewModel::deleteItem,
         onCategorySelect = viewModel::selectCategory,
         onCategoryDelete = viewModel::deleteCategory,
@@ -91,6 +97,7 @@ private fun ItemsScreen(
     onDismissNotifications: () -> Unit,
     onAddClick: () -> Unit,
     onItemClick: (String) -> Unit,
+    onHelpClick: () -> Unit,
     onItemDelete: (String) -> Unit,
     onCategorySelect: (String?) -> Unit,
     onCategoryDelete: (String) -> Unit,
@@ -121,16 +128,18 @@ private fun ItemsScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = onAddClick,
-                shape = RoundedCornerShape(18.dp),
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_add),
-                    contentDescription = stringResource(R.string.add_item)
-                )
+            if (state.hasItems) {
+                FloatingActionButton(
+                    onClick = onAddClick,
+                    shape = RoundedCornerShape(18.dp),
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_add),
+                        contentDescription = stringResource(R.string.add_item)
+                    )
+                }
             }
         }
     ) { padding ->
@@ -148,12 +157,19 @@ private fun ItemsScreen(
                     onSelect = onCategorySelect,
                     onDelete = onCategoryDelete
                 )
-                if (state.groups.isEmpty()) {
+                if (!state.hasItems) {
                     banners()
-                    val message = when {
-                        !state.hasItems -> R.string.items_empty
-                        state.isSearching || state.opened != OpenedFilter.ALL -> R.string.search_empty
-                        else -> R.string.items_empty_category
+                    EmptyItems(
+                        onAddClick = onAddClick,
+                        onHelpClick = onHelpClick,
+                        modifier = Modifier.fillMaxWidth().weight(1f)
+                    )
+                } else if (state.groups.isEmpty()) {
+                    banners()
+                    val message = if (state.isSearching || state.opened != OpenedFilter.ALL) {
+                        R.string.search_empty
+                    } else {
+                        R.string.items_empty_category
                     }
                     Column(
                         modifier = Modifier.fillMaxWidth().weight(1f),
@@ -164,10 +180,8 @@ private fun ItemsScreen(
                             text = stringResource(message),
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
-                        if (state.hasItems) {
-                            TextButton(onClick = onResetFilters) {
-                                Text(stringResource(R.string.reset_filters))
-                            }
+                        TextButton(onClick = onResetFilters) {
+                            Text(stringResource(R.string.reset_filters))
                         }
                     }
                 } else {
@@ -292,6 +306,7 @@ private fun ItemsScreenPreview() {
             onDismissNotifications = {},
             onAddClick = {},
             onItemClick = {},
+            onHelpClick = {},
             onItemDelete = {},
             onCategorySelect = {},
             onCategoryDelete = {},

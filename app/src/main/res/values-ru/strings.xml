@@ -8,7 +8,10 @@
 
   <string name="items_title">Мои сроки</string>
   <string name="add_item">Добавить</string>
-  <string name="items_empty">Нет продуктов</string>
+  <string name="items_empty">Здесь пока пусто</string>
+  <string name="items_empty_hint">Добавьте первый продукт, и приложение напомнит, когда срок подойдёт к концу.</string>
+  <string name="items_add_first">Добавить продукт</string>
+  <string name="items_help">Как пользоваться</string>
 
   <string name="search">Поиск</string>
   <string name="search_clear">Очистить</string>
@@ -269,4 +272,17 @@
     <item quantity="many">%d изменений ещё не отправлены на сервер и будут потеряны.</item>
     <item quantity="other">%d изменения ещё не отправлены на сервер и будут потеряны.</item>
   </plurals>
+
+
+  <string name="help_title">Помощь</string>
+  <string name="help_adding_title">Добавление продукта</string>
+  <string name="help_adding_text">Нажмите «+» на главном экране, укажите название и срок годности: дату с упаковки или дату изготовления и срок хранения. Если на упаковке только месяц и год, сроком считается последний день месяца.</string>
+  <string name="help_opening_title">Срок после вскрытия</string>
+  <string name="help_opening_text">Многие продукты после вскрытия хранятся меньше, чем запечатанные. Нажмите «Открыть сегодня» в карточке продукта, и приложение пересчитает срок: дата вскрытия плюс срок после вскрытия, но не позже даты с упаковки.\n\nПоэтому после вскрытия дней может стать меньше. Если отметили по ошибке, нажмите «Отменить вскрытие».</string>
+  <string name="help_notifications_title">Уведомления</string>
+  <string name="help_notifications_text">Каждый день в выбранное время приложение проверяет сроки и напоминает о продуктах, срок которых подходит к концу. За сколько дней напоминать, задаётся у каждого продукта, значение по умолчанию выбирается в настройках.</string>
+  <string name="help_subscriptions_title">Подписки</string>
+  <string name="help_subscriptions_text">На вкладке «Подписки» можно вести платные подписки: цена, период списания и напоминание перед списанием.</string>
+  <string name="help_account_title">Аккаунт и синхронизация</string>
+  <string name="help_account_text">Без входа данные хранятся только на этом телефоне. После входа они сохраняются на сервере и появляются на других устройствах с тем же аккаунтом.</string>
 </resources>

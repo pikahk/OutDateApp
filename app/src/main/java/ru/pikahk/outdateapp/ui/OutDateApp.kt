@@ -47,6 +47,7 @@ import ru.pikahk.outdateapp.ui.add.AddItemScreen
 import ru.pikahk.outdateapp.ui.auth.AuthFlow
 import ru.pikahk.outdateapp.ui.details.ItemDetailsScreen
 import ru.pikahk.outdateapp.ui.details.ItemDetailsViewModel
+import ru.pikahk.outdateapp.ui.help.HelpScreen
 import ru.pikahk.outdateapp.ui.items.ItemsScreen
 import ru.pikahk.outdateapp.ui.items.ItemsViewModel
 import ru.pikahk.outdateapp.ui.profile.ProfileScreen
@@ -84,6 +85,9 @@ private object ProfileRoute
 
 @Serializable
 private object SettingsRoute
+
+@Serializable
+private object HelpRoute
 
 private enum class Tab(val route: Any, @StringRes val label: Int, @DrawableRes val icon: Int) {
     ITEMS(ItemsRoute, R.string.tab_items, R.drawable.ic_notification),
@@ -186,7 +190,8 @@ private fun MainNavigation(onSignIn: () -> Unit) {
                     onAddClick = dropUnlessResumed { navController.navigate(AddItemRoute) },
                     onItemClick = { id ->
                         if (entry.isResumed()) navController.navigate(ItemDetailsRoute(id))
-                    }
+                    },
+                    onHelpClick = dropUnlessResumed { navController.navigate(HelpRoute) }
                 )
             }
             composable<AddItemRoute> { entry ->
@@ -250,6 +255,7 @@ private fun MainNavigation(onSignIn: () -> Unit) {
                     viewModel = profileViewModel,
                     accountViewModel = accountViewModel,
                     onSettingsClick = dropUnlessResumed { navController.navigate(SettingsRoute) },
+                    onHelpClick = dropUnlessResumed { navController.navigate(HelpRoute) },
                     onSignIn = onSignIn
                 )
             }
@@ -259,6 +265,9 @@ private fun MainNavigation(onSignIn: () -> Unit) {
                     viewModel = settingsViewModel,
                     onBack = dropUnlessResumed { navController.popBackStack() }
                 )
+            }
+            composable<HelpRoute> {
+                HelpScreen(onBack = dropUnlessResumed { navController.popBackStack() })
             }
         }
     }
