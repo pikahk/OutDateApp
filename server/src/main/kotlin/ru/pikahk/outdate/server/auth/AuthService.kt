@@ -3,7 +3,6 @@ package ru.pikahk.outdate.server.auth
 import io.ktor.http.HttpStatusCode
 import java.security.MessageDigest
 import java.security.SecureRandom
-import java.sql.SQLException
 import java.time.Clock
 import java.time.Duration
 import java.time.OffsetDateTime
@@ -26,11 +25,11 @@ import org.jetbrains.exposed.v1.jdbc.update
 import org.slf4j.LoggerFactory
 import ru.pikahk.outdate.server.db.SessionsTable
 import ru.pikahk.outdate.server.db.UsersTable
+import ru.pikahk.outdate.server.db.isUniqueViolation
 import ru.pikahk.outdate.server.mail.Mailer
 import ru.pikahk.outdate.server.plugins.ApiException
 
 private const val TOKEN_BYTES = 32
-private const val UNIQUE_VIOLATION = "23505"
 private val SESSION_LIFETIME: Duration = Duration.ofDays(90)
 
 data class AuthSession(val token: String, val email: String)
@@ -174,6 +173,3 @@ class AuthService(
 
 private fun hashToken(token: String): String =
     HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(token.toByteArray()))
-
-private fun Throwable.isUniqueViolation(): Boolean =
-    generateSequence(this) { it.cause }.any { it is SQLException && it.sqlState == UNIQUE_VIOLATION }

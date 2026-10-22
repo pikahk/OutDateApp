@@ -3,7 +3,8 @@ package ru.pikahk.outdate.server.sync
 import org.jetbrains.exposed.v1.core.ResultRow
 import org.jetbrains.exposed.v1.core.statements.UpdateBuilder
 import ru.pikahk.outdate.server.db.CategoriesTable
-import ru.pikahk.outdate.server.db.ItemsTable
+import ru.pikahk.outdate.server.db.FamilyItemsTable
+import ru.pikahk.outdate.server.db.ItemTable
 import ru.pikahk.outdate.server.db.ProductsTable
 import ru.pikahk.outdate.server.db.SubscriptionsTable
 
@@ -13,16 +14,16 @@ fun UpdateBuilder<*>.fill(category: CategoryDto) {
     this[CategoriesTable.isDeleted] = category.isDeleted
 }
 
-fun UpdateBuilder<*>.fill(item: ItemDto) {
-    this[ItemsTable.name] = item.name
-    this[ItemsTable.categoryId] = item.categoryId
-    this[ItemsTable.barcode] = item.barcode
-    this[ItemsTable.expiresAt] = item.expiresAt
-    this[ItemsTable.daysAfterOpening] = item.daysAfterOpening
-    this[ItemsTable.openedAt] = item.openedAt
-    this[ItemsTable.notifyDaysBefore] = item.notifyDaysBefore
-    this[ItemsTable.createdAt] = item.createdAt
-    this[ItemsTable.isDeleted] = item.isDeleted
+fun UpdateBuilder<*>.fill(table: ItemTable, item: ItemDto) {
+    this[table.name] = item.name
+    this[table.categoryId] = item.categoryId
+    this[table.barcode] = item.barcode
+    this[table.expiresAt] = item.expiresAt
+    this[table.daysAfterOpening] = item.daysAfterOpening
+    this[table.openedAt] = item.openedAt
+    this[table.notifyDaysBefore] = item.notifyDaysBefore
+    this[table.createdAt] = item.createdAt
+    this[table.isDeleted] = item.isDeleted
 }
 
 fun UpdateBuilder<*>.fill(subscription: SubscriptionDto) {
@@ -52,18 +53,19 @@ fun ResultRow.toCategory() = CategoryDto(
     updatedAt = this[CategoriesTable.updatedAt]
 )
 
-fun ResultRow.toItem() = ItemDto(
-    id = this[ItemsTable.key],
-    name = this[ItemsTable.name],
-    categoryId = this[ItemsTable.categoryId],
-    barcode = this[ItemsTable.barcode],
-    expiresAt = this[ItemsTable.expiresAt],
-    daysAfterOpening = this[ItemsTable.daysAfterOpening],
-    openedAt = this[ItemsTable.openedAt],
-    notifyDaysBefore = this[ItemsTable.notifyDaysBefore],
-    createdAt = this[ItemsTable.createdAt],
-    isDeleted = this[ItemsTable.isDeleted],
-    updatedAt = this[ItemsTable.updatedAt]
+fun ResultRow.toItem(table: ItemTable) = ItemDto(
+    id = this[table.key],
+    name = this[table.name],
+    categoryId = this[table.categoryId],
+    barcode = this[table.barcode],
+    expiresAt = this[table.expiresAt],
+    daysAfterOpening = this[table.daysAfterOpening],
+    openedAt = this[table.openedAt],
+    notifyDaysBefore = this[table.notifyDaysBefore],
+    createdAt = this[table.createdAt],
+    isDeleted = this[table.isDeleted],
+    addedBy = if (table is FamilyItemsTable) this[table.addedBy] else null,
+    updatedAt = this[table.updatedAt]
 )
 
 fun ResultRow.toSubscription() = SubscriptionDto(

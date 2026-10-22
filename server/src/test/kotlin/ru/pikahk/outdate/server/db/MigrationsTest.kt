@@ -43,4 +43,12 @@ class MigrationsTest {
             assertTrue(columns(table).containsAll(listOf("user_id", "updated_at", "version")), table)
         }
     }
+
+    @Test
+    fun `миграции создают таблицы для семейных групп`() {
+        assertEquals(listOf("created_at", "id", "name", "owner_id", "sync_version"), columns("families"))
+        assertEquals(listOf("family_id", "joined_at", "name", "user_id"), columns("family_members"))
+        assertEquals(listOf("code", "expires_at", "family_id"), columns("family_invites"))
+        assertTrue(columns("family_items").containsAll(listOf("family_id", "added_by", "updated_at", "version")))
+    }
 }

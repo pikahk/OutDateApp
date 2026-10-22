@@ -34,13 +34,13 @@ object EmailCodesTable : Table("email_codes") {
     override val primaryKey = PrimaryKey(userId, purpose)
 }
 
-abstract class SyncedTable(name: String, keyColumn: String) : Table(name) {
-    val userId = javaUUID("user_id").references(UsersTable.id)
+abstract class SyncedTable(name: String, keyColumn: String, ownerColumn: String = "user_id") : Table(name) {
+    val owner = javaUUID(ownerColumn)
     val key = text(keyColumn)
     val updatedAt = long("updated_at")
     val version = long("version")
 
-    override val primaryKey = PrimaryKey(userId, key)
+    override val primaryKey = PrimaryKey(owner, key)
 }
 
 object CategoriesTable : SyncedTable("categories", "id") {
@@ -49,7 +49,7 @@ object CategoriesTable : SyncedTable("categories", "id") {
     val isDeleted = bool("is_deleted")
 }
 
-object ItemsTable : SyncedTable("items", "id") {
+open class ItemTable(name: String, ownerColumn: String) : SyncedTable(name, "id", ownerColumn) {
     val name = text("name")
     val categoryId = text("category_id").nullable()
     val barcode = text("barcode").nullable()
@@ -60,6 +60,8 @@ object ItemsTable : SyncedTable("items", "id") {
     val createdAt = long("created_at")
     val isDeleted = bool("is_deleted")
 }
+
+object ItemsTable : ItemTable("items", "user_id")
 
 object SubscriptionsTable : SyncedTable("subscriptions", "id") {
     val name = text("name")
@@ -78,4 +80,34 @@ object ProductsTable : SyncedTable("products", "barcode") {
     val categoryId = text("category_id").nullable()
     val defaultDaysAfterOpening = integer("default_days_after_opening").nullable()
     val defaultNotifyDaysBefore = integer("default_notify_days_before").nullable()
+}
+
+object FamiliesTable : Table("families") {
+    val id = javaUUID("id")
+    val name = text("name")
+    val ownerId = javaUUID("owner_id").references(UsersTable.id)
+    val syncVersion = long("sync_version").default(0)
+
+    override val primaryKey = PrimaryKey(id)
+}
+
+object FamilyMembersTable : Table("family_members") {
+    val userId = javaUUID("user_id").references(UsersTable.id)
+    val familyId = javaUUID("family_id").references(FamiliesTable.id)
+    val name = text("name")
+    val joinedAt = timestampWithTimeZone("joined_at")
+
+    override val primaryKey = PrimaryKey(userId)
+}
+
+object FamilyInvitesTable : Table("family_invites") {
+    val familyId = javaUUID("family_id").references(FamiliesTable.id)
+    val code = text("code")
+    val expiresAt = timestampWithTimeZone("expires_at")
+
+    override val primaryKey = PrimaryKey(familyId)
+}
+
+object FamilyItemsTable : ItemTable("family_items", "family_id") {
+    val addedBy = text("added_by")
 }

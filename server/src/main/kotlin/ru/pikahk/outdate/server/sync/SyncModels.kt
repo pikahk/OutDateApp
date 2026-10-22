@@ -52,6 +52,7 @@ data class ItemDto(
     val notifyDaysBefore: Int,
     val createdAt: Long,
     val isDeleted: Boolean = false,
+    val addedBy: String? = null,
     override val updatedAt: Long
 ) : SyncRecord {
     override val key get() = id
