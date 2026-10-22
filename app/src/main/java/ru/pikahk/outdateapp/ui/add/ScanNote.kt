@@ -12,7 +12,8 @@ enum class ScanNote(@StringRes val title: Int, @StringRes val text: Int?, val su
     NOT_FOUND(R.string.scan_not_found, R.string.scan_fill_manually, false),
     OFFLINE(R.string.scan_offline, R.string.scan_fill_manually, false),
     UNAVAILABLE(R.string.scan_unavailable, R.string.scan_fill_manually, false),
-    NO_CAMERA(R.string.scan_no_camera, null, false)
+    NO_CAMERA(R.string.scan_no_camera, null, false),
+    PRODUCTION_DATE(R.string.date_production_found, R.string.date_enter_shelf_life, true)
 }
 
 fun ProductLookup.toNote(): ScanNote = when (this) {

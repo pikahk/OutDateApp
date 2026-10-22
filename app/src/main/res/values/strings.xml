@@ -288,4 +288,23 @@
   <string name="scan_fill_manually">Fill it in yourself, next time this product will be filled in automatically.</string>
   <string name="scan_no_camera">Scanning is unavailable without camera access</string>
   <string name="scan_open_settings">Open settings</string>
+
+  <string name="help_barcode_title">Barcode scanning</string>
+  <string name="help_barcode_text">A barcode is the same on every package of a product and holds no batch data. That is why scanning fills in only the name and category, and the expiry date always comes from the package. If the product is not found, fill it in yourself: next time it will be filled in automatically.</string>
+  <string name="help_dates_title">Date recognition</string>
+  <string name="help_dates_text">Tap “Recognize date” and point the camera at the date on the package. If there are several dates, the later one is taken as the expiry date and the earlier one as the production date. If there is one date and it is unclear what it means, the app will ask.\n\nRecognition is only a helper and can make mistakes. Check the date before saving: you are responsible for the data.</string>
+
+  <string name="date_recognize">Recognize date</string>
+  <string name="date_hint">Point the camera at the date on the package</string>
+  <string name="date_again">Try again</string>
+  <string name="date_confirm">Confirm</string>
+  <string name="date_question">What does the date %1$s mean?</string>
+  <string name="date_failed_title">Can’t recognize the date</string>
+  <string name="date_failed_text">Try in better light, turn on the flashlight or enter the date yourself.</string>
+  <string name="date_manual">Enter manually</string>
+  <string name="date_continue">Continue</string>
+  <string name="date_notice_title">Date recognition</string>
+  <string name="date_notice_text">The app can make mistakes: dates on packages are printed in many ways. Check the date before saving, you are responsible for the data.</string>
+  <string name="date_production_found">Production date recognized</string>
+  <string name="date_enter_shelf_life">Enter the shelf life from the package.</string>
 </resources>

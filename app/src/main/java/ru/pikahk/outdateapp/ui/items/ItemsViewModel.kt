@@ -101,6 +101,12 @@ class ItemsViewModel(
             initialValue = emptyList()
         )
 
+    val dateNoticeShown: StateFlow<Boolean> = settings.dateNoticeShown.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = false
+    )
+
     init {
         viewModelScope.launch { categories.addDefaults() }
         viewModelScope.launch { lastOpened.value = settings.markOpened(LocalDate.now()) }
@@ -146,6 +152,10 @@ class ItemsViewModel(
     }
 
     suspend fun lookupProduct(barcode: String): ProductLookup = products.lookup(barcode)
+
+    fun markDateNoticeShown() {
+        viewModelScope.launch { settings.markDateNoticeShown() }
+    }
 
     fun addItem(draft: ItemDraft) {
         viewModelScope.launch {

@@ -304,4 +304,23 @@
   <string name="scan_fill_manually">Заполните вручную, в следующий раз этот товар заполнится сам.</string>
   <string name="scan_no_camera">Без доступа к камере сканирование недоступно</string>
   <string name="scan_open_settings">Открыть настройки</string>
+
+  <string name="help_barcode_title">Сканирование штрихкода</string>
+  <string name="help_barcode_text">Штрихкод одинаковый на всех упаковках товара и не содержит данных о партии. Поэтому по нему заполняются только название и категория, а срок годности всегда берётся с упаковки. Если товар не найден, заполните его вручную: в следующий раз он заполнится сам.</string>
+  <string name="help_dates_title">Распознавание даты</string>
+  <string name="help_dates_text">Нажмите «Распознать дату» и наведите камеру на дату на упаковке. Если дат несколько, более поздняя считается сроком годности, а более ранняя — датой изготовления. Если дата одна и непонятно, что она означает, приложение спросит.\n\nРаспознавание — вспомогательная функция и может ошибаться. Проверьте дату перед сохранением: за правильность данных отвечаете вы.</string>
+
+  <string name="date_recognize">Распознать дату</string>
+  <string name="date_hint">Наведите камеру на дату на упаковке</string>
+  <string name="date_again">Ещё раз</string>
+  <string name="date_confirm">Подтвердить</string>
+  <string name="date_question">Что означает дата %1$s?</string>
+  <string name="date_failed_title">Не получается распознать дату</string>
+  <string name="date_failed_text">Попробуйте при лучшем освещении, включите фонарик или введите дату вручную.</string>
+  <string name="date_manual">Ввести вручную</string>
+  <string name="date_continue">Продолжить</string>
+  <string name="date_notice_title">Распознавание даты</string>
+  <string name="date_notice_text">Приложение может ошибиться: даты на упаковках печатают по-разному. Проверьте дату перед сохранением, за правильность данных отвечаете вы.</string>
+  <string name="date_production_found">Распознана дата изготовления</string>
+  <string name="date_enter_shelf_life">Укажите срок хранения с упаковки.</string>
 </resources>

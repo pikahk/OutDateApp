@@ -38,6 +38,8 @@ import ru.pikahk.outdateapp.ui.theme.OutDateAppTheme
 
 enum class HelpTopic(@StringRes val title: Int, @StringRes val text: Int) {
     ADDING(R.string.help_adding_title, R.string.help_adding_text),
+    BARCODE(R.string.help_barcode_title, R.string.help_barcode_text),
+    DATES(R.string.help_dates_title, R.string.help_dates_text),
     OPENING(R.string.help_opening_title, R.string.help_opening_text),
     NOTIFICATIONS(R.string.help_notifications_title, R.string.help_notifications_text),
     SUBSCRIPTIONS(R.string.help_subscriptions_title, R.string.help_subscriptions_text),

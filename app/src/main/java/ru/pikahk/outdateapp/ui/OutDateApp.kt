@@ -195,6 +195,7 @@ private fun MainNavigation(onSignIn: () -> Unit) {
                 )
             }
             composable<AddItemRoute> { entry ->
+                val dateNoticeShown by itemsViewModel.dateNoticeShown.collectAsStateWithLifecycle()
                 AddItemScreen(
                     categories = itemsState.categories,
                     initialCategoryId = itemsState.selectedCategoryId,
@@ -207,7 +208,9 @@ private fun MainNavigation(onSignIn: () -> Unit) {
                         }
                     },
                     onCancel = dropUnlessResumed { navController.popBackStack() },
-                    onLookup = itemsViewModel::lookupProduct
+                    onLookup = itemsViewModel::lookupProduct,
+                    dateNoticeShown = dateNoticeShown,
+                    onDateNoticeShown = itemsViewModel::markDateNoticeShown
                 )
             }
             composable<ItemDetailsRoute>(

@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -37,6 +38,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -63,6 +65,7 @@ import java.time.temporal.ChronoUnit
 import ru.pikahk.outdateapp.R
 import ru.pikahk.outdateapp.data.repository.ProductLookup
 import ru.pikahk.outdateapp.domain.DEFAULT_REMINDER_DAYS
+import ru.pikahk.outdateapp.domain.DateReading
 import ru.pikahk.outdateapp.domain.ShelfLifeUnit
 import ru.pikahk.outdateapp.domain.effectiveExpiryDate
 import ru.pikahk.outdateapp.domain.expiryFromProduction
@@ -76,9 +79,12 @@ import ru.pikahk.outdateapp.ui.color
 import ru.pikahk.outdateapp.ui.containerColor
 import ru.pikahk.outdateapp.ui.reminderOptions
 import ru.pikahk.outdateapp.ui.scan.BarcodeScanner
+import ru.pikahk.outdateapp.ui.scan.DateScanner
 import ru.pikahk.outdateapp.ui.theme.OutDateAppTheme
 
 private enum class InputMode { EXPIRY_DATE, PRODUCTION }
+
+private enum class Scanner { BARCODE, DATE }
 
 private val modeOptions = listOf(
     InputMode.EXPIRY_DATE to R.string.mode_expiry,
@@ -102,6 +108,8 @@ fun AddItemScreen(
     onSave: (ItemDraft) -> Unit,
     onCancel: () -> Unit,
     onLookup: suspend (String) -> ProductLookup,
+    dateNoticeShown: Boolean,
+    onDateNoticeShown: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val today = remember { LocalDate.now() }
@@ -119,16 +127,27 @@ fun AddItemScreen(
     var notifyDaysBefore by rememberSaveable { mutableIntStateOf(defaultNotifyDaysBefore) }
     var showMissing by rememberSaveable { mutableStateOf(false) }
     var barcode by rememberSaveable { mutableStateOf<String?>(null) }
-    var scanning by rememberSaveable { mutableStateOf(false) }
+    var scanner by rememberSaveable { mutableStateOf<Scanner?>(null) }
+    var requestedScanner by rememberSaveable { mutableStateOf<Scanner?>(null) }
+    var showDateNotice by rememberSaveable { mutableStateOf(false) }
     var scanNote by rememberSaveable { mutableStateOf<ScanNote?>(null) }
     val context = LocalContext.current
     val hasCamera = remember { context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY) }
     val cameraPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
         if (granted) {
-            scanNote = null
-            scanning = true
+            if (scanNote == ScanNote.NO_CAMERA) scanNote = null
+            scanner = requestedScanner
         } else {
             scanNote = ScanNote.NO_CAMERA
+        }
+    }
+
+    fun openScanner(kind: Scanner) {
+        if (context.hasCameraPermission()) {
+            scanner = kind
+        } else {
+            requestedScanner = kind
+            cameraPermission.launch(Manifest.permission.CAMERA)
         }
     }
 
@@ -148,6 +167,22 @@ fun AddItemScreen(
                 categoryId = lookup.categoryId
             }
             else -> Unit
+        }
+    }
+
+    fun applyDates(reading: DateReading) {
+        when (reading) {
+            is DateReading.Expiry -> {
+                mode = InputMode.EXPIRY_DATE
+                expiryText = formatDate(reading.expiresAt)
+                if (scanNote == ScanNote.PRODUCTION_DATE) scanNote = null
+            }
+            is DateReading.Production -> {
+                mode = InputMode.PRODUCTION
+                producedText = formatDate(reading.producedAt)
+                scanNote = ScanNote.PRODUCTION_DATE
+            }
+            is DateReading.Unclear -> Unit
         }
     }
 
@@ -245,13 +280,7 @@ fun AddItemScreen(
             }
             if (hasCamera) {
                 OutlinedButton(
-                    onClick = {
-                        if (context.hasCameraPermission()) {
-                            scanning = true
-                        } else {
-                            cameraPermission.launch(Manifest.permission.CAMERA)
-                        }
-                    },
+                    onClick = { openScanner(Scanner.BARCODE) },
                     shape = RoundedCornerShape(12.dp),
                     modifier = Modifier.fillMaxWidth().height(48.dp)
                 ) {
@@ -319,6 +348,19 @@ fun AddItemScreen(
                     Segmented(options = unitOptions, selected = unit, onSelect = { unit = it })
                 }
             }
+            if (hasCamera) {
+                TextButton(
+                    onClick = { if (dateNoticeShown) openScanner(Scanner.DATE) else showDateNotice = true }
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_camera),
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(stringResource(R.string.date_recognize))
+                }
+            }
 
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 
@@ -364,19 +406,49 @@ fun AddItemScreen(
         }
     }
 
-    if (scanning) {
+    if (showDateNotice) {
+        AlertDialog(
+            onDismissRequest = { showDateNotice = false },
+            title = { Text(stringResource(R.string.date_notice_title)) },
+            text = { Text(stringResource(R.string.date_notice_text)) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showDateNotice = false
+                        onDateNoticeShown()
+                        openScanner(Scanner.DATE)
+                    }
+                ) {
+                    Text(stringResource(R.string.away_ok))
+                }
+            }
+        )
+    }
+
+    val activeScanner = scanner
+    if (activeScanner != null) {
         Dialog(
-            onDismissRequest = { scanning = false },
+            onDismissRequest = { scanner = null },
             properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false)
         ) {
-            BarcodeScanner(
-                onLookup = onLookup,
-                onResult = { code, lookup ->
-                    applyLookup(code, lookup)
-                    scanning = false
-                },
-                onClose = { scanning = false }
-            )
+            when (activeScanner) {
+                Scanner.BARCODE -> BarcodeScanner(
+                    onLookup = onLookup,
+                    onResult = { code, lookup ->
+                        applyLookup(code, lookup)
+                        scanner = null
+                    },
+                    onClose = { scanner = null }
+                )
+
+                Scanner.DATE -> DateScanner(
+                    onConfirm = { reading ->
+                        applyDates(reading)
+                        scanner = null
+                    },
+                    onClose = { scanner = null }
+                )
+            }
         }
     }
 }
@@ -430,7 +502,9 @@ private fun AddItemScreenPreview() {
             onCreateCategory = { "" },
             onSave = {},
             onCancel = {},
-            onLookup = { ProductLookup.NotFound }
+            onLookup = { ProductLookup.NotFound },
+            dateNoticeShown = true,
+            onDateNoticeShown = {}
         )
     }
 }

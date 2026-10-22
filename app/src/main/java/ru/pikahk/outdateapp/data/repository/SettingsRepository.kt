@@ -50,6 +50,8 @@ class SettingsRepository(context: Context) {
 
     val authPromptDone: Flow<Boolean> = store.data.map { it[AUTH_PROMPT_DONE] ?: false }
 
+    val dateNoticeShown: Flow<Boolean> = store.data.map { it[DATE_NOTICE_SHOWN] ?: false }
+
     suspend fun setReminderTime(time: LocalTime) {
         store.edit { it[REMINDER_MINUTES] = time.hour * 60 + time.minute }
     }
@@ -83,6 +85,10 @@ class SettingsRepository(context: Context) {
         store.edit { it[AUTH_PROMPT_DONE] = true }
     }
 
+    suspend fun markDateNoticeShown() {
+        store.edit { it[DATE_NOTICE_SHOWN] = true }
+    }
+
     private fun MutablePreferences.put(key: Preferences.Key<String>, value: String?) {
         if (value == null) remove(key) else this[key] = value
     }
@@ -97,5 +103,6 @@ class SettingsRepository(context: Context) {
         val LIST_OPENED = stringPreferencesKey("list_opened")
         val LAST_OPENED_DAY = longPreferencesKey("last_opened_day")
         val AUTH_PROMPT_DONE = booleanPreferencesKey("auth_prompt_done")
+        val DATE_NOTICE_SHOWN = booleanPreferencesKey("date_notice_shown")
     }
 }
