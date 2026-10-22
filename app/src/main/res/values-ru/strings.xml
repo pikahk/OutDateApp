@@ -287,4 +287,21 @@
   <string name="help_account_text">Без входа данные хранятся только на этом телефоне. После входа они сохраняются на сервере и появляются на других устройствах с тем же аккаунтом.</string>
 
   <string name="language_system">Как в системе</string>
+
+  <string name="scan_barcode">Сканировать штрихкод</string>
+  <string name="scan_hint">Наведите камеру на штрихкод или квадратный код на упаковке</string>
+  <string name="scan_searching">Ищем товар…</string>
+  <string name="scan_close">Закрыть</string>
+  <string name="scan_torch">Фонарик</string>
+  <string name="scan_remembered">Заполнено как в прошлый раз</string>
+  <string name="scan_found_food">Найдено в Open Food Facts</string>
+  <string name="scan_found_beauty">Найдено в Open Beauty Facts</string>
+  <string name="scan_enter_date">Срок годности введите с упаковки.</string>
+  <string name="scan_check_name">Проверьте название и введите срок годности с упаковки.</string>
+  <string name="scan_not_found">Товар не найден</string>
+  <string name="scan_offline">Нет подключения к интернету</string>
+  <string name="scan_unavailable">Базы товаров не отвечают</string>
+  <string name="scan_fill_manually">Заполните вручную, в следующий раз этот товар заполнится сам.</string>
+  <string name="scan_no_camera">Без доступа к камере сканирование недоступно</string>
+  <string name="scan_open_settings">Открыть настройки</string>
 </resources>

@@ -206,7 +206,8 @@ private fun MainNavigation(onSignIn: () -> Unit) {
                             navController.popBackStack()
                         }
                     },
-                    onCancel = dropUnlessResumed { navController.popBackStack() }
+                    onCancel = dropUnlessResumed { navController.popBackStack() },
+                    onLookup = itemsViewModel::lookupProduct
                 )
             }
             composable<ItemDetailsRoute>(

@@ -1,17 +1,28 @@
 package ru.pikahk.outdateapp.ui.add
 
+import android.Manifest
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.provider.Settings
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -21,6 +32,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
@@ -36,15 +48,20 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import androidx.core.content.ContextCompat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import ru.pikahk.outdateapp.R
+import ru.pikahk.outdateapp.data.repository.ProductLookup
 import ru.pikahk.outdateapp.domain.DEFAULT_REMINDER_DAYS
 import ru.pikahk.outdateapp.domain.ShelfLifeUnit
 import ru.pikahk.outdateapp.domain.effectiveExpiryDate
@@ -58,6 +75,7 @@ import ru.pikahk.outdateapp.ui.CategoryUi
 import ru.pikahk.outdateapp.ui.color
 import ru.pikahk.outdateapp.ui.containerColor
 import ru.pikahk.outdateapp.ui.reminderOptions
+import ru.pikahk.outdateapp.ui.scan.BarcodeScanner
 import ru.pikahk.outdateapp.ui.theme.OutDateAppTheme
 
 private enum class InputMode { EXPIRY_DATE, PRODUCTION }
@@ -83,6 +101,7 @@ fun AddItemScreen(
     onCreateCategory: (String) -> String,
     onSave: (ItemDraft) -> Unit,
     onCancel: () -> Unit,
+    onLookup: suspend (String) -> ProductLookup,
     modifier: Modifier = Modifier
 ) {
     val today = remember { LocalDate.now() }
@@ -99,6 +118,38 @@ fun AddItemScreen(
     var openedText by rememberSaveable { mutableStateOf("") }
     var notifyDaysBefore by rememberSaveable { mutableIntStateOf(defaultNotifyDaysBefore) }
     var showMissing by rememberSaveable { mutableStateOf(false) }
+    var barcode by rememberSaveable { mutableStateOf<String?>(null) }
+    var scanning by rememberSaveable { mutableStateOf(false) }
+    var scanNote by rememberSaveable { mutableStateOf<ScanNote?>(null) }
+    val context = LocalContext.current
+    val hasCamera = remember { context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY) }
+    val cameraPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+        if (granted) {
+            scanNote = null
+            scanning = true
+        } else {
+            scanNote = ScanNote.NO_CAMERA
+        }
+    }
+
+    fun applyLookup(code: String, lookup: ProductLookup) {
+        barcode = code
+        scanNote = lookup.toNote()
+        when (lookup) {
+            is ProductLookup.Remembered -> {
+                name = lookup.product.name
+                categoryId = lookup.product.categoryId
+                openedAmountText = lookup.product.defaultDaysAfterOpening?.toString().orEmpty()
+                openedUnit = ShelfLifeUnit.DAYS
+                lookup.product.defaultNotifyDaysBefore?.let { notifyDaysBefore = it }
+            }
+            is ProductLookup.Found -> {
+                name = lookup.name
+                categoryId = lookup.categoryId
+            }
+            else -> Unit
+        }
+    }
 
     val expiresAt = when (mode) {
         InputMode.EXPIRY_DATE -> parseExpiryDate(expiryText)
@@ -157,7 +208,8 @@ fun AddItemScreen(
                                             expiresAt = expiresAt,
                                             daysAfterOpening = daysAfterOpening,
                                             openedAt = openedAt,
-                                            notifyDaysBefore = notifyDaysBefore
+                                            notifyDaysBefore = notifyDaysBefore,
+                                            barcode = barcode
                                         )
                                     )
                                 }
@@ -188,6 +240,31 @@ fun AddItemScreen(
                 .padding(horizontal = 16.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            scanNote?.let { note ->
+                ScanNoteCard(note = note, onOpenSettings = context::openAppSettings)
+            }
+            if (hasCamera) {
+                OutlinedButton(
+                    onClick = {
+                        if (context.hasCameraPermission()) {
+                            scanning = true
+                        } else {
+                            cameraPermission.launch(Manifest.permission.CAMERA)
+                        }
+                    },
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier.fillMaxWidth().height(48.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_barcode),
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(stringResource(R.string.scan_barcode))
+                }
+            }
+
             LabeledField(label = stringResource(R.string.field_name)) {
                 OutlinedTextField(
                     value = name,
@@ -286,6 +363,22 @@ fun AddItemScreen(
             }
         }
     }
+
+    if (scanning) {
+        Dialog(
+            onDismissRequest = { scanning = false },
+            properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false)
+        ) {
+            BarcodeScanner(
+                onLookup = onLookup,
+                onResult = { code, lookup ->
+                    applyLookup(code, lookup)
+                    scanning = false
+                },
+                onClose = { scanning = false }
+            )
+        }
+    }
 }
 
 @Composable
@@ -319,6 +412,13 @@ private fun calculateExpiry(producedText: String, amountText: String, unit: Shel
 
 private fun parseAmount(text: String): Int? = text.toIntOrNull()?.takeIf { it > 0 }
 
+private fun Context.hasCameraPermission(): Boolean =
+    ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
+
+private fun Context.openAppSettings() {
+    startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", packageName, null)))
+}
+
 @Preview(showBackground = true)
 @Composable
 private fun AddItemScreenPreview() {
@@ -329,7 +429,8 @@ private fun AddItemScreenPreview() {
             defaultNotifyDaysBefore = DEFAULT_REMINDER_DAYS,
             onCreateCategory = { "" },
             onSave = {},
-            onCancel = {}
+            onCancel = {},
+            onLookup = { ProductLookup.NotFound }
         )
     }
 }
