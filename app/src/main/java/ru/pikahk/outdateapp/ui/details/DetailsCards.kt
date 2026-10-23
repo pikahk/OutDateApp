@@ -144,6 +144,10 @@ internal fun DetailRows(item: ItemDetailsUi, longDate: DateTimeFormatter, shortD
             label = stringResource(R.string.details_added),
             value = item.createdAt.format(shortDate)
         )
+        if (item.addedBy != null) {
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+            DetailRow(label = stringResource(R.string.details_added_by), value = item.addedBy)
+        }
     }
 }
 

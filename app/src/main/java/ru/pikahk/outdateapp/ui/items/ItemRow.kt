@@ -112,7 +112,10 @@ private fun DaysBadge(daysLeft: Long, urgency: Urgency) {
 }
 
 @Composable
-private fun subtitle(item: ItemUi): String {
+private fun subtitle(item: ItemUi): String = listOfNotNull(openingText(item), item.addedBy).joinToString(" · ")
+
+@Composable
+private fun openingText(item: ItemUi): String {
     val openedAt = item.openedAt ?: return stringResource(R.string.list_sealed)
     val locale = LocalConfiguration.current.locales[0]
     val formatter = remember(locale) { DateTimeFormatter.ofPattern("d MMMM", locale) }

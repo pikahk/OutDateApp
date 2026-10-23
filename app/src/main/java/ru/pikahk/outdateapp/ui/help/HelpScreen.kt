@@ -42,6 +42,7 @@ enum class HelpTopic(@StringRes val title: Int, @StringRes val text: Int) {
     DATES(R.string.help_dates_title, R.string.help_dates_text),
     OPENING(R.string.help_opening_title, R.string.help_opening_text),
     NOTIFICATIONS(R.string.help_notifications_title, R.string.help_notifications_text),
+    FAMILY(R.string.help_family_title, R.string.help_family_text),
     SUBSCRIPTIONS(R.string.help_subscriptions_title, R.string.help_subscriptions_text),
     ACCOUNT(R.string.help_account_title, R.string.help_account_text)
 }

@@ -41,7 +41,7 @@ internal fun CategoryField(
     categories: List<CategoryUi>,
     selectedId: String?,
     onSelect: (String?) -> Unit,
-    onCreate: (String) -> String
+    onCreate: ((String) -> String)?
 ) {
     var expanded by remember { mutableStateOf(false) }
     var creating by rememberSaveable { mutableStateOf(false) }
@@ -99,31 +99,33 @@ internal fun CategoryField(
                         }
                     )
                 }
-                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-                DropdownMenuItem(
-                    text = {
-                        Text(
-                            text = stringResource(R.string.category_create),
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    },
-                    leadingIcon = {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_add),
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                    },
-                    onClick = {
-                        expanded = false
-                        creating = true
-                    }
-                )
+                if (onCreate != null) {
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = stringResource(R.string.category_create),
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        },
+                        leadingIcon = {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_add),
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        },
+                        onClick = {
+                            expanded = false
+                            creating = true
+                        }
+                    )
+                }
             }
         }
     }
 
-    if (creating) {
+    if (creating && onCreate != null) {
         NewCategoryDialog(
             onConfirm = { name ->
                 val existing = categories.firstOrNull { labels[it.id].equals(name, ignoreCase = true) }

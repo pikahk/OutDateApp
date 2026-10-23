@@ -48,10 +48,16 @@ private const val CANCELLED_ALPHA = 0.55f
 fun SubscriptionsScreen(
     viewModel: SubscriptionsViewModel,
     onAddClick: () -> Unit,
-    onSubscriptionClick: (String) -> Unit
+    onSubscriptionClick: (String) -> Unit,
+    profileAction: @Composable () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    SubscriptionsScreen(state = state, onAddClick = onAddClick, onSubscriptionClick = onSubscriptionClick)
+    SubscriptionsScreen(
+        state = state,
+        onAddClick = onAddClick,
+        onSubscriptionClick = onSubscriptionClick,
+        profileAction = profileAction
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -59,7 +65,8 @@ fun SubscriptionsScreen(
 private fun SubscriptionsScreen(
     state: SubscriptionsUiState?,
     onAddClick: () -> Unit,
-    onSubscriptionClick: (String) -> Unit
+    onSubscriptionClick: (String) -> Unit,
+    profileAction: @Composable () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -70,7 +77,8 @@ private fun SubscriptionsScreen(
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold
                     )
-                }
+                },
+                actions = { profileAction() }
             )
         },
         floatingActionButton = {
@@ -239,7 +247,8 @@ private fun SubscriptionsScreenPreview() {
                 monthlyTotalMinor = 419_921
             ),
             onAddClick = {},
-            onSubscriptionClick = {}
+            onSubscriptionClick = {},
+            profileAction = {}
         )
     }
 }

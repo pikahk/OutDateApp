@@ -16,7 +16,8 @@ data class ItemDetailsUi(
     val limitedByOpening: Boolean,
     val expiresIfOpenedToday: LocalDate?,
     val createdAt: LocalDate,
-    val notifyDaysBefore: Int
+    val notifyDaysBefore: Int,
+    val addedBy: String? = null
 )
 
 sealed interface ItemDetailsState {

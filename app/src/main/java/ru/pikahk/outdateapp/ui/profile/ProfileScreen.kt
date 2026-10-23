@@ -18,6 +18,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -29,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -53,7 +56,8 @@ fun ProfileScreen(
     accountViewModel: AccountViewModel,
     onSettingsClick: () -> Unit,
     onHelpClick: () -> Unit,
-    onSignIn: () -> Unit
+    onSignIn: () -> Unit,
+    onBack: () -> Unit
 ) {
     val stats by viewModel.stats.collectAsStateWithLifecycle()
     val email by accountViewModel.email.collectAsStateWithLifecycle()
@@ -66,7 +70,8 @@ fun ProfileScreen(
         onSettingsClick = onSettingsClick,
         onHelpClick = onHelpClick,
         onSignIn = onSignIn,
-        onLogout = accountViewModel::logout
+        onLogout = accountViewModel::logout,
+        onBack = onBack
     )
 }
 
@@ -80,7 +85,8 @@ private fun ProfileScreen(
     onSettingsClick: () -> Unit,
     onHelpClick: () -> Unit,
     onSignIn: () -> Unit,
-    onLogout: () -> Unit
+    onLogout: () -> Unit,
+    onBack: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -91,6 +97,14 @@ private fun ProfileScreen(
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold
                     )
+                },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_arrow_back),
+                            contentDescription = stringResource(R.string.back)
+                        )
+                    }
                 }
             )
         }
@@ -215,7 +229,8 @@ private fun ProfileScreenPreview() {
             onSettingsClick = {},
             onHelpClick = {},
             onSignIn = {},
-            onLogout = {}
+            onLogout = {},
+            onBack = {}
         )
     }
 }

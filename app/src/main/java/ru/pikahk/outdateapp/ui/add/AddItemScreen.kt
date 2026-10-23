@@ -104,7 +104,7 @@ fun AddItemScreen(
     categories: List<CategoryUi>,
     initialCategoryId: String?,
     defaultNotifyDaysBefore: Int,
-    onCreateCategory: (String) -> String,
+    onCreateCategory: ((String) -> String)?,
     onSave: (ItemDraft) -> Unit,
     onCancel: () -> Unit,
     onLookup: suspend (String) -> ProductLookup,

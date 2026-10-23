@@ -12,7 +12,8 @@ data class ItemUi(
     val urgency: Urgency,
     val openedAt: LocalDate?,
     val limitedByOpening: Boolean,
-    val category: CategoryUi?
+    val category: CategoryUi?,
+    val addedBy: String? = null
 )
 
 enum class ItemsSection { EXPIRED, SOON, LATER }

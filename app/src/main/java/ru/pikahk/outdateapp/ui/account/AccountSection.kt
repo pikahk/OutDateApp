@@ -13,6 +13,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -28,8 +29,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import ru.pikahk.outdateapp.R
 
@@ -58,11 +62,19 @@ fun AccountRow(email: String?, onSignIn: () -> Unit, modifier: Modifier = Modifi
 }
 
 @Composable
-private fun Avatar(email: String?) {
+fun ProfileButton(email: String?, onClick: () -> Unit) {
+    val description = stringResource(R.string.profile_title)
+    IconButton(onClick = onClick, modifier = Modifier.semantics { contentDescription = description }) {
+        Avatar(email = email, size = 32.dp)
+    }
+}
+
+@Composable
+private fun Avatar(email: String?, size: Dp = 48.dp) {
     val signedIn = email != null
     Box(
         modifier = Modifier
-            .size(48.dp)
+            .size(size)
             .background(
                 color = if (signedIn) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
                 shape = CircleShape
@@ -72,7 +84,7 @@ private fun Avatar(email: String?) {
         if (email != null) {
             Text(
                 text = email.take(1).uppercase(),
-                style = MaterialTheme.typography.titleLarge,
+                style = if (size < 48.dp) MaterialTheme.typography.titleSmall else MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onPrimary
             )
@@ -80,7 +92,8 @@ private fun Avatar(email: String?) {
             Icon(
                 painter = painterResource(R.drawable.ic_person),
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(size / 2)
             )
         }
     }

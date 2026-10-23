@@ -272,7 +272,7 @@ internal fun CodeField(value: String, onValueChange: (String) -> Unit, error: Au
 }
 
 @Composable
-private fun CodeCells(value: String, isError: Boolean) {
+internal fun CodeCells(value: String, isError: Boolean) {
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
         repeat(CODE_LENGTH) { index ->
             val borderColor = when {

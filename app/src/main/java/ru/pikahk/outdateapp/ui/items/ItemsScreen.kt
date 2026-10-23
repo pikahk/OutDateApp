@@ -3,7 +3,6 @@ package ru.pikahk.outdateapp.ui.items
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,9 +13,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -33,7 +30,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
@@ -46,7 +42,6 @@ import ru.pikahk.outdateapp.domain.Urgency
 import ru.pikahk.outdateapp.notifications.areNotificationsEnabled
 import ru.pikahk.outdateapp.notifications.openNotificationSettings
 import ru.pikahk.outdateapp.ui.CategoryUi
-import ru.pikahk.outdateapp.ui.color
 import ru.pikahk.outdateapp.ui.theme.OutDateAppTheme
 
 @Composable
@@ -54,7 +49,8 @@ fun ItemsScreen(
     viewModel: ItemsViewModel,
     onAddClick: () -> Unit,
     onItemClick: (String) -> Unit,
-    onHelpClick: () -> Unit
+    onHelpClick: () -> Unit,
+    profileAction: @Composable () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val missedExpiries by viewModel.missedExpiries.collectAsStateWithLifecycle()
@@ -82,7 +78,8 @@ fun ItemsScreen(
         onCategoryDelete = viewModel::deleteCategory,
         onSortSelect = viewModel::selectSort,
         onOpenedSelect = viewModel::selectOpened,
-        onResetFilters = viewModel::resetFilters
+        onResetFilters = viewModel::resetFilters,
+        profileAction = profileAction
     )
 }
 
@@ -103,7 +100,8 @@ private fun ItemsScreen(
     onCategoryDelete: (String) -> Unit,
     onSortSelect: (ItemsSort) -> Unit,
     onOpenedSelect: (OpenedFilter) -> Unit,
-    onResetFilters: () -> Unit
+    onResetFilters: () -> Unit,
+    profileAction: @Composable () -> Unit
 ) {
     var deletingId by rememberSaveable { mutableStateOf<String?>(null) }
 
@@ -124,7 +122,8 @@ private fun ItemsScreen(
                 sort = state.sort,
                 opened = state.opened,
                 onSortSelect = onSortSelect,
-                onOpenedSelect = onOpenedSelect
+                onOpenedSelect = onOpenedSelect,
+                profileAction = profileAction
             )
         },
         floatingActionButton = {
@@ -221,52 +220,6 @@ private fun ItemsScreen(
     }
 }
 
-@Composable
-private fun DeleteItemDialog(name: String, onConfirm: () -> Unit, onDismiss: () -> Unit) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.item_delete_title, name)) },
-        text = { Text(stringResource(R.string.delete_message)) },
-        confirmButton = {
-            TextButton(onClick = onConfirm) {
-                Text(stringResource(R.string.delete), color = MaterialTheme.colorScheme.error)
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.cancel))
-            }
-        }
-    )
-}
-
-@Composable
-private fun SectionHeader(section: ItemsSection) {
-    val title = when (section) {
-        ItemsSection.EXPIRED -> stringResource(R.string.section_expired)
-        ItemsSection.SOON -> stringResource(R.string.section_soon)
-        ItemsSection.LATER -> stringResource(R.string.section_later)
-    }
-    val color = if (section == ItemsSection.EXPIRED) {
-        Urgency.EXPIRED.color()
-    } else {
-        MaterialTheme.colorScheme.onSurfaceVariant
-    }
-    Row(
-        modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 4.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        Text(
-            text = title.uppercase(),
-            style = MaterialTheme.typography.labelMedium,
-            fontWeight = FontWeight.Bold,
-            color = color
-        )
-        HorizontalDivider(modifier = Modifier.weight(1f), color = MaterialTheme.colorScheme.outlineVariant)
-    }
-}
-
 @Preview(showBackground = true)
 @Composable
 private fun ItemsScreenPreview() {
@@ -312,7 +265,8 @@ private fun ItemsScreenPreview() {
             onCategoryDelete = {},
             onSortSelect = {},
             onOpenedSelect = {},
-            onResetFilters = {}
+            onResetFilters = {},
+            profileAction = {}
         )
     }
 }

@@ -46,7 +46,8 @@ internal fun ItemsTopBar(
     sort: ItemsSort,
     opened: OpenedFilter,
     onSortSelect: (ItemsSort) -> Unit,
-    onOpenedSelect: (OpenedFilter) -> Unit
+    onOpenedSelect: (OpenedFilter) -> Unit,
+    profileAction: @Composable () -> Unit
 ) {
     var searching by rememberSaveable { mutableStateOf(false) }
     val closeSearch = {
@@ -91,6 +92,7 @@ internal fun ItemsTopBar(
                     onSortSelect = onSortSelect,
                     onOpenedSelect = onOpenedSelect
                 )
+                profileAction()
             } else if (query.text.isNotEmpty()) {
                 IconButton(onClick = { query.clearText() }) {
                     Icon(

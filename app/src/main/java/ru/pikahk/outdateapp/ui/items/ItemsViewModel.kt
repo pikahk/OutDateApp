@@ -32,12 +32,8 @@ import ru.pikahk.outdateapp.data.repository.ListPreferences
 import ru.pikahk.outdateapp.data.repository.ProductLookup
 import ru.pikahk.outdateapp.data.repository.ProductRepository
 import ru.pikahk.outdateapp.data.repository.SettingsRepository
-import ru.pikahk.outdateapp.domain.Urgency
-import ru.pikahk.outdateapp.domain.daysLeft
 import ru.pikahk.outdateapp.domain.effectiveExpiryDate
 import ru.pikahk.outdateapp.domain.expiredWhileAway
-import ru.pikahk.outdateapp.domain.urgency
-import ru.pikahk.outdateapp.ui.CategoryUi
 import ru.pikahk.outdateapp.ui.add.ItemDraft
 import ru.pikahk.outdateapp.ui.toUi
 
@@ -82,7 +78,7 @@ class ItemsViewModel(
                 sort = current.sort,
                 opened = current.opened,
                 isSearching = search.isNotEmpty(),
-                groups = visible.toUiModels(LocalDate.now(), categoryUis).toGroups(),
+                groups = visible.toItemGroups(LocalDate.now(), categoryUis),
                 hasItems = itemList.isNotEmpty(),
                 defaultNotifyDaysBefore = appSettings.defaultNotifyDaysBefore
             )
@@ -157,7 +153,7 @@ class ItemsViewModel(
         viewModelScope.launch { settings.markDateNoticeShown() }
     }
 
-    fun addItem(draft: ItemDraft) {
+    fun addItem(draft: ItemDraft, familyId: String? = null, addedBy: String? = null) {
         viewModelScope.launch {
             items.save(
                 Item(
@@ -167,7 +163,9 @@ class ItemsViewModel(
                     expiresAt = draft.expiresAt,
                     daysAfterOpening = draft.daysAfterOpening,
                     openedAt = draft.openedAt,
-                    notifyDaysBefore = draft.notifyDaysBefore
+                    notifyDaysBefore = draft.notifyDaysBefore,
+                    familyId = familyId,
+                    addedBy = addedBy
                 )
             )
             if (draft.barcode != null) {
@@ -192,32 +190,6 @@ class ItemsViewModel(
         ItemsSort.EXPIRY -> compareBy { effectiveExpiryDate(it) }
         ItemsSort.NAME -> compareBy(collator) { it.name }
         ItemsSort.ADDED -> compareByDescending { it.createdAt }
-    }
-
-    private fun List<Item>.toUiModels(today: LocalDate, categoryUis: List<CategoryUi>): List<ItemUi> {
-        val categoriesById = categoryUis.associateBy { it.id }
-        return map { item ->
-            val left = daysLeft(item, today)
-            ItemUi(
-                id = item.id,
-                name = item.name,
-                daysLeft = left,
-                urgency = urgency(left),
-                openedAt = item.openedAt,
-                limitedByOpening = effectiveExpiryDate(item) < item.expiresAt,
-                category = item.categoryId?.let { categoriesById[it] }
-            )
-        }
-    }
-
-    private fun List<ItemUi>.toGroups(): List<ItemsGroup> = groupBy { it.urgency.toSection() }
-        .map { (section, sectionItems) -> ItemsGroup(section, sectionItems) }
-        .sortedBy { it.section }
-
-    private fun Urgency.toSection(): ItemsSection = when (this) {
-        Urgency.EXPIRED -> ItemsSection.EXPIRED
-        Urgency.CRITICAL, Urgency.SOON -> ItemsSection.SOON
-        Urgency.OK -> ItemsSection.LATER
     }
 
     companion object {
