@@ -149,7 +149,7 @@ fun InviteScreen(
                     onClick = { onShare(shareText) }
                 )
                 LinkButton(text = stringResource(R.string.family_done), onClick = onDone)
-            } else if (error != null && !busy) {
+            } else if (!busy) {
                 FamilyErrorText(error)
                 PrimaryButton(
                     text = stringResource(R.string.family_retry),

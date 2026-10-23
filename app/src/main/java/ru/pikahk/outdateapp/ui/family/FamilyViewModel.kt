@@ -130,14 +130,16 @@ class FamilyViewModel(
         viewModelScope.launch {
             busyState.value = true
             errorState.value = null
-            try {
+            val succeeded = try {
                 action()
-                onDone()
+                true
             } catch (e: ApiException) {
                 errorState.value = familyError(e.code)
+                false
             } finally {
                 busyState.value = false
             }
+            if (succeeded) onDone()
         }
     }
 
