@@ -73,7 +73,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           mkdir -p ~/.ssh
-          printf '%s\n' "$DEPLOY_SSH_KEY" | tr -d '\r' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' > ~/.ssh/deploy_key
+          case "$DEPLOY_SSH_KEY" in
+            *BEGIN*) printf '%s\n' "$DEPLOY_SSH_KEY" | tr -d '\r' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' ;;
+            *) printf '%s' "$DEPLOY_SSH_KEY" | tr -d '[:space:]' | base64 --decode ;;
+          esac > ~/.ssh/deploy_key
           printf '%s\n' "$DEPLOY_KNOWN_HOSTS" | tr -d '\r' > ~/.ssh/known_hosts
           chmod 600 ~/.ssh/deploy_key
           if ! ssh-keygen -y -f ~/.ssh/deploy_key > /dev/null; then
