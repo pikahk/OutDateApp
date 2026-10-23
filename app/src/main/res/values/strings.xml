@@ -262,11 +262,11 @@
   <string name="help_opening_title">Shelf life after opening</string>
   <string name="help_opening_text">Many items keep for less time once opened. Tap “Open today” on the item card and the app recalculates the date: the opening date plus the shelf life after opening, but never later than the date on the package.\n\nThat is why the number of days left can drop after opening. If you marked it by mistake, tap “Undo opening”.</string>
   <string name="help_notifications_title">Notifications</string>
-  <string name="help_notifications_text">Every day at the time you choose, the app checks the dates and reminds you about items that are about to expire. How many days in advance to remind is set for each item, and the default is chosen in Settings.</string>
+  <string name="help_notifications_text">Every day at the time you choose, the app checks the dates and reminds you about items that are about to expire. How many days in advance to remind is set for each item, and the default is chosen in Settings. Tap a notification to open the item.\n\nIf the app has not been opened for two days or more, a “While you were away” message above the list shows the items that expired in that time. If notifications are turned off in the phone settings, the main screen shows a warning with a “Turn on” button.</string>
   <string name="help_subscriptions_title">Subscriptions</string>
-  <string name="help_subscriptions_text">On the Subscriptions tab you can keep track of paid subscriptions: the price, the billing period and a reminder before each charge.</string>
+  <string name="help_subscriptions_text">On the Subscriptions tab you can keep track of paid subscriptions: the price, the billing period and a reminder before each charge. The total per month is shown above the list, and the next charge date is updated automatically.\n\nTap a subscription to edit, cancel or delete it. A cancelled subscription is not counted in the total and sends no reminders, but it stays under “Cancelled” and can be resumed.</string>
   <string name="help_account_title">Account and sync</string>
-  <string name="help_account_text">Without an account your data is stored only on this phone. Once you sign in, it is saved on the server and appears on your other devices with the same account.</string>
+  <string name="help_account_text">Without an account your data is stored only on this phone. Once you sign in, it is saved on the server and appears on your other devices with the same account.\n\nTo sign out, tap “Sign out” in the profile. If some changes have not reached the server yet, the app will warn you.</string>
 
   <string name="language_system">System</string>
   <string name="language_russian" translatable="false">Русский</string>
@@ -352,4 +352,11 @@
   <string name="details_added_by">Added by</string>
   <string name="help_family_title">Family</string>
   <string name="help_family_text">On the Home tab you can keep a shared list with your family. Create a group and send the invite code, it is valid for 24 hours. All members see the items in the shared list, and everyone gets expiry reminders.\n\nThe group owner can remove a member, and a member can leave on their own. Personal items are not affected.</string>
+
+  <string name="help_list_title">List and search</string>
+  <string name="help_list_text">On the Expiry tab items are grouped into “Expired”, “Soon” and “Later”. The colour on the right shows urgency: red means the item has expired or expires today or tomorrow, yellow means within a week, green means there is still time.\n\nTap a category above the list to show only that category. You can delete your own category with a long press, its items will stay without a category. The magnifier icon opens search by name, and the menu next to it lets you choose the sort order and show only opened or only sealed items. The selected category, order and filter are kept until the next launch.</string>
+  <string name="help_deleting_title">Deleting an item</string>
+  <string name="help_deleting_text">When an item is used up or thrown away, delete it: tap the bin icon on the item card or long-press the row in the list. If the item is deleted before it expires, the statistics count it as used in time, and if after, as thrown away.</string>
+  <string name="help_profile_title">Profile and settings</string>
+  <string name="help_profile_text">The profile opens from the circle in the top right corner. It shows how many items are tracked, expire this week and have already expired, and how many were used in time and thrown away this month.\n\nIn Settings you choose the time of daily notifications, the default reminder for new items and subscriptions, the theme and the app language.</string>
 </resources>
