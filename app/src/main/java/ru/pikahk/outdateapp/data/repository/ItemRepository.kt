@@ -9,6 +9,10 @@ class ItemRepository(private val dao: ItemDao) {
 
     fun observeAll(): Flow<List<Item>> = dao.observeAll()
 
+    fun observeFamily(familyId: String): Flow<List<Item>> = dao.observeFamily(familyId)
+
+    fun observeWithFamily(): Flow<List<Item>> = dao.observeWithFamily()
+
     fun observeById(id: String): Flow<Item?> = dao.observeById(id)
 
     fun observeDeletedSince(since: Long): Flow<List<Item>> = dao.observeDeletedSince(since)

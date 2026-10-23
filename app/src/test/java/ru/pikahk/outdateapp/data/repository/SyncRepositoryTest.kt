@@ -19,10 +19,15 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import ru.pikahk.outdateapp.data.dao.SyncDao
 import ru.pikahk.outdateapp.data.model.Category
+import ru.pikahk.outdateapp.data.model.Family
+import ru.pikahk.outdateapp.data.model.FamilyMember
 import ru.pikahk.outdateapp.data.model.Item
 import ru.pikahk.outdateapp.data.model.Session
 import ru.pikahk.outdateapp.data.remote.ApiException
 import ru.pikahk.outdateapp.data.remote.CategoryDto
+import ru.pikahk.outdateapp.data.remote.FamilyStateResponse
+import ru.pikahk.outdateapp.data.remote.FamilySyncRequest
+import ru.pikahk.outdateapp.data.remote.FamilySyncResponse
 import ru.pikahk.outdateapp.data.remote.OutDateApi
 import ru.pikahk.outdateapp.data.remote.ProductDto
 import ru.pikahk.outdateapp.data.remote.SyncRequest
@@ -40,7 +45,7 @@ class SyncRepositoryTest {
 
     private val paths = mutableListOf<String>()
 
-    private fun item(id: String, updatedAt: Long, pending: Boolean = true) = Item(
+    private fun item(id: String, updatedAt: Long, pending: Boolean = true, familyId: String? = null) = Item(
         id = id,
         name = "Молоко",
         categoryId = null,
@@ -49,7 +54,8 @@ class SyncRepositoryTest {
         daysAfterOpening = null,
         openedAt = null,
         updatedAt = updatedAt,
-        isPendingSync = pending
+        isPendingSync = pending,
+        familyId = familyId
     )
 
     private fun echo(version: Long, request: SyncRequest) = SyncResponse(
@@ -60,21 +66,44 @@ class SyncRepositoryTest {
         products = request.products
     )
 
+    private val familyRequests = mutableListOf<FamilySyncRequest>()
+
+    private val home = Family(
+        id = "f1",
+        name = "Квартира",
+        isOwner = true,
+        members = listOf(FamilyMember("u1", "Миша", isOwner = true, isMe = true, joinedAt = 0))
+    )
+
     private fun repository(
         store: SessionStore,
         dao: SyncDao,
+        family: Family? = null,
+        familyServer: suspend MockRequestHandleScope.(FamilySyncRequest) -> HttpResponseData = {
+            reply(FamilySyncResponse(it.familyId, 1, it.items))
+        },
         server: suspend MockRequestHandleScope.(SyncRequest) -> HttpResponseData
     ) = SyncRepository(
         OutDateApi(
             "https://api.test/",
             MockEngine { request ->
                 paths += request.url.encodedPath
-                if (request.url.encodedPath == "/sync") {
-                    val body = json.decodeFromString<SyncRequest>(request.body.toByteArray().decodeToString())
-                    requests += body
-                    server(body)
-                } else {
-                    respond("", HttpStatusCode.NoContent)
+                when (request.url.encodedPath) {
+                    "/sync" -> {
+                        val body = json.decodeFromString<SyncRequest>(request.body.toByteArray().decodeToString())
+                        requests += body
+                        server(body)
+                    }
+                    "/family" -> {
+                        val body = json.encodeToString(FamilyStateResponse(family))
+                        respond(body, HttpStatusCode.OK, jsonHeaders)
+                    }
+                    "/family/sync" -> {
+                        val body = json.decodeFromString<FamilySyncRequest>(request.body.toByteArray().decodeToString())
+                        familyRequests += body
+                        familyServer(body)
+                    }
+                    else -> respond("", HttpStatusCode.NoContent)
                 }
             }
         ),
@@ -85,6 +114,9 @@ class SyncRepositoryTest {
     private val jsonHeaders = headersOf(HttpHeaders.ContentType, "application/json")
 
     private fun MockRequestHandleScope.reply(response: SyncResponse): HttpResponseData =
+        respond(json.encodeToString(response), HttpStatusCode.OK, jsonHeaders)
+
+    private fun MockRequestHandleScope.reply(response: FamilySyncResponse): HttpResponseData =
         respond(json.encodeToString(response), HttpStatusCode.OK, jsonHeaders)
 
     @Test
@@ -190,5 +222,73 @@ class SyncRepositoryTest {
         assertNull(store.current.value)
         assertEquals(0L, store.cursor.value)
         assertEquals(listOf("/auth/logout"), paths)
+    }
+
+    @Test
+    fun `без группы общая синхронизация не идёт`() = runBlocking {
+        repository(FakeSessionStore(signedIn), FakeSyncDao()) { reply(echo(1, it)) }.sync()
+        assertEquals(listOf("/sync", "/family"), paths)
+        assertTrue(familyRequests.isEmpty())
+    }
+
+    @Test
+    fun `общий список приходит с сервера с именем добавившего`() = runBlocking {
+        val store = FakeSessionStore(signedIn)
+        val dao = FakeSyncDao()
+        val cheese = item("c", 100, pending = false).toDto().copy(addedBy = "Аня")
+        repository(store, dao, family = home, familyServer = { reply(FamilySyncResponse("f1", 4, listOf(cheese))) }) {
+            reply(echo(1, it))
+        }.sync()
+        val saved = dao.items.value.getValue("c")
+        assertEquals("f1", saved.familyId)
+        assertEquals("Аня", saved.addedBy)
+        assertFalse(saved.isPendingSync)
+        assertEquals(home, store.currentFamily.value)
+        assertEquals(4L, store.familyCursor.value)
+    }
+
+    @Test
+    fun `общие продукты уходят только в общую синхронизацию`() = runBlocking {
+        val store = FakeSessionStore(signedIn)
+        store.saveFamily(home)
+        store.saveFamilyVersion(3)
+        val dao = FakeSyncDao()
+        dao.upsertItems(listOf(item("mine", 100), item("shared", 100, familyId = "f1")))
+        repository(store, dao, family = home) { reply(echo(1, it)) }.sync()
+        assertEquals(listOf("mine"), requests.single().items.map { it.id })
+        assertEquals(listOf("shared"), familyRequests.single().items.map { it.id })
+        assertEquals(3L, familyRequests.single().since)
+        assertEquals("f1", familyRequests.single().familyId)
+        assertEquals(0, dao.observePendingCount().first())
+        assertEquals("f1", dao.items.value.getValue("shared").familyId)
+    }
+
+    @Test
+    fun `после выхода из группы общие продукты пропадают с устройства`() = runBlocking {
+        val store = FakeSessionStore(signedIn)
+        store.saveFamily(home)
+        val dao = FakeSyncDao()
+        dao.upsertItems(
+            listOf(item("mine", 100, pending = false), item("shared", 100, pending = false, familyId = "f1"))
+        )
+        repository(store, dao, family = null) { reply(echo(1, it)) }.sync()
+        assertEquals(setOf("mine"), dao.items.value.keys)
+        assertNull(store.currentFamily.value)
+    }
+
+    @Test
+    fun `если участника удалили во время синхронизации, общий список очищается`() = runBlocking {
+        val store = FakeSessionStore(signedIn)
+        val dao = FakeSyncDao()
+        dao.upsertItems(listOf(item("shared", 100, familyId = "f1")))
+        val repository = repository(
+            store,
+            dao,
+            family = home,
+            familyServer = { respond("""{"error":"no_family"}""", HttpStatusCode.NotFound, jsonHeaders) }
+        ) { reply(echo(1, it)) }
+        repository.sync()
+        assertTrue(dao.items.value.isEmpty())
+        assertNull(store.currentFamily.value)
     }
 }

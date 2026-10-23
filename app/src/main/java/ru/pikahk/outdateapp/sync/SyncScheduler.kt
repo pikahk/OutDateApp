@@ -29,6 +29,7 @@ object SyncScheduler {
         if (!started.compareAndSet(false, true)) return
         val appContext = context.applicationContext
         val sync = SyncProvider.get(appContext)
+        SyncWorker.schedulePeriodic(appContext)
         CoroutineScope(SupervisorJob() + Dispatchers.Default).launch {
             syncRequests(sync.session, sync.pendingCount).collect { SyncWorker.request(appContext) }
         }

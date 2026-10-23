@@ -10,6 +10,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
+import ru.pikahk.outdateapp.data.model.Family
 import ru.pikahk.outdateapp.data.model.Session
 import ru.pikahk.outdateapp.data.remote.OutDateApi
 import ru.pikahk.outdateapp.data.repository.AuthRepository
@@ -18,16 +19,32 @@ import ru.pikahk.outdateapp.data.repository.SessionStore
 internal class FakeSessionStore(initial: Session? = null) : SessionStore {
     val current = MutableStateFlow(initial)
     val cursor = MutableStateFlow(0L)
+    val currentFamily = MutableStateFlow<Family?>(null)
+    val familyCursor = MutableStateFlow(0L)
     override val session = current
     override val syncVersion = cursor
+    override val family = currentFamily
+    override val familyVersion = familyCursor
 
     override suspend fun save(session: Session?) {
-        if (session?.token != current.value?.token) cursor.value = 0
+        if (session?.token != current.value?.token) {
+            cursor.value = 0
+            saveFamily(null)
+        }
         current.value = session
     }
 
     override suspend fun saveSyncVersion(version: Long) {
         cursor.value = version
+    }
+
+    override suspend fun saveFamily(family: Family?) {
+        if (family?.id != currentFamily.value?.id) familyCursor.value = 0
+        currentFamily.value = family
+    }
+
+    override suspend fun saveFamilyVersion(version: Long) {
+        familyCursor.value = version
     }
 }
 

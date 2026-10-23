@@ -46,7 +46,8 @@ data class ItemDto(
     val notifyDaysBefore: Int,
     val createdAt: Long,
     val isDeleted: Boolean,
-    val updatedAt: Long
+    val updatedAt: Long,
+    val addedBy: String? = null
 )
 
 @Serializable

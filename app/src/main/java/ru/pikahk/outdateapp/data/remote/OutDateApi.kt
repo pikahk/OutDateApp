@@ -21,6 +21,7 @@ import io.ktor.serialization.ContentConvertException
 import io.ktor.serialization.kotlinx.json.json
 import java.io.IOException
 import kotlinx.serialization.json.Json
+import ru.pikahk.outdateapp.data.model.Family
 
 private const val CONNECT_TIMEOUT_MS = 10_000L
 private const val REQUEST_TIMEOUT_MS = 20_000L
@@ -79,6 +80,37 @@ class OutDateApi(baseUrl: String, engine: HttpClientEngine) {
         setJson(request)
     }.read()
 
+    suspend fun family(token: String): Family? =
+        send(HttpMethod.Get, "family") { bearerAuth(token) }.read<FamilyStateResponse>().family
+
+    suspend fun createFamily(token: String, name: String, memberName: String): Family = post("family") {
+        bearerAuth(token)
+        setJson(CreateFamilyRequest(name, memberName))
+    }.read()
+
+    suspend fun joinFamily(token: String, code: String, memberName: String): Family = post("family/join") {
+        bearerAuth(token)
+        setJson(JoinFamilyRequest(code, memberName))
+    }.read()
+
+    suspend fun invite(token: String): InviteResponse = post("family/invite") { bearerAuth(token) }.read()
+
+    suspend fun leaveFamily(token: String) {
+        post("family/leave") { bearerAuth(token) }
+    }
+
+    suspend fun deleteFamily(token: String) {
+        send(HttpMethod.Delete, "family") { bearerAuth(token) }
+    }
+
+    suspend fun removeMember(token: String, memberId: String) {
+        send(HttpMethod.Delete, "family/members/$memberId") { bearerAuth(token) }
+    }
+
+    suspend fun familySync(token: String, request: FamilySyncRequest): FamilySyncResponse = post("family/sync") {
+        bearerAuth(token)
+        setJson(request)
+    }.read()
     private suspend fun post(path: String, block: HttpRequestBuilder.() -> Unit): HttpResponse =
         send(HttpMethod.Post, path, block)
 

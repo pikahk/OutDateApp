@@ -24,8 +24,11 @@ interface SyncDao {
     @Query("SELECT * FROM categories WHERE isPendingSync = 1 LIMIT :limit")
     suspend fun pendingCategories(limit: Int): List<Category>
 
-    @Query("SELECT * FROM items WHERE isPendingSync = 1 LIMIT :limit")
+    @Query("SELECT * FROM items WHERE isPendingSync = 1 AND familyId IS NULL LIMIT :limit")
     suspend fun pendingItems(limit: Int): List<Item>
+
+    @Query("SELECT * FROM items WHERE isPendingSync = 1 AND familyId = :familyId LIMIT :limit")
+    suspend fun pendingFamilyItems(familyId: String, limit: Int): List<Item>
 
     @Query("SELECT * FROM subscriptions WHERE isPendingSync = 1 LIMIT :limit")
     suspend fun pendingSubscriptions(limit: Int): List<Subscription>
@@ -57,6 +60,9 @@ interface SyncDao {
     @Query("DELETE FROM products")
     suspend fun deleteProducts()
 
+    @Query("DELETE FROM items WHERE familyId IS NOT NULL")
+    suspend fun deleteFamilyItems()
+
     @Transaction
     suspend fun saveFromServer(
         categories: List<Category>,
@@ -70,6 +76,11 @@ interface SyncDao {
             subscriptions.notOlderThan(pendingSubscriptions(Int.MAX_VALUE), Subscription::id, Subscription::updatedAt)
         )
         upsertProducts(products.notOlderThan(pendingProducts(Int.MAX_VALUE), Product::barcode, Product::updatedAt))
+    }
+
+    @Transaction
+    suspend fun saveFamilyFromServer(familyId: String, items: List<Item>) {
+        upsertItems(items.notOlderThan(pendingFamilyItems(familyId, Int.MAX_VALUE), Item::id, Item::updatedAt))
     }
 
     @Transaction

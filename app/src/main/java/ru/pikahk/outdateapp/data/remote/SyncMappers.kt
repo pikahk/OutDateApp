@@ -36,7 +36,7 @@ fun Item.toDto() = ItemDto(
     updatedAt = updatedAt
 )
 
-fun ItemDto.toModel() = Item(
+fun ItemDto.toModel(familyId: String? = null) = Item(
     id = id,
     name = name,
     categoryId = categoryId,
@@ -48,7 +48,9 @@ fun ItemDto.toModel() = Item(
     createdAt = createdAt,
     updatedAt = updatedAt,
     isDeleted = isDeleted,
-    isPendingSync = false
+    isPendingSync = false,
+    familyId = familyId,
+    addedBy = addedBy
 )
 
 fun Subscription.toDto() = SubscriptionDto(

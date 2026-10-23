@@ -25,7 +25,7 @@ class ExpiryWorker(context: Context, params: WorkerParameters) : CoroutineWorker
     override suspend fun doWork(): Result {
         val database = DatabaseProvider.get(applicationContext)
         val today = LocalDate.now()
-        val items = itemsToRemind(ItemRepository(database.itemDao()).observeAll().first(), today)
+        val items = itemsToRemind(ItemRepository(database.itemDao()).observeWithFamily().first(), today)
         val charges = upcomingCharges(SubscriptionRepository(database.subscriptionDao()).observeAll().first(), today)
         NotificationManagerCompat.from(applicationContext).cancelAll()
         ExpiryNotification.show(applicationContext, items, today)

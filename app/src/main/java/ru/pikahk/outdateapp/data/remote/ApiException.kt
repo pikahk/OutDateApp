@@ -5,5 +5,6 @@ class ApiException(val code: String, cause: Throwable? = null) : Exception(code,
         const val NETWORK = "network"
         const val SERVER = "server_error"
         const val UNAUTHORIZED = "unauthorized"
+        const val NO_FAMILY = "no_family"
     }
 }

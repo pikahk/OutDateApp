@@ -11,7 +11,8 @@ import java.util.UUID
     indices = [
         Index("categoryId"),
         Index("barcode"),
-        Index("expiresAt")
+        Index("expiresAt"),
+        Index("familyId")
     ]
 )
 data class Item(
@@ -38,5 +39,9 @@ data class Item(
 
     val isDeleted: Boolean = false,
 
-    val isPendingSync: Boolean = true
+    val isPendingSync: Boolean = true,
+
+    val familyId: String? = null,
+
+    val addedBy: String? = null
 )

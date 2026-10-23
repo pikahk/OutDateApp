@@ -25,7 +25,11 @@ internal class FakeSyncDao : SyncDao {
 
     override suspend fun pendingCategories(limit: Int) = categories.value.values.filter { it.isPendingSync }.take(limit)
 
-    override suspend fun pendingItems(limit: Int) = items.value.values.filter { it.isPendingSync }.take(limit)
+    override suspend fun pendingItems(limit: Int) =
+        items.value.values.filter { it.isPendingSync && it.familyId == null }.take(limit)
+
+    override suspend fun pendingFamilyItems(familyId: String, limit: Int) =
+        items.value.values.filter { it.isPendingSync && it.familyId == familyId }.take(limit)
 
     override suspend fun pendingSubscriptions(limit: Int) =
         subscriptions.value.values.filter { it.isPendingSync }.take(limit)
@@ -62,5 +66,9 @@ internal class FakeSyncDao : SyncDao {
 
     override suspend fun deleteProducts() {
         products.value = emptyMap()
+    }
+
+    override suspend fun deleteFamilyItems() {
+        items.update { map -> map.filterValues { it.familyId == null } }
     }
 }

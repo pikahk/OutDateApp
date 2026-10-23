@@ -13,6 +13,7 @@ import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
+import ru.pikahk.outdateapp.data.model.Family
 import ru.pikahk.outdateapp.data.model.Session
 import ru.pikahk.outdateapp.data.remote.OutDateApi
 
@@ -31,6 +32,17 @@ class AuthRepositoryTest {
 
         override suspend fun saveSyncVersion(version: Long) {
             syncVersion.value = version
+        }
+
+        override val family = MutableStateFlow<Family?>(null)
+        override val familyVersion = MutableStateFlow(0L)
+
+        override suspend fun saveFamily(family: Family?) {
+            this.family.value = family
+        }
+
+        override suspend fun saveFamilyVersion(version: Long) {
+            familyVersion.value = version
         }
     }
 

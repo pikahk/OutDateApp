@@ -10,13 +10,19 @@ import ru.pikahk.outdateapp.data.model.Item
 @Dao
 interface ItemDao {
 
-    @Query("SELECT * FROM items WHERE isDeleted = 0")
+    @Query("SELECT * FROM items WHERE isDeleted = 0 AND familyId IS NULL")
     fun observeAll(): Flow<List<Item>>
 
-    @Query("SELECT * FROM items WHERE isDeleted = 0 AND categoryId = :categoryId")
+    @Query("SELECT * FROM items WHERE isDeleted = 0 AND familyId = :familyId")
+    fun observeFamily(familyId: String): Flow<List<Item>>
+
+    @Query("SELECT * FROM items WHERE isDeleted = 0")
+    fun observeWithFamily(): Flow<List<Item>>
+
+    @Query("SELECT * FROM items WHERE isDeleted = 0 AND familyId IS NULL AND categoryId = :categoryId")
     fun observeByCategory(categoryId: String): Flow<List<Item>>
 
-    @Query("SELECT * FROM items WHERE isDeleted = 1 AND updatedAt >= :since")
+    @Query("SELECT * FROM items WHERE isDeleted = 1 AND familyId IS NULL AND updatedAt >= :since")
     fun observeDeletedSince(since: Long): Flow<List<Item>>
 
     @Query("SELECT * FROM items WHERE id = :id AND isDeleted = 0")
